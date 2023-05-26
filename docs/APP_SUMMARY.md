@@ -9,6 +9,8 @@ Design and develop an app to aid individuals with short-term memory loss. The ap
 - **Transcription**: Uses Whisper AI to convert audio conversations into written text.
 - **Context Setup**: Leverages Chat GPT for extracting relevant information such as reminders, orders, and form-fill data from the transcribed text.
 - **Participant Identification**: Identifies and records conversation participants.
+- **Form Scrubbing (same as  Context Setup)**: The Chrome extension identifies the information requested in web forms (e.g., name, address, phone number).
+
 
 ## **III. Use Cases**
 
@@ -19,7 +21,6 @@ Design and develop an app to aid individuals with short-term memory loss. The ap
 ## **IV. Unique Features**
 
 - **Conversation Titling**: Each conversation is assigned a suggested title determined by the content of the conversation using Chat GPT.
-- **Form Scrubbing**: The Chrome extension identifies the information requested in web forms (e.g., name, address, phone number).
 
 ## **V. Development Details**
 
