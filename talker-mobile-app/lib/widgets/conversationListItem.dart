@@ -4,10 +4,12 @@ import 'package:intl/intl.dart';
 import '../models/conversation.dart';
 
 class ConversationListItem extends StatelessWidget {
-  ConversationListItem({required this.conversation, Key? key})
+  ConversationListItem(
+      {required this.conversation, required this.onTap, Key? key})
       : super(key: key);
 
   final Conversation conversation;
+  final Function() onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +20,7 @@ class ConversationListItem extends StatelessWidget {
           borderRadius: BorderRadius.all(Radius.circular(30))),
       margin: const EdgeInsets.all(10),
       child: TextButton(
-        onPressed: () {},
+        onPressed: onTap,
         child: Container(
           padding: const EdgeInsets.all(10),
           child: Row(
