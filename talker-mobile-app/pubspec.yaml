@@ -36,6 +36,19 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   intl: ^0.18.1
+  flutter_native_splash: ^2.3.0
+
+  #Run commands to generate splash screen
+  # 1. flutter clean
+  # 2. flutter pub get
+  # 3. flutter pub run flutter_native_splash:create
+
+flutter_native_splash:
+  android: true
+  ios: true
+
+  background_image: "assets/splashScreen.png"
+  
 
 dev_dependencies:
   flutter_test:
