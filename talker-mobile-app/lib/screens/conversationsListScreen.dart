@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:talker_mobile_app/enums/sorting_type.dart';
 import 'package:talker_mobile_app/models/conversation.dart';
 import 'package:talker_mobile_app/state/conversations_provider.dart';
 
@@ -15,57 +16,143 @@ class ConversationsListScreen extends StatefulWidget {
 
 class _ConversationsListScreenState extends State<ConversationsListScreen> {
   final controller = TextEditingController();
-  List<Conversation> filteredConversations = [];
+  String searchText = "";
+  SortingType sortingType = SortingType.dateNewToOld;
 
   @override
   Widget build(BuildContext context) {
     final conversationsProvider = Provider.of<ConversationsProvider>(context);
+    List<Conversation> filteredConversations =
+        conversationsProvider.filterConversations(searchText);
+
+    if (sortingType == SortingType.dateNewToOld) {
+      sortByDate(filteredConversations, true);
+    } else if (sortingType == SortingType.dateOldToNew) {
+      sortByDate(filteredConversations, false);
+    } else if (sortingType == SortingType.titleAToZ) {
+      sortByTitle(filteredConversations, true);
+    } else if (sortingType == SortingType.titleZToA) {
+      sortByTitle(filteredConversations, false);
+    } else if (sortingType == SortingType.durationShortToLong) {
+      sortByDuration(filteredConversations, true);
+    } else {
+      sortByDuration(filteredConversations, false);
+    }
 
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text('Conversations List Screen'),
+        title: const Text('Conversations List Screen'),
         centerTitle: true,
         backgroundColor: Colors.black,
       ),
-      body: Column(
-        children: [
-          TextField(
-            controller: controller,
-            decoration: InputDecoration(
-                prefixIcon: const Icon(Icons.search),
-                hintText: 'Conversation Title',
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
-                    borderSide: const BorderSide(color: Colors.blue))),
-            onChanged: (value) => setState(() {
-              filteredConversations =
-                  conversationsProvider.filterConversations(value);
-            }),
-          ),
-          Expanded(
-            child: ListView(
-              physics: const BouncingScrollPhysics(),
-              children: filteredConversations.map((conversation) {
-                return ConversationListItem(
-                    conversation: conversation,
-                    onTap: () => removeConversation(context, conversation));
-              }).toList(),
+      body: Container(
+        padding: const EdgeInsets.only(top: 10, left: 10, right: 10),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                PopupMenuButton(
+                  initialValue: sortingType,
+                  onSelected: (SortingType sortType) {
+                    setState(() {
+                      sortingType = sortType;
+                    });
+                  },
+                  itemBuilder: (BuildContext context) =>
+                      <PopupMenuEntry<SortingType>>[
+                    const PopupMenuItem<SortingType>(
+                      value: SortingType.dateNewToOld,
+                      child: Text('Date (New -> Old)'),
+                    ),
+                    const PopupMenuItem<SortingType>(
+                      value: SortingType.dateOldToNew,
+                      child: Text('Date (Old -> New)'),
+                    ),
+                    const PopupMenuItem<SortingType>(
+                      value: SortingType.titleAToZ,
+                      child: Text('Tag (A -> Z)'),
+                    ),
+                    const PopupMenuItem<SortingType>(
+                      value: SortingType.titleZToA,
+                      child: Text('Tag (Z -> A)'),
+                    ),
+                    const PopupMenuItem<SortingType>(
+                      value: SortingType.durationShortToLong,
+                      child: Text('Duration (Short -> Long)'),
+                    ),
+                    const PopupMenuItem<SortingType>(
+                      value: SortingType.durationLongToShort,
+                      child: Text('Duration (Long -> Short)'),
+                    ),
+                  ],
+                  icon: const Icon(Icons.sort),
+                ),
+                Expanded(
+                  child: TextField(
+                    controller: controller,
+                    decoration: InputDecoration(
+                        prefixIcon: const Icon(Icons.search),
+                        hintText: 'Conversation Title',
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(20),
+                            borderSide: const BorderSide(color: Colors.blue))),
+                    onChanged: (value) => setState(() {
+                      searchText = value;
+                    }),
+                  ),
+                ),
+              ],
             ),
-          ),
-        ],
+            Expanded(
+              child: ListView(
+                physics: const BouncingScrollPhysics(),
+                children: filteredConversations.map((conversation) {
+                  return ConversationListItem(
+                      conversation: conversation,
+                      onTap: () => removeConversation(context, conversation));
+                }).toList(),
+              ),
+            ),
+          ],
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.pushNamed(context, '/home');
-        }, //_speechToText.isNotListening ? _startListening : _stopListening,
-        child: Text('Home'),
-        backgroundColor: Colors.green,
+        },
+        backgroundColor: Colors
+            .green, //_speechToText.isNotListening ? _startListening : _stopListening,
+        child: const Text('Home'),
       ),
     );
   }
 
   void removeConversation(BuildContext context, Conversation conversation) {
     context.read<ConversationsProvider>().removeConversation(conversation);
+  }
+
+  void sortByDate(List<Conversation> conversations, bool newestFirst) {
+    if (newestFirst) {
+      conversations.sort((a, b) => b.recordedDate.compareTo(a.recordedDate));
+      return;
+    }
+    conversations.sort((a, b) => a.recordedDate.compareTo(b.recordedDate));
+  }
+
+  void sortByTitle(List<Conversation> conversations, bool aToZ) {
+    if (aToZ) {
+      conversations.sort((a, b) => a.title.compareTo(b.title));
+      return;
+    }
+    conversations.sort((a, b) => b.title.compareTo(a.title));
+  }
+
+  void sortByDuration(List<Conversation> conversations, bool shortestFirst) {
+    if (shortestFirst) {
+      conversations.sort((a, b) => a.duration.compareTo(b.duration));
+      return;
+    }
+    conversations.sort((a, b) => b.duration.compareTo(a.duration));
   }
 }
