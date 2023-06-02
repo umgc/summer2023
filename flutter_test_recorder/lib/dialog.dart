@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 Future<void> buildErrorDialog(BuildContext context, Object error) async {
-  if (context.mounted) return;
+  if (!context.mounted) return;
   var ex = error as Exception?;
   return showDialog<void>(
     context: context,

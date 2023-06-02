@@ -11,20 +11,16 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:test_recorder/main.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
+  testWidgets('smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
     await tester.pumpWidget(const MyApp());
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // Verify that record_voice_over button is visible, voice_over_off is not
+    expect(find.byIcon(Icons.record_voice_over), findsOneWidget);
+    expect(find.byIcon(Icons.voice_over_off), findsNothing);
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // Verify that play_arrow button is visible, voice_over_off is not
+    expect(find.byIcon(Icons.play_arrow), findsOneWidget);
+    expect(find.byIcon(Icons.stop), findsNothing);
   });
 }
