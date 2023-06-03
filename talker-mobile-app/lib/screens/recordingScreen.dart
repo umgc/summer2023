@@ -46,7 +46,8 @@ class _RecordingScreenState extends State<RecordingScreen> {
       ..androidEncoder = AndroidEncoder.aac
       ..androidOutputFormat = AndroidOutputFormat.mpeg4
       ..iosEncoder = IosEncoder.kAudioFormatMPEG4AAC
-      ..sampleRate = 44100;
+      ..sampleRate = 44100
+      ..bitRate = 48000;
   }
 
   void _startRecording() async {
