@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 import '../models/conversation.dart';
 
 class ConversationListItem extends StatelessWidget {
-  ConversationListItem(
+  const ConversationListItem(
       {required this.conversation, required this.onTap, Key? key})
       : super(key: key);
 

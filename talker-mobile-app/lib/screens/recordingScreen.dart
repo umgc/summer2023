@@ -1,4 +1,9 @@
+import 'dart:io';
+
+import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:stop_watch_timer/stop_watch_timer.dart';
 
 class RecordingScreen extends StatefulWidget {
   const RecordingScreen({Key? key}) : super(key: key);
@@ -8,9 +13,59 @@ class RecordingScreen extends StatefulWidget {
 }
 
 class _RecordingScreenState extends State<RecordingScreen> {
+  late final RecorderController recorderController;
+  late Directory appDirectory;
+  final _stopWatchTimer = StopWatchTimer(mode: StopWatchMode.countUp);
+
+  String? path;
   bool isRecording = false;
   bool isPaused = false;
-  String currentDuration = '0:00';
+
+  @override
+  void initState() {
+    super.initState();
+    _getDir();
+    _initializeControllers();
+  }
+
+  void _getDir() async {
+    appDirectory = await getApplicationDocumentsDirectory();
+    path = "${appDirectory.path}/recording.m4a";
+    setState(() {});
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    recorderController.dispose();
+    _stopWatchTimer.dispose();
+  }
+
+  void _initializeControllers() {
+    recorderController = RecorderController()
+      ..androidEncoder = AndroidEncoder.aac
+      ..androidOutputFormat = AndroidOutputFormat.mpeg4
+      ..iosEncoder = IosEncoder.kAudioFormatMPEG4AAC
+      ..sampleRate = 44100;
+  }
+
+  void _startRecording() async {
+    await recorderController.record(path: path);
+    _stopWatchTimer.onStartTimer();
+    setState(() {
+      isRecording = true;
+    });
+  }
+
+  void _pauseRecording() {}
+
+  void _stopRecording() async {
+    await recorderController.stop();
+    _stopWatchTimer.onStopTimer();
+    setState(() {
+      isRecording = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,19 +88,27 @@ class _RecordingScreenState extends State<RecordingScreen> {
                 child: Image(
                     image: AssetImage('assets/microphone_Background.jpg'))),
             if (isRecording)
-              const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.graphic_eq, color: Colors.white, size: 70),
-                  Icon(Icons.graphic_eq, color: Colors.white, size: 70),
-                  Icon(Icons.graphic_eq, color: Colors.white, size: 70),
-                ],
+              AudioWaveforms(
+                size: Size(300, 45),
+                recorderController: recorderController,
+                waveStyle: WaveStyle(
+                  waveColor: Colors.white,
+                  extendWaveform: true,
+                ),
               ),
             if (isRecording)
-              Text(
-                currentDuration,
-                style: TextStyle(color: Colors.white, fontSize: 30),
-              ),
+              StreamBuilder(
+                  stream: _stopWatchTimer.secondTime,
+                  initialData: 0,
+                  builder: (context, snap) {
+                    final value = snap.data;
+                    final displayTime = StopWatchTimer.getDisplayTime(value!,
+                        minute: true, second: true);
+                    return Text(
+                      '${'${(value / 60).floor()}'.padLeft(2, '0')}:${'${value % 60}'.padLeft(2, '0')}',
+                      style: TextStyle(color: Colors.white, fontSize: 30),
+                    );
+                  }),
             if (isRecording)
               TextButton(
                   onPressed: () {
@@ -62,9 +125,11 @@ class _RecordingScreenState extends State<RecordingScreen> {
                       const Icon(Icons.pause, color: Colors.black, size: 25)),
             TextButton(
               onPressed: () {
-                setState(() {
-                  isRecording = !isRecording;
-                });
+                if (isRecording) {
+                  _stopRecording();
+                } else {
+                  _startRecording();
+                }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red,

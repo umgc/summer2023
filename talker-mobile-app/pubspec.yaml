@@ -38,6 +38,9 @@ dependencies:
   intl: ^0.18.1
   flutter_native_splash: ^2.3.0
   provider: ^6.0.5
+  audio_waveforms: ^1.0.4
+  path_provider: ^2.0.15
+  stop_watch_timer: ^2.0.0
 
   #Run commands to generate splash screen
   # 1. flutter clean
