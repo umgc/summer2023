@@ -18,7 +18,7 @@ class ConversationListItem extends StatelessWidget {
       decoration: const BoxDecoration(
           color: Color(0xFF262626),
           borderRadius: BorderRadius.all(Radius.circular(30))),
-      margin: const EdgeInsets.only(top: 10, bottom: 10),
+      margin: const EdgeInsets.only(top: 10, bottom: 5),
       child: TextButton(
         onPressed: onTap,
         child: Container(
