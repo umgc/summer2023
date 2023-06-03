@@ -89,9 +89,9 @@ class _RecordingScreenState extends State<RecordingScreen> {
                     image: AssetImage('assets/microphone_Background.jpg'))),
             if (isRecording)
               AudioWaveforms(
-                size: Size(300, 45),
+                size: const Size(300, 45),
                 recorderController: recorderController,
-                waveStyle: WaveStyle(
+                waveStyle: const WaveStyle(
                   waveColor: Colors.white,
                   extendWaveform: true,
                 ),
@@ -101,12 +101,10 @@ class _RecordingScreenState extends State<RecordingScreen> {
                   stream: _stopWatchTimer.secondTime,
                   initialData: 0,
                   builder: (context, snap) {
-                    final value = snap.data;
-                    final displayTime = StopWatchTimer.getDisplayTime(value!,
-                        minute: true, second: true);
+                    final value = snap.data!;
                     return Text(
                       '${'${(value / 60).floor()}'.padLeft(2, '0')}:${'${value % 60}'.padLeft(2, '0')}',
-                      style: TextStyle(color: Colors.white, fontSize: 30),
+                      style: const TextStyle(color: Colors.white, fontSize: 30),
                     );
                   }),
             if (isRecording)
