@@ -10,7 +10,7 @@ class RecordingScreen extends StatefulWidget {
 class _RecordingScreenState extends State<RecordingScreen> {
   bool isRecording = false;
   bool isPaused = false;
-  String currentDuration = '';
+  String currentDuration = '0:00';
 
   @override
   Widget build(BuildContext context) {
@@ -36,11 +36,30 @@ class _RecordingScreenState extends State<RecordingScreen> {
               const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.graphic_eq, color: Colors.white, size: 80),
-                  Icon(Icons.graphic_eq, color: Colors.white, size: 80),
-                  Icon(Icons.graphic_eq, color: Colors.white, size: 80),
+                  Icon(Icons.graphic_eq, color: Colors.white, size: 70),
+                  Icon(Icons.graphic_eq, color: Colors.white, size: 70),
+                  Icon(Icons.graphic_eq, color: Colors.white, size: 70),
                 ],
               ),
+            if (isRecording)
+              Text(
+                currentDuration,
+                style: TextStyle(color: Colors.white, fontSize: 30),
+              ),
+            if (isRecording)
+              TextButton(
+                  onPressed: () {
+                    setState(() {
+                      isPaused = true;
+                    });
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    shape: const CircleBorder(),
+                    padding: const EdgeInsets.all(5),
+                  ),
+                  child:
+                      const Icon(Icons.pause, color: Colors.black, size: 25)),
             TextButton(
               onPressed: () {
                 setState(() {
