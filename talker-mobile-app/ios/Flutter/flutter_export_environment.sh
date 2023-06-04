@@ -1,7 +1,7 @@
 #!/bin/sh
 # This is a generated file; do not edit or check into version control.
-export "FLUTTER_ROOT=D:\Coding\flutter"
-export "FLUTTER_APPLICATION_PATH=D:\Coding\FlutterApps\summer2023\talker-mobile-app"
+export "FLUTTER_ROOT=C:\src\flutter"
+export "FLUTTER_APPLICATION_PATH=J:\Documents and files\Studies\UMGC\Summer 2023\Capstone project\summer2023\talker-mobile-app"
 export "COCOAPODS_PARALLEL_CODE_SIGN=true"
 export "FLUTTER_TARGET=lib\main.dart"
 export "FLUTTER_BUILD_DIR=build"
