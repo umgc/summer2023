@@ -2,89 +2,89 @@ import 'package:flutter/cupertino.dart';
 
 import '../models/conversation.dart';
 
-final List<Conversation> test = [
+final List<Conversation> sampleData = [
   Conversation(
       title: 'restaurant order',
       recordedDate: DateTime.now(),
-      duration: Duration(),
+      duration: const Duration(minutes: 1),
       content: '',
       audioFilePath: ''),
   Conversation(
       title: 'doctor appointment',
       recordedDate: DateTime.now().add(const Duration(minutes: -120)),
-      duration: Duration(),
+      duration: const Duration(minutes: 20),
       content: '',
       audioFilePath: ''),
   Conversation(
       title: 'dinner with friend',
       recordedDate: DateTime.now().add(const Duration(days: -120)),
-      duration: Duration(),
+      duration: const Duration(minutes: 55),
       content: '',
       audioFilePath: ''),
   Conversation(
       title: 'a very loooooooooonnnnnng title',
       recordedDate: DateTime.now().add(const Duration(days: -220)),
-      duration: Duration(),
+      duration: const Duration(hours: 1),
       content: '',
       audioFilePath: ''),
   Conversation(
-      title: 'doctor appointment',
-      recordedDate: DateTime.now().add(const Duration(minutes: -120)),
-      duration: Duration(),
+      title: 'order 1',
+      recordedDate: DateTime.now().add(const Duration(minutes: -2340)),
+      duration: const Duration(hours: 3),
       content: '',
       audioFilePath: ''),
   Conversation(
-      title: 'dinner with friend',
-      recordedDate: DateTime.now().add(const Duration(days: -120)),
-      duration: Duration(),
+      title: 'order 2',
+      recordedDate: DateTime.now().add(const Duration(days: -1000)),
+      duration: const Duration(hours: 20),
       content: '',
       audioFilePath: ''),
   Conversation(
-      title: 'a very loooooooooonnnnnng title',
-      recordedDate: DateTime.now().add(const Duration(days: -220)),
-      duration: Duration(),
+      title: 'date',
+      recordedDate: DateTime.now().add(const Duration(days: -2000)),
+      duration: const Duration(hours: 15),
       content: '',
       audioFilePath: ''),
   Conversation(
-      title: 'doctor appointment',
-      recordedDate: DateTime.now().add(const Duration(minutes: -120)),
-      duration: Duration(),
+      title: 'birthday party',
+      recordedDate: DateTime.now().add(const Duration(minutes: -52)),
+      duration: const Duration(days: 1),
       content: '',
       audioFilePath: ''),
   Conversation(
-      title: 'dinner with friend',
-      recordedDate: DateTime.now().add(const Duration(days: -120)),
-      duration: Duration(),
+      title: 'work meeting',
+      recordedDate: DateTime.now().add(const Duration(days: -10000)),
+      duration: const Duration(days: 3),
       content: '',
       audioFilePath: ''),
   Conversation(
-      title: 'a very loooooooooonnnnnng title',
-      recordedDate: DateTime.now().add(const Duration(days: -220)),
-      duration: Duration(),
+      title: 'anniversary',
+      recordedDate: DateTime.now().add(const Duration(days: -2354)),
+      duration: const Duration(days: 5),
       content: '',
       audioFilePath: ''),
   Conversation(
-      title: 'doctor appointment',
-      recordedDate: DateTime.now().add(const Duration(minutes: -120)),
-      duration: Duration(),
+      title: 'dentist',
+      recordedDate: DateTime.now().add(const Duration(minutes: -3)),
+      duration: const Duration(days: 10),
       content: '',
       audioFilePath: ''),
   Conversation(
-      title: 'dinner with friend',
-      recordedDate: DateTime.now().add(const Duration(days: -120)),
-      duration: Duration(),
+      title: 'grocery list',
+      recordedDate: DateTime.now().add(const Duration(days: -7)),
+      duration: const Duration(days: 20),
       content: '',
       audioFilePath: ''),
   Conversation(
-      title: 'a very loooooooooonnnnnng title',
-      recordedDate: DateTime.now().add(const Duration(days: -220)),
-      duration: Duration(),
+      title: 'therapist',
+      recordedDate: DateTime.now().add(const Duration(days: -121)),
+      duration: const Duration(milliseconds: 10),
       content: '',
       audioFilePath: ''),
 ];
 
 class ConversationsProvider with ChangeNotifier {
-  final List<Conversation> _conversations = test;
+  final List<Conversation> _conversations = sampleData;
 
   List<Conversation> get conversations => _conversations;
 
@@ -96,5 +96,14 @@ class ConversationsProvider with ChangeNotifier {
   void removeConversation(Conversation conversation) {
     _conversations.remove(conversation);
     notifyListeners();
+  }
+
+  List<Conversation> filterConversations(String searchText) {
+    var filteredConversations = _conversations
+        .where((conversation) => conversation.title
+            .toLowerCase()
+            .contains(searchText.toLowerCase().trim()))
+        .toList();
+    return filteredConversations;
   }
 }
