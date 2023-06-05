@@ -26,7 +26,6 @@ public class HelloMessage {
         this.name = name;
     }
 
-
     public String toString() {
         return "HelloMessage[name=" + this.name + "]";
     }
