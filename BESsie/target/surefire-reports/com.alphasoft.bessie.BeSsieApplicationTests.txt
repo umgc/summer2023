@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: com.alphasoft.bessie.BeSsieApplicationTests
--------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.318 s - in com.alphasoft.bessie.BeSsieApplicationTests
