@@ -1,4 +1,5 @@
 class Conversation {
+  final String id;
   final String title;
   final DateTime recordedDate;
   final Duration duration;
@@ -6,7 +7,8 @@ class Conversation {
   final String audioFilePath;
 
   Conversation(
-      {required this.title,
+      {required this.id,
+      required this.title,
       required this.recordedDate,
       required this.duration,
       required this.content,
