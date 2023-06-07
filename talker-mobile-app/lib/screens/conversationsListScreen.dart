@@ -98,7 +98,7 @@ class _ConversationsListScreenState extends State<ConversationsListScreen> {
                     child: TextField(
                       controller: controller,
                       textAlignVertical: TextAlignVertical.center,
-                      style: TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                       cursorColor: Colors.white,
                       decoration: InputDecoration(
                           enabledBorder: OutlineInputBorder(
@@ -109,7 +109,7 @@ class _ConversationsListScreenState extends State<ConversationsListScreen> {
                           prefixIcon: const Icon(Icons.search),
                           prefixIconColor: Colors.white,
                           hintText: 'Conversation Title',
-                          hintStyle: TextStyle(color: Colors.grey),
+                          hintStyle: const TextStyle(color: Colors.grey),
                           border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(20),
                               borderSide:
