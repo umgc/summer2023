@@ -26,6 +26,7 @@ class _RecordingScreenState extends State<RecordingScreen> {
     super.initState();
     _getDir();
     _initializeControllers();
+    _startRecording();
   }
 
   void _getDir() async {
@@ -54,18 +55,68 @@ class _RecordingScreenState extends State<RecordingScreen> {
     await recorderController.record(path: path);
     _stopWatchTimer.onStartTimer();
     setState(() {
+      isPaused = false;
       isRecording = true;
     });
   }
 
-  void _pauseRecording() {}
+  void _pauseRecording() async {
+    await recorderController.pause();
+    _stopWatchTimer.onStopTimer();
+    setState(() {
+      isPaused = true;
+    });
+  }
+
+  void _resumeRecording() async {
+    await recorderController.record();
+    _stopWatchTimer.onStartTimer();
+    setState(() {
+      isPaused = false;
+      isRecording = true;
+    });
+  }
 
   void _stopRecording() async {
     await recorderController.stop();
     _stopWatchTimer.onStopTimer();
     setState(() {
       isRecording = false;
+      isPaused = false;
     });
+  }
+
+  Widget _buildPauseAndResumeButton() {
+    if (!isPaused) {
+      return TextButton(
+          onPressed: () {
+            _pauseRecording();
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.white,
+            shape: const CircleBorder(),
+            padding: const EdgeInsets.all(5),
+          ),
+          child: const Icon(Icons.pause, color: Colors.black, size: 25));
+    } else {
+      return Padding(
+        padding: const EdgeInsets.only(left: 20, right: 20),
+        child: TextButton(
+            onPressed: () {
+              _resumeRecording();
+            },
+            style: TextButton.styleFrom(
+                backgroundColor: const Color(0xFF8900F8),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                )),
+            child: const Text(
+              'Resume',
+              style: TextStyle(fontSize: 20),
+            )),
+      );
+    }
   }
 
   @override
@@ -81,6 +132,7 @@ class _RecordingScreenState extends State<RecordingScreen> {
         color: Colors.black,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const ClipRRect(
                 borderRadius: BorderRadius.only(
@@ -89,12 +141,14 @@ class _RecordingScreenState extends State<RecordingScreen> {
                 child: Image(
                     image: AssetImage('assets/microphone_Background.jpg'))),
             if (isRecording)
-              AudioWaveforms(
-                size: const Size(300, 45),
-                recorderController: recorderController,
-                waveStyle: const WaveStyle(
-                  waveColor: Colors.white,
-                  extendWaveform: true,
+              Center(
+                child: AudioWaveforms(
+                  size: const Size(300, 45),
+                  recorderController: recorderController,
+                  waveStyle: const WaveStyle(
+                    waveColor: Colors.white,
+                    extendWaveform: true,
+                  ),
                 ),
               ),
             if (isRecording)
@@ -103,41 +157,25 @@ class _RecordingScreenState extends State<RecordingScreen> {
                   initialData: 0,
                   builder: (context, snap) {
                     final value = snap.data!;
-                    return Text(
-                      '${'${(value / 60).floor()}'.padLeft(2, '0')}:${'${value % 60}'.padLeft(2, '0')}',
-                      style: const TextStyle(color: Colors.white, fontSize: 30),
+                    return Center(
+                      child: Text(
+                        '${'${(value / 60).floor()}'.padLeft(2, '0')}:${'${value % 60}'.padLeft(2, '0')}',
+                        style:
+                            const TextStyle(color: Colors.white, fontSize: 30),
+                      ),
                     );
                   }),
-            if (isRecording)
-              TextButton(
-                  onPressed: () {
-                    setState(() {
-                      isPaused = true;
-                    });
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    shape: const CircleBorder(),
-                    padding: const EdgeInsets.all(5),
-                  ),
-                  child:
-                      const Icon(Icons.pause, color: Colors.black, size: 25)),
+            if (isRecording) _buildPauseAndResumeButton(),
             TextButton(
               onPressed: () {
-                if (isRecording) {
-                  _stopRecording();
-                } else {
-                  _startRecording();
-                }
+                _stopRecording();
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red,
                 shape: const CircleBorder(),
                 padding: const EdgeInsets.all(15),
               ),
-              child: isRecording
-                  ? const Icon(Icons.stop, color: Colors.white, size: 30)
-                  : const Icon(Icons.mic, color: Colors.white, size: 30),
+              child: const Icon(Icons.stop, color: Colors.white, size: 30),
             ),
           ],
         ),
