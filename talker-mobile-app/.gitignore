@@ -51,3 +51,9 @@ app.*.map.json
 /android/gradlew.bat
 /android/local.properties
 /android/**/GeneratedPluginRegistrant.java
+
+../.DS_Store
+../.idea/
+ios/Podfile
+ios/Podfile.lock
+
