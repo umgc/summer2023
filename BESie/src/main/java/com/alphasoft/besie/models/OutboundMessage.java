@@ -1,4 +1,4 @@
-package com.alphasoft.besie;
+package com.alphasoft.besie.models;
 
 public class OutboundMessage {
     //private variable content with getter and setter

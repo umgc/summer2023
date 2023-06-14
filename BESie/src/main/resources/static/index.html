@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Message Broker</title>
+    <title>BESie - Browser Extension Service</title>
     <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link href="/main.css" rel="stylesheet">
     <script src="/webjars/jquery/jquery.min.js"></script>
@@ -30,8 +30,8 @@
         <div class="col-md-6">
             <form class="form-inline">
                 <div class="form-group">
-                    <label for="name">Send this to /fill endpoint:</label>
-                    <input type="text" id="name" class="form-control" placeholder="Your name here...">
+                    <label for="payload">Send this to /fill endpoint:</label>
+                    <input type="text" id="payload" class="form-control" placeholder="Your name here...">
                 </div>
                 <button id="send" class="btn btn-default" type="submit">Send</button>
             </form>
@@ -42,7 +42,7 @@
             <table id="conversation" class="table table-striped">
                 <thead>
                 <tr>
-                    <th>messages</th>
+                    <th>messages retrieved by subscribing to <code>/topic/form_model</code>></th>
                 </tr>
                 </thead>
                 <tbody id="conversations">
