@@ -1,0 +1,3 @@
+class LocalStorageService {
+  String? filepath;
+}
