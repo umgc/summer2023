@@ -1,0 +1,9 @@
+{
+    "name": "Form Filler",
+    "version": "0.0.1",
+    "description": "",
+    "manifest_version": 3,
+    "author": "Charlie McAllister - Team A",
+    "action": {"default_popup": "index.html",
+               "default-title": "Form Filler"}
+}
