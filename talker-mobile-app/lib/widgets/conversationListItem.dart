@@ -11,6 +11,14 @@ class ConversationListItem extends StatelessWidget {
   final Conversation conversation;
   final Function() onTap;
 
+  String getFormattedDuration() {
+    final minutes = conversation.duration.inMinutes;
+    final seconds = conversation.duration.inSeconds % 60;
+    final minutesString = '$minutes'.padLeft(2, '0');
+    final secondsString = '$seconds'.padLeft(2, '0');
+    return '$minutesString:$secondsString';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -26,39 +34,29 @@ class ConversationListItem extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              TextButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF8900F8),
-                  shape: const CircleBorder(),
-                  padding: const EdgeInsets.all(18),
-                ),
-                child: const Icon(
-                  Icons.play_circle,
-                  color: Colors.white,
-                ),
-              ),
-              Expanded(
-                child: Container(
-                  margin: const EdgeInsets.only(left: 15),
-                  child: Text(conversation.title,
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(conversation.title,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
-                          fontSize: 18)),
-                ),
+                          fontSize: 20)),
+                  Text(
+                    '${DateFormat('MM/dd/yyyy').format(conversation.recordedDate)}  ${DateFormat.jm().format(conversation.recordedDate)}',
+                    style: const TextStyle(fontSize: 13, color: Colors.white),
+                  )
+                ],
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    DateFormat('MM/dd/yyyy').format(conversation.recordedDate),
-                    style: const TextStyle(fontSize: 10, color: Colors.white),
+                    getFormattedDuration(),
+                    style: const TextStyle(fontSize: 13, color: Colors.white),
                   ),
-                  Text(DateFormat.jm().format(conversation.recordedDate),
-                      style:
-                          const TextStyle(fontSize: 10, color: Colors.white)),
                 ],
               ),
             ],

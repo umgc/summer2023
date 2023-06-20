@@ -42,9 +42,17 @@ class _ConversationsListScreenState extends State<ConversationsListScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Conversations'),
+        title: const Text('ConvoBuddy'),
         centerTitle: true,
         backgroundColor: Colors.black,
+        actions: const <Widget>[
+          IconButton(
+              onPressed: null,
+              icon: Icon(
+                Icons.info_outline,
+                color: Colors.white,
+              ))
+        ],
       ),
       body: Container(
         color: Colors.black,
@@ -52,6 +60,10 @@ class _ConversationsListScreenState extends State<ConversationsListScreen> {
         child: Column(
           children: [
             Container(
+              margin: const EdgeInsets.only(bottom: 20),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  color: const Color(0xFF262626)),
               height: 45,
               child: Row(
                 children: [
@@ -101,23 +113,27 @@ class _ConversationsListScreenState extends State<ConversationsListScreen> {
                       style: const TextStyle(color: Colors.white),
                       cursorColor: Colors.white,
                       decoration: InputDecoration(
+                          filled: true,
+                          fillColor: const Color(0xFF262626),
                           enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(20),
                               borderSide:
-                                  const BorderSide(color: Colors.white)),
+                                  const BorderSide(color: Colors.transparent)),
                           contentPadding: const EdgeInsets.all(0),
                           prefixIcon: const Icon(Icons.search),
-                          prefixIconColor: Colors.white,
-                          hintText: 'Conversation Title',
+                          prefixIconColor: searchText.isEmpty
+                              ? Colors.white
+                              : Colors.transparent,
+                          hintText: 'Search Conversations',
                           hintStyle: const TextStyle(color: Colors.grey),
                           border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(20),
                               borderSide:
-                                  const BorderSide(color: Colors.white)),
+                                  const BorderSide(color: Colors.transparent)),
                           focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(20),
                               borderSide:
-                                  const BorderSide(color: Colors.white))),
+                                  const BorderSide(color: Colors.transparent))),
                       onChanged: (value) => setState(() {
                         searchText = value;
                       }),
