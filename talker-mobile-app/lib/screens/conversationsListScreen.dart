@@ -17,11 +17,12 @@ class ConversationsListScreen extends StatefulWidget {
 class _ConversationsListScreenState extends State<ConversationsListScreen> {
   final controller = TextEditingController();
   String searchText = "";
-  SortingType sortingType = SortingType.dateNewToOld;
 
   @override
   Widget build(BuildContext context) {
     final conversationsProvider = Provider.of<ConversationsProvider>(context);
+    final sortingType = Provider.of<ConversationsProvider>(context).sortingType;
+
     List<Conversation> filteredConversations =
         conversationsProvider.filterConversations(searchText);
 
@@ -37,6 +38,26 @@ class _ConversationsListScreenState extends State<ConversationsListScreen> {
       sortByDuration(filteredConversations, true);
     } else {
       sortByDuration(filteredConversations, false);
+    }
+
+    Widget buildConversationList() {
+      if (filteredConversations.isEmpty) {
+        return const Text("No Conversations Found",
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 20));
+      }
+      return Expanded(
+        child: ListView(
+          physics: const BouncingScrollPhysics(),
+          children: filteredConversations.map((conversation) {
+            return ConversationListItem(
+                conversation: conversation, onTap: () => {});
+          }).toList(),
+        ),
+      );
     }
 
     return Scaffold(
@@ -58,6 +79,7 @@ class _ConversationsListScreenState extends State<ConversationsListScreen> {
         color: Colors.black,
         padding: const EdgeInsets.only(top: 10, left: 10, right: 10),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Container(
               margin: const EdgeInsets.only(bottom: 20),
@@ -71,7 +93,7 @@ class _ConversationsListScreenState extends State<ConversationsListScreen> {
                     initialValue: sortingType,
                     onSelected: (SortingType sortType) {
                       setState(() {
-                        sortingType = sortType;
+                        conversationsProvider.setSortingType(sortType);
                       });
                     },
                     itemBuilder: (BuildContext context) =>
@@ -142,25 +164,31 @@ class _ConversationsListScreenState extends State<ConversationsListScreen> {
                 ],
               ),
             ),
-            Expanded(
-              child: ListView(
-                physics: const BouncingScrollPhysics(),
-                children: filteredConversations.map((conversation) {
-                  return ConversationListItem(
-                      conversation: conversation, onTap: () => {});
-                }).toList(),
-              ),
+            buildConversationList(),
+            Container(
+              margin: const EdgeInsets.only(top: 10),
+              child: ElevatedButton.icon(
+                  onPressed: () {
+                    null;
+                  },
+                  style: ElevatedButton.styleFrom(
+                      minimumSize: const Size.fromHeight(50),
+                      backgroundColor: const Color(0xFF8900F8),
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      )),
+                  icon: const Icon(
+                    Icons.mic_none,
+                    color: Colors.white,
+                  ),
+                  label: const Text(
+                    'Record',
+                    style: TextStyle(fontSize: 20),
+                  )),
             ),
           ],
         ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.pushNamed(context, '/recording');
-        },
-        backgroundColor: Colors.red,
-        child: const Icon(Icons.mic),
       ),
     );
   }
