@@ -100,8 +100,10 @@ final List<Conversation> sampleData = [
 class ConversationsProvider with ChangeNotifier {
   final List<Conversation> _conversations = sampleData;
   SortingType _sortingType = SortingType.dateNewToOld;
+  Conversation? _selectedConversation;
 
   List<Conversation> get conversations => _conversations;
+  Conversation? get selectedConversation => _selectedConversation;
   SortingType get sortingType => _sortingType;
 
   void addConversation(Conversation conversation) {
@@ -121,6 +123,11 @@ class ConversationsProvider with ChangeNotifier {
             .contains(searchText.toLowerCase().trim()))
         .toList();
     return filteredConversations;
+  }
+
+  void setSelectedConversation(Conversation conversation) {
+    _selectedConversation = conversation;
+    notifyListeners();
   }
 
   void setSortingType(SortingType type) {
