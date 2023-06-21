@@ -15,7 +15,7 @@ function setConnected(connected) {
 function connect() {
     var socket = new SockJS('/ws');
     stompClient = Stomp.over(socket);
-    stompClient.connect({}, function (frame) {
+    stompClient.connect({'Access-Control-Allow-Origin':'*'}, function (frame) {
         setConnected(true);
         console.log('Connected: ' + frame);
         stompClient.subscribe('/topic/form-model', function (greeting) {
