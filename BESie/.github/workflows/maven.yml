@@ -10,7 +10,8 @@ name: Java CI with Maven
 
 on:
   push:
-    branches: [ "development" ]
+    # Sequence of patterns matched against refs/tags
+    branches: [ "development", "main", "master", "feature/*" ]
   pull_request:
     branches: [ "development" ]
 
