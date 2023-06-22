@@ -71,10 +71,10 @@ class _ConversationsListScreenState extends State<ConversationsListScreen> {
         title: const Text('ConvoBuddy'),
         centerTitle: true,
         backgroundColor: Colors.black,
-        actions: const <Widget>[
+        actions: <Widget>[
           IconButton(
-              onPressed: null,
-              icon: Icon(
+              onPressed: () => Navigator.pushNamed(context, '/information'),
+              icon: const Icon(
                 Icons.info_outline,
                 color: Colors.white,
               ))
