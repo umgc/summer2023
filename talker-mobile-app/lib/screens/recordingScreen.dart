@@ -52,7 +52,7 @@ class _RecordingScreenState extends State<RecordingScreen> {
   }
 
   void _startRecording() async {
-    await recorderController.record(path: path);
+    //todo: add back in later: await recorderController.record(path: path);
     _stopWatchTimer.onStartTimer();
     setState(() {
       isPaused = false;
@@ -61,7 +61,7 @@ class _RecordingScreenState extends State<RecordingScreen> {
   }
 
   void _pauseRecording() async {
-    await recorderController.pause();
+    //todo: add back in later: await recorderController.pause();
     _stopWatchTimer.onStopTimer();
     setState(() {
       isPaused = true;
@@ -69,7 +69,7 @@ class _RecordingScreenState extends State<RecordingScreen> {
   }
 
   void _resumeRecording() async {
-    await recorderController.record();
+    //todo: add back in later: await recorderController.record();
     _stopWatchTimer.onStartTimer();
     setState(() {
       isPaused = false;
@@ -78,7 +78,7 @@ class _RecordingScreenState extends State<RecordingScreen> {
   }
 
   void _stopRecording() async {
-    await recorderController.stop();
+    //todo: add back in later: await recorderController.stop();
     _stopWatchTimer.onStopTimer();
     setState(() {
       isRecording = false;
