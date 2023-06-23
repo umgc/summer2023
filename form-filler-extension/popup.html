@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Form Filler</title>
     <link rel="stylesheet" href="css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/popup.css">
 </head>
 <body>
     <div id ="mainContainer" class="container">
@@ -20,17 +20,14 @@
                 <input type="number" class="form-field" placeholder="Enter your PIN:" maxlength="20">
             </div>
             <div class="col">
-                <button id="pairButton" class="btn btn-primary">Pair</button>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col">
                 <button id="fillFormButton" class="btn btn-primary">Fill Form</button>
             </div>
         </div>
     </div>
     <script src="js/jquery-3.7.0.min.js"></script>
     <script src="js/bootstrap.bundle.min.js"></script>
-    <script src="js/app.js"></script>
+    <script src="js/sockjs.min.js"></script>
+    <script src="js/stomp.min.js"></script>
+    <script type="module" src="js/popup.js"></script>
 </body>
 </html>
