@@ -8,6 +8,8 @@
 		<string>Talker Mobile App</string>
 		<key>CFBundleExecutable</key>
 		<string>$(EXECUTABLE_NAME)</string>
+		<key>NSMicrophoneUsageDescription</key>
+        <string>This app requires Mic permission</string>
 		<key>CFBundleIdentifier</key>
 		<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 		<key>CFBundleInfoDictionaryVersion</key>
