@@ -1,4 +1,4 @@
-import { getActiveTabURL } from "./helper.js";
+import { getActiveTabURL } from "./utils.js";
 
 $(document).ready(async function(){
 
