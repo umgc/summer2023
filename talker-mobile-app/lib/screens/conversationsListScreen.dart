@@ -65,6 +65,13 @@ class _ConversationsListScreenState extends State<ConversationsListScreen> {
       );
     }
 
+    void clearSearchText() {
+      controller.clear();
+      setState(() {
+        searchText = "";
+      });
+    }
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -95,6 +102,9 @@ class _ConversationsListScreenState extends State<ConversationsListScreen> {
               child: Row(
                 children: [
                   PopupMenuButton(
+                    shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(15.0))),
+                    color: const Color(0xFF262626),
                     initialValue: sortingType,
                     onSelected: (SortingType sortType) {
                       setState(() {
@@ -105,27 +115,45 @@ class _ConversationsListScreenState extends State<ConversationsListScreen> {
                         <PopupMenuEntry<SortingType>>[
                       const PopupMenuItem<SortingType>(
                         value: SortingType.dateNewToOld,
-                        child: Text('Date (New -> Old)'),
+                        child: Text(
+                          'Date (New ➔ Old)',
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
                       const PopupMenuItem<SortingType>(
                         value: SortingType.dateOldToNew,
-                        child: Text('Date (Old -> New)'),
+                        child: Text(
+                          'Date (Old ➔ New)',
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
                       const PopupMenuItem<SortingType>(
                         value: SortingType.titleAToZ,
-                        child: Text('Tag (A -> Z)'),
+                        child: Text(
+                          'Title (A ➔ Z)',
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
                       const PopupMenuItem<SortingType>(
                         value: SortingType.titleZToA,
-                        child: Text('Tag (Z -> A)'),
+                        child: Text(
+                          'Title (Z ➔ A)',
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
                       const PopupMenuItem<SortingType>(
                         value: SortingType.durationShortToLong,
-                        child: Text('Duration (Short -> Long)'),
+                        child: Text(
+                          'Duration (Short ➔ Long)',
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
                       const PopupMenuItem<SortingType>(
                         value: SortingType.durationLongToShort,
-                        child: Text('Duration (Long -> Short)'),
+                        child: Text(
+                          'Duration (Long ➔ Short)',
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
                     ],
                     icon: const Icon(
@@ -153,6 +181,13 @@ class _ConversationsListScreenState extends State<ConversationsListScreen> {
                               : Colors.transparent,
                           hintText: 'Search Conversations',
                           hintStyle: const TextStyle(color: Colors.grey),
+                          suffixIcon: IconButton(
+                            onPressed: () => clearSearchText(),
+                            icon: const Icon(Icons.clear),
+                            color: searchText.isNotEmpty
+                                ? Colors.white
+                                : Colors.transparent,
+                          ),
                           border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(20),
                               borderSide:
