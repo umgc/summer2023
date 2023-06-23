@@ -78,10 +78,10 @@ class _ConversationsListScreenState extends State<ConversationsListScreen> {
         title: const Text('ConvoBuddy'),
         centerTitle: true,
         backgroundColor: Colors.black,
-        actions: const <Widget>[
+        actions: <Widget>[
           IconButton(
-              onPressed: null,
-              icon: Icon(
+              onPressed: () => Navigator.pushNamed(context, '/information'),
+              icon: const Icon(
                 Icons.info_outline,
                 color: Colors.white,
               ))
@@ -243,10 +243,12 @@ class _ConversationsListScreenState extends State<ConversationsListScreen> {
 
   void sortByTitle(List<Conversation> conversations, bool aToZ) {
     if (aToZ) {
-      conversations.sort((a, b) => a.title.compareTo(b.title));
+      conversations.sort(
+          (a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()));
       return;
     }
-    conversations.sort((a, b) => b.title.compareTo(a.title));
+    conversations
+        .sort((a, b) => b.title.toLowerCase().compareTo(a.title.toLowerCase()));
   }
 
   void sortByDuration(List<Conversation> conversations, bool shortestFirst) {
