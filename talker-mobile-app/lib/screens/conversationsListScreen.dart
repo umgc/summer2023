@@ -243,10 +243,12 @@ class _ConversationsListScreenState extends State<ConversationsListScreen> {
 
   void sortByTitle(List<Conversation> conversations, bool aToZ) {
     if (aToZ) {
-      conversations.sort((a, b) => a.title.compareTo(b.title));
+      conversations.sort(
+          (a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()));
       return;
     }
-    conversations.sort((a, b) => b.title.compareTo(a.title));
+    conversations
+        .sort((a, b) => b.title.toLowerCase().compareTo(a.title.toLowerCase()));
   }
 
   void sortByDuration(List<Conversation> conversations, bool shortestFirst) {
