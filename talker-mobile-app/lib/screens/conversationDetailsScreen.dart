@@ -19,6 +19,8 @@ class _ConversationDetailsScreenState extends State<ConversationDetailsScreen> {
   final String resultsText =
       "hello this is testing the results hello this is testing the results hello this is testing the results hello this is testing the results hello this is testing the results hello this is testing the results hello this is testing the results hello this is testing the results hello this is testing the results hello this is testing the results hello this is testing the results hello this is testing the results ";
 
+  // todo - add in actualy playback functionality
+
   @override
   Widget build(BuildContext context) {
     final conversationsProvider = Provider.of<ConversationsProvider>(context);
