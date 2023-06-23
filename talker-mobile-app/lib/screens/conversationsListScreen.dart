@@ -54,7 +54,12 @@ class _ConversationsListScreenState extends State<ConversationsListScreen> {
           physics: const BouncingScrollPhysics(),
           children: filteredConversations.map((conversation) {
             return ConversationListItem(
-                conversation: conversation, onTap: () => {});
+                conversation: conversation,
+                onTap: () => {
+                      conversationsProvider
+                          .setSelectedConversation(conversation),
+                      Navigator.pushNamed(context, '/conversationDetailsScreen')
+                    });
           }).toList(),
         ),
       );

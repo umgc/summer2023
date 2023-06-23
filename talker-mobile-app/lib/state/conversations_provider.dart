@@ -5,7 +5,7 @@ import '../models/conversation.dart';
 
 final List<Conversation> sampleData = [
   Conversation(
-      title: 'restaurant order',
+      title: 'Restaurant order',
       recordedDate: DateTime.now(),
       duration: const Duration(minutes: 1, seconds: 20),
       content: '',
@@ -19,7 +19,7 @@ final List<Conversation> sampleData = [
       audioFilePath: '',
       id: ''),
   Conversation(
-      title: 'dinner with friend',
+      title: 'Dinner with friend',
       recordedDate: DateTime.now().add(const Duration(days: -120)),
       duration: const Duration(minutes: 22, seconds: 164),
       content: '',
@@ -33,7 +33,7 @@ final List<Conversation> sampleData = [
       audioFilePath: '',
       id: ''),
   Conversation(
-      title: 'order 1',
+      title: 'Order 1',
       recordedDate: DateTime.now().add(const Duration(minutes: -2340)),
       duration: const Duration(minutes: 29, seconds: 59),
       content: '',
@@ -47,7 +47,7 @@ final List<Conversation> sampleData = [
       audioFilePath: '',
       id: ''),
   Conversation(
-      title: 'date',
+      title: 'Date',
       recordedDate: DateTime.now().add(const Duration(days: -2000)),
       duration: const Duration(minutes: 1, seconds: 1),
       content: '',
@@ -61,7 +61,7 @@ final List<Conversation> sampleData = [
       audioFilePath: '',
       id: ''),
   Conversation(
-      title: 'work meeting',
+      title: 'Work meeting',
       recordedDate: DateTime.now().add(const Duration(days: -10000)),
       duration: const Duration(minutes: 0, seconds: 3),
       content: '',
@@ -75,7 +75,7 @@ final List<Conversation> sampleData = [
       audioFilePath: '',
       id: ''),
   Conversation(
-      title: 'dentist',
+      title: 'Dentist',
       recordedDate: DateTime.now().add(const Duration(minutes: -3)),
       duration: const Duration(minutes: 5, seconds: 56),
       content: '',
@@ -89,7 +89,7 @@ final List<Conversation> sampleData = [
       audioFilePath: '',
       id: ''),
   Conversation(
-      title: 'therapist',
+      title: 'Therapist',
       recordedDate: DateTime.now().add(const Duration(days: -121)),
       duration: const Duration(minutes: 3, seconds: 30),
       content: '',
@@ -100,8 +100,10 @@ final List<Conversation> sampleData = [
 class ConversationsProvider with ChangeNotifier {
   final List<Conversation> _conversations = sampleData;
   SortingType _sortingType = SortingType.dateNewToOld;
+  Conversation? _selectedConversation;
 
   List<Conversation> get conversations => _conversations;
+  Conversation? get selectedConversation => _selectedConversation;
   SortingType get sortingType => _sortingType;
 
   void addConversation(Conversation conversation) {
@@ -121,6 +123,11 @@ class ConversationsProvider with ChangeNotifier {
             .contains(searchText.toLowerCase().trim()))
         .toList();
     return filteredConversations;
+  }
+
+  void setSelectedConversation(Conversation conversation) {
+    _selectedConversation = conversation;
+    notifyListeners();
   }
 
   void setSortingType(SortingType type) {
