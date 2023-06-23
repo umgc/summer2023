@@ -4,6 +4,22 @@
     "description": "",
     "manifest_version": 3,
     "author": "Charlie McAllister - Team A",
-    "action": {"default_popup": "index.html",
-               "default-title": "Form Filler"}
+    "permissions": [
+        "activeTab",
+        "scripting",
+        "storage",
+        "tabs",
+        "<all_urls>"
+    ],
+    "background": {
+        "service_worker": "js/background.js"
+    },
+    
+
+    "action": {
+        "default_popup": "popup.html",
+        "default-title": "Form Filler"
+    },
+
+    "host_permissions": ["<all_urls>"]
 }
