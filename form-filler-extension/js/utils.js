@@ -12,7 +12,32 @@ export async function getActiveTabURL() {
     return tabs[0];
 }
 
-export function wsConnect() {
-    let socket = new SockJS("http://localhost:8080/ws");
+const serviceUrl = "http://localhost:8080/ws";
+var stompClient;
+export async function connect() {
+    let socket = new SockJS(serviceUrl);
     stompClient = Stomp.over(socket);
+    stompClient.connect({'Access-Control-Allow-Origin':'*'}, function (frame) {
+        stompClient.subscribe('/topic/form-model', function (frame) {
+            //let data = JSON.parse(frame.content).content; 
+            //console.log(data);
+        });
+    });
+}
+
+function disconnect() {
+    if (stompClient !== null) {
+        stompClient.disconnect();
+    }
+    console.log("Disconnected");
+}
+
+export function sendFormPayload(pinNumber, form) {
+    let payload = {
+        payload: form,
+        pin: pinNumber,
+        formId: 112554665
+    };
+    console.log(JSON.stringify(payload));
+    stompClient.send("/app/fill", {}, JSON.stringify(payload));
 }
