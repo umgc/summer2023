@@ -209,7 +209,7 @@ class _ConversationsListScreenState extends State<ConversationsListScreen> {
               margin: const EdgeInsets.only(top: 10),
               child: ElevatedButton.icon(
                   onPressed: () {
-                    null;
+                    Navigator.pushNamed(context, '/recording');
                   },
                   style: ElevatedButton.styleFrom(
                       minimumSize: const Size.fromHeight(50),
