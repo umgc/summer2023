@@ -18,8 +18,8 @@ function connect() {
     stompClient.connect({'Access-Control-Allow-Origin':'*'}, function (frame) {
         setConnected(true);
         console.log('Connected: ' + frame);
-        stompClient.subscribe('/topic/form-model', function (greeting) {
-            showMessages(JSON.parse(greeting.body).content);
+        stompClient.subscribe('/topic/form-model', function (msg) {
+            showMessages(JSON.parse(msg.body).content);
         });
     });
 }
