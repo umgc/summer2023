@@ -4,6 +4,7 @@ import 'package:talker_mobile_app/enums/sorting_type.dart';
 import 'package:talker_mobile_app/models/conversation.dart';
 import 'package:talker_mobile_app/state/conversations_provider.dart';
 
+import '../services/fileHelpers.dart';
 import '../widgets/conversationListItem.dart';
 
 class ConversationsListScreen extends StatefulWidget {
@@ -209,7 +210,9 @@ class _ConversationsListScreenState extends State<ConversationsListScreen> {
               margin: const EdgeInsets.only(top: 10),
               child: ElevatedButton.icon(
                   onPressed: () {
-                    Navigator.pushNamed(context, '/recording');
+                    writeConversationsToJsonFile(
+                        conversationsProvider.conversations, "");
+                    //Navigator.pushNamed(context, '/recording');
                   },
                   style: ElevatedButton.styleFrom(
                       minimumSize: const Size.fromHeight(50),
