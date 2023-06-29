@@ -1,12 +1,11 @@
-import 'dart:io';
-
 import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 import 'package:talker_mobile_app/screens/conversationDetailsScreen.dart';
+import 'package:uuid/uuid.dart';
 
+import '../globals.dart';
 import '../models/conversation.dart';
 import '../state/conversations_provider.dart';
 
@@ -19,10 +18,10 @@ class RecordingScreen extends StatefulWidget {
 
 class _RecordingScreenState extends State<RecordingScreen> {
   late final RecorderController recorderController;
-  late Directory appDirectory;
   final _stopWatchTimer = StopWatchTimer(mode: StopWatchMode.countUp);
 
   String? path;
+  String id = const Uuid().v1();
   bool isPaused = false;
 
   @override
@@ -33,10 +32,8 @@ class _RecordingScreenState extends State<RecordingScreen> {
     _startRecording();
   }
 
-  void _getDir() async {
-    appDirectory = await getApplicationDocumentsDirectory();
-    path = "${appDirectory.path}/recording.m4a";
-    setState(() {});
+  void _getDir() {
+    path = "${Globals.appDirectory?.path}/$id";
   }
 
   @override
@@ -56,7 +53,7 @@ class _RecordingScreenState extends State<RecordingScreen> {
   }
 
   void _startRecording() async {
-    //todo: add back in later: await recorderController.record(path: path);
+    await recorderController.record(path: path);
     _stopWatchTimer.onStartTimer();
     setState(() {
       isPaused = false;
@@ -64,7 +61,7 @@ class _RecordingScreenState extends State<RecordingScreen> {
   }
 
   void _pauseRecording() async {
-    //todo: add back in later: await recorderController.pause();
+    await recorderController.pause();
     _stopWatchTimer.onStopTimer();
     setState(() {
       isPaused = true;
@@ -72,7 +69,7 @@ class _RecordingScreenState extends State<RecordingScreen> {
   }
 
   void _resumeRecording() async {
-    //todo: add back in later: await recorderController.record();
+    await recorderController.record();
     _stopWatchTimer.onStartTimer();
     setState(() {
       isPaused = false;
@@ -80,7 +77,7 @@ class _RecordingScreenState extends State<RecordingScreen> {
   }
 
   void _stopRecording(ConversationsProvider conversationsProvider) async {
-    //todo: add back in later: await recorderController.stop();
+    await recorderController.stop();
     _stopWatchTimer.onStopTimer();
     setState(() {
       isPaused = false;
@@ -92,8 +89,8 @@ class _RecordingScreenState extends State<RecordingScreen> {
         recordedDate: recordedDate,
         duration: Duration(seconds: seconds.value),
         content: '',
-        audioFilePath: '',
-        id: '');
+        audioFilePath: path.toString(),
+        id: id);
     conversationsProvider.addConversation(newConversation);
     conversationsProvider.setSelectedConversation(newConversation);
     Navigator.pushReplacement(

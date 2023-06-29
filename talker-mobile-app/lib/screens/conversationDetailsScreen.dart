@@ -1,6 +1,8 @@
+import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:talker_mobile_app/globals.dart';
 import 'package:talker_mobile_app/models/conversation.dart';
 import 'package:talker_mobile_app/state/conversations_provider.dart';
 
@@ -19,13 +21,39 @@ class _ConversationDetailsScreenState extends State<ConversationDetailsScreen> {
   final String resultsText =
       "hello this is testing the results hello this is testing the results hello this is testing the results hello this is testing the results hello this is testing the results hello this is testing the results hello this is testing the results hello this is testing the results hello this is testing the results hello this is testing the results hello this is testing the results hello this is testing the results ";
 
-  // todo - add in actualy playback functionality
+  late String audioPath;
+  late PlayerController playerController = PlayerController();
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  void _playOrPauseAudio() async {
+    playerController.playerState == PlayerState.playing
+        ? await playerController.pausePlayer()
+        : await playerController.startPlayer(finishMode: FinishMode.pause);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    playerController.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final conversationsProvider = Provider.of<ConversationsProvider>(context);
     final Conversation? conversation =
         conversationsProvider.selectedConversation;
+    var path = "${Globals.appDirectory?.path}/${conversation?.id}";
+    playerController = PlayerController();
+    playerController.preparePlayer(
+        path: path,
+        shouldExtractWaveform: true,
+        noOfSamples: const PlayerWaveStyle()
+            .getSamplesForWidth(MediaQuery.of(context).size.width - 100),
+        volume: 3.0);
 
     String getFormattedDuration() {
       final minutes = conversation?.duration.inMinutes;
@@ -145,14 +173,27 @@ class _ConversationDetailsScreenState extends State<ConversationDetailsScreen> {
                     decoration: const BoxDecoration(
                         color: Color(0xFF8900F8),
                         borderRadius: BorderRadius.all(Radius.circular(10))),
-                    child: const Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         IconButton(
-                            onPressed: null,
-                            icon: Icon(Icons.play_arrow_rounded,
-                                color: Colors.white, size: 40))
+                            onPressed: _playOrPauseAudio,
+                            icon: const Icon(Icons.play_arrow_rounded,
+                                color: Colors.white, size: 40)),
+                        Expanded(
+                          child: AudioFileWaveforms(
+                            enableSeekGesture: true,
+                            waveformType: WaveformType.fitWidth,
+                            size: Size(
+                                MediaQuery.of(context).size.width - 100, 90),
+                            playerController: playerController,
+                            continuousWaveform: true,
+                            playerWaveStyle: const PlayerWaveStyle(
+                                scaleFactor: 200,
+                                fixedWaveColor: Colors.grey,
+                                liveWaveColor: Colors.white),
+                          ),
+                        )
                       ],
                     ),
                   ),
