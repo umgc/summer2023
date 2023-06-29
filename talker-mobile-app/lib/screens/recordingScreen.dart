@@ -163,22 +163,25 @@ class _RecordingScreenState extends State<RecordingScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Container(
-              margin: EdgeInsets.only(top: 50),
-              child: const ClipRRect(
+            const Expanded(
+              child: ClipRRect(
                   borderRadius: BorderRadius.only(
                       bottomLeft: Radius.circular(20),
                       bottomRight: Radius.circular(20)),
                   child: Image(
+                      fit: BoxFit.cover,
                       image: AssetImage('assets/microphone_Background.jpg'))),
             ),
             Center(
-              child: AudioWaveforms(
-                size: const Size(300, 45),
-                recorderController: recorderController,
-                waveStyle: const WaveStyle(
-                  waveColor: Colors.white,
-                  extendWaveform: true,
+              child: Container(
+                margin: const EdgeInsets.only(top: 10, bottom: 10),
+                child: AudioWaveforms(
+                  size: const Size(300, 35),
+                  recorderController: recorderController,
+                  waveStyle: const WaveStyle(
+                    waveColor: Colors.white,
+                    extendWaveform: true,
+                  ),
                 ),
               ),
             ),
@@ -188,9 +191,13 @@ class _RecordingScreenState extends State<RecordingScreen> {
                 builder: (context, snap) {
                   final value = snap.data!;
                   return Center(
-                    child: Text(
-                      '${'${(value / 60).floor()}'.padLeft(2, '0')}:${'${value % 60}'.padLeft(2, '0')}',
-                      style: const TextStyle(color: Colors.white, fontSize: 30),
+                    child: Container(
+                      margin: const EdgeInsets.only(bottom: 10),
+                      child: Text(
+                        '${'${(value / 60).floor()}'.padLeft(2, '0')}:${'${value % 60}'.padLeft(2, '0')}',
+                        style:
+                            const TextStyle(color: Colors.white, fontSize: 30),
+                      ),
                     ),
                   );
                 }),
