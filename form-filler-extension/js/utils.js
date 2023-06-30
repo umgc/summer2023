@@ -18,9 +18,15 @@ export async function connect() {
     let socket = new SockJS(serviceUrl);
     stompClient = Stomp.over(socket);
     stompClient.connect({'Access-Control-Allow-Origin':'*'}, function (frame) {
-        stompClient.subscribe('/topic/form-model', function (frame) {
-            //let data = JSON.parse(frame.content).content; 
-            //console.log(data);
+        stompClient.subscribe('/topic/filled-form', async function (frame) {
+            let data = JSON.parse(frame.body); 
+            console.log(data);
+            let activeTab = await getActiveTabURL();
+            
+            chrome.tabs.sendMessage(activeTab.id, {
+                mode: "FORM_FILL",
+                data: data
+            });
         });
     });
 }
@@ -34,9 +40,8 @@ function disconnect() {
 
 export function sendFormPayload(pinNumber, form) {
     let payload = {
-        payload: form,
+        form: form,
         pin: pinNumber,
-        formId: 112554665
     };
     console.log(JSON.stringify(payload));
     stompClient.send("/app/fill", {}, JSON.stringify(payload));
