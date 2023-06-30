@@ -10,6 +10,22 @@ void main() {
 
   final logger = Logger();
 
+  test('get app instance code, not initialized', () {
+    var agent = Agent('browser-extension-api-unit-test');
+    var code = agent.instanceCode;
+    logger.i(code);
+    expect(code, isNull);
+  });
+
+  test('get app instance code, initialized', () {
+    var agent = Agent('browser-extension-api-unit-test');
+    agent.generateInstanceCode();
+    var code = agent.instanceCode;
+    logger.i(code);
+    expect(code, isNotNull);
+    expect(code, isNotEmpty);
+  });
+
   test('extract form values, app instance code initialized and passed in',
       () async {
     var agent = Agent('browser-extension-api-unit-test');
