@@ -9,13 +9,12 @@ enum SortType { oldestFirst, newestFirst, aDescription, zDescription }
 
 class Agent {
   final String userId;
-  late String instanceCode;
+  String? instanceCode;
   late String profile;
   late List<Recording> recordingList;
   late List<Reminder> reminderList;
 
   Agent(this.userId);
-
 
   String getProfile() {
     return this.profile;
@@ -26,13 +25,16 @@ class Agent {
   }
 
   String getInstanceCode() {
-    return this.instanceCode;
+    if (instanceCode == null) {
+      throw "Instance code has not been initialized yet.";
+    }
+    return instanceCode!;
   }
 
   String generateInstanceCode() {
     //Some code to generate a new InstanceCode
     instanceCode = 'ABCDEF';
-    return instanceCode;
+    return instanceCode!;
   }
 
   String createRecording(String filename) {
@@ -60,12 +62,13 @@ class Agent {
     //send API call to STT provider, store results to Recording Object, save
   }
 
-  void extractFormValues(String instanceCode, List formFields) {
+  Map<String, String> extractFormValues(String instanceCode, List formFields) {
     //send to chatgpt
+    return <String, String>{};
   }
 
   String processFoodOrder(String guid) {
-    //Send to ChatGPT, return a string 
+    //Send to ChatGPT, return a string
     return 'Hamburger';
   }
 
@@ -99,16 +102,13 @@ class Agent {
     final File reminderFile = File('/path/reminders.json'); //load JSON File
     //await readReminderData(reminderFile); //read data from json
 
-    reminderList  //convert list data  to json 
-      .map(
-        (reminder) => reminder.toJson(),
-      )
-      .toList();
-      
-    reminderFile.writeAsStringSync(json.encode(reminderList));  //write (the whole list) to json file
-      
+    reminderList //convert list data  to json
+        .map(
+          (reminder) => reminder.toJson(),
+        )
+        .toList();
 
+    reminderFile.writeAsStringSync(
+        json.encode(reminderList)); //write (the whole list) to json file
   }
-
-
 }
