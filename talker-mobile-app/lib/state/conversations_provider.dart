@@ -1,9 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:talker_mobile_app/enums/sorting_type.dart';
+import 'package:talker_mobile_app/services/fileHelpers.dart';
 
+import '../globals.dart';
 import '../models/conversation.dart';
 
-final List<Conversation> sampleData = [
+/* final List<Conversation> sampleData = [
   Conversation(
       title: 'Restaurant order',
       recordedDate: DateTime.now(),
@@ -95,10 +97,11 @@ final List<Conversation> sampleData = [
       content: '',
       audioFilePath: '',
       id: ''),
-];
+]; */
 
 class ConversationsProvider with ChangeNotifier {
-  final List<Conversation> _conversations = sampleData;
+  final List<Conversation> _conversations = getConversationsFromJsonFile(
+      "${Globals.appDirectory?.path}/conversations.json");
   SortingType _sortingType = SortingType.dateNewToOld;
   Conversation? _selectedConversation;
 

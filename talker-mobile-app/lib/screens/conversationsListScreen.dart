@@ -4,6 +4,7 @@ import 'package:talker_mobile_app/enums/sorting_type.dart';
 import 'package:talker_mobile_app/models/conversation.dart';
 import 'package:talker_mobile_app/state/conversations_provider.dart';
 
+import '../globals.dart';
 import '../services/fileHelpers.dart';
 import '../widgets/conversationListItem.dart';
 
@@ -210,8 +211,11 @@ class _ConversationsListScreenState extends State<ConversationsListScreen> {
               margin: const EdgeInsets.only(top: 10),
               child: ElevatedButton.icon(
                   onPressed: () {
-                    writeConversationsToJsonFile(
-                        conversationsProvider.conversations, "");
+                    getConversationsFromJsonFile(
+                        "${Globals.appDirectory?.path}/conversations.json");
+                    /*writeConversationsToJsonFile(
+                        conversationsProvider.conversations,
+                        "${Globals.appDirectory?.path}/conversations.json");*/
                     //Navigator.pushNamed(context, '/recording');
                   },
                   style: ElevatedButton.styleFrom(
