@@ -49,6 +49,18 @@ class Agent {
 
   void deleteRecording(String guid) {
     //Delete recording from memory and filesystem
+    // Use the guid to identify the recording in question and the filepath to it and remove it from the system
+    var recordingFile = File('/path/to/recording');
+    if (recordingFile.existsSync()){
+        var content = recordingFile.readasStringSync();
+        if (content.contains(guid)) {
+            recordingFile.deleteSync();
+        }  else{
+        print('Not the right recording');
+        }
+    } else {
+      print('Recording file does not exist');
+      }
   }
 
   List<Recording> searchRecordings(String searchTerm) {
@@ -86,6 +98,7 @@ class Agent {
 
   void deleteReminder(int reminderId) {
     //delete a reminder from list and from file storage
+
   }
 
   void addReminder(Reminder newReminder) {
