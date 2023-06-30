@@ -26,14 +26,14 @@ class Agent {
 
   String getInstanceCode() {
     if (instanceCode == null) {
-      throw "Instance code has not been initialized yet.";
+      throw 'Instance code has not been initialized yet.';
     }
     return instanceCode!;
   }
 
   String generateInstanceCode() {
     //Some code to generate a new InstanceCode
-    instanceCode = 'ABCDEF';
+    instanceCode = '8736';
     return instanceCode!;
   }
 

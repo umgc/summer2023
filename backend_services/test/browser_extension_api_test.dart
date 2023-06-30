@@ -20,8 +20,7 @@ void main() {
     agent.generateInstanceCode();
     var code = agent.instanceCode;
     logger.i(code);
-    expect(code, isNotNull);
-    expect(code, isNotEmpty);
+    expect(code, '8736');
   });
 
   test('extract form values, app instance code initialized and passed in', () {
