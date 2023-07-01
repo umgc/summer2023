@@ -30,7 +30,7 @@ public class WebSocketController {
         log.info("parsed json form map - extensionToPhone: {}", parsedJsonFormMap.toString());
         Thread.sleep(2000); // simulated delay
         //sending message to FORM-MODEL topic
-        return new OutboundMessage(HtmlUtils.htmlEscape(form));
+        return new OutboundMessage(form);
     }
 
 
@@ -41,7 +41,7 @@ public class WebSocketController {
         log.info("parsed json form map - phoneToExtension: {}", parsedJsonFormMap.toString());
         Thread.sleep(2000); // simulated delay
         //sending message to FILLED-FORM topic
-        return new OutboundMessage(HtmlUtils.htmlEscape(form));
+        return new OutboundMessage(form);
     }
 
     @GetMapping("/ws/info/{t}")
