@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:talker_mobile_app/enums/sorting_type.dart';
 import 'package:talker_mobile_app/models/conversation.dart';
@@ -70,6 +71,17 @@ class _ConversationsListScreenState extends State<ConversationsListScreen> {
       setState(() {
         searchText = "";
       });
+    }
+
+    void onRecordPress() async {
+      PermissionStatus permissionStatus = await Permission.microphone.request();
+      if (permissionStatus.isGranted) {
+        Navigator.pushNamed(context, '/recording');
+      } else if (permissionStatus.isDenied) {
+        return;
+      } else if (permissionStatus.isPermanentlyDenied) {
+        openAppSettings();
+      }
     }
 
     return Scaffold(
@@ -209,7 +221,7 @@ class _ConversationsListScreenState extends State<ConversationsListScreen> {
               margin: const EdgeInsets.only(top: 10),
               child: ElevatedButton.icon(
                   onPressed: () {
-                    Navigator.pushNamed(context, '/recording');
+                    onRecordPress();
                   },
                   style: ElevatedButton.styleFrom(
                       minimumSize: const Size.fromHeight(50),

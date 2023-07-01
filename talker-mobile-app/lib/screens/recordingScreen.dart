@@ -7,6 +7,7 @@ import 'package:uuid/uuid.dart';
 
 import '../globals.dart';
 import '../models/conversation.dart';
+import '../services/fileHelpers.dart';
 import '../state/conversations_provider.dart';
 
 class RecordingScreen extends StatefulWidget {
@@ -93,6 +94,8 @@ class _RecordingScreenState extends State<RecordingScreen> {
         id: id);
     conversationsProvider.addConversation(newConversation);
     conversationsProvider.setSelectedConversation(newConversation);
+    await writeConversationsToJsonFile(conversationsProvider.conversations,
+        "${Globals.appDirectory?.path}/conversations.json");
     Navigator.pushReplacement(
         context,
         MaterialPageRoute(
