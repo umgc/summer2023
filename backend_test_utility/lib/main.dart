@@ -1,3 +1,4 @@
+import 'package:backend_test_utility/ambients.dart';
 import 'package:backend_test_utility/app_startup.dart';
 import 'package:backend_test_utility/test_screens/app_instance_screen.dart';
 import 'package:flutter/material.dart';
@@ -47,6 +48,7 @@ class _MainScreenState extends State<MainScreen> {
               child: ListView(children: [
             ScreenMenuItem(
                 title: 'App Instance Tests',
+                buttonKey: WidgetKeys.appInstanceCodeTestsButton,
                 builder: (context) =>
                     const AppInstanceScreen(title: 'App Instance Tests')),
           ])),
@@ -55,8 +57,13 @@ class _MainScreenState extends State<MainScreen> {
 }
 
 class ScreenMenuItem extends StatelessWidget {
-  const ScreenMenuItem({super.key, required this.title, required this.builder});
+  const ScreenMenuItem(
+      {super.key,
+      required this.title,
+      required this.buttonKey,
+      required this.builder});
 
+  final Key buttonKey;
   final String title;
   final WidgetBuilder builder;
 
@@ -64,6 +71,7 @@ class ScreenMenuItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       title: ElevatedButton(
+        key: buttonKey,
         child: Text(title),
         onPressed: () {
           Navigator.push(

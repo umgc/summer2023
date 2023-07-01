@@ -48,14 +48,16 @@ class _AppInstanceScreenState extends State<AppInstanceScreen> {
               style: TextStyle(
                   fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize),
             ),
-            title: Text(appCode),
+            title: Text(appCode, key: WidgetKeys.appCodeTextField),
           ),
           ListTile(
               title: ElevatedButton(
+                  key: WidgetKeys.generateAppCodeButton,
                   onPressed: () => _generateAppCode(),
-                  child: const Text('Initialize App Code'))),
+                  child: const Text('Generate App Code'))),
           ListTile(
               title: ElevatedButton(
+                  key: WidgetKeys.resetAgentButton,
                   onPressed: () => _resetAgent(),
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Theme.of(context).colorScheme.error,

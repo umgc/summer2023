@@ -9,7 +9,7 @@ enum SortType { oldestFirst, newestFirst, aDescription, zDescription }
 
 class Agent {
   final String userId;
-  String? _instanceCode;
+  String _instanceCode = '';
   late String profile;
   late List<Recording> recordingList;
   late List<Reminder> reminderList;
@@ -25,16 +25,16 @@ class Agent {
   }
 
   String getInstanceCode() {
-    if (_instanceCode == null) {
+    if (_instanceCode.isEmpty) {
       throw 'Instance code has not been initialized yet.';
     }
-    return _instanceCode!;
+    return _instanceCode;
   }
 
   String generateInstanceCode() {
     //Some code to generate a new InstanceCode
     _instanceCode = '8736';
-    return _instanceCode!;
+    return _instanceCode;
   }
 
   String createRecording(String filename) {
