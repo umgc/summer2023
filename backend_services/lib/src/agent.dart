@@ -50,9 +50,9 @@ class Agent {
   void deleteRecording(String guid) {
     //Delete recording from memory and filesystem
     // Use the guid to identify the recording in question and the filepath to it and remove it from the system
-    var recordingFile = File('/path/to/recording');
+    var recordingFile = File('/path/to/recording/guid.json');
     if (recordingFile.existsSync()){
-        var content = recordingFile.readasStringSync();
+        var content = recordingFile.readAsStringSync();
         if (content.contains(guid)) {
             recordingFile.deleteSync();
         }  else{
