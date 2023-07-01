@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:backend_services/src/utilities/json_utility.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:backend_services/src/agent.dart';
@@ -10,15 +8,13 @@ void main() {
 
   test('get app instance code, not initialized', () {
     var agent = Agent('browser-extension-api-unit-test');
-    var code = agent.instanceCode;
-    logger.i(code);
-    expect(code, isNull);
+    expect(() => agent.getInstanceCode(), throwsA(anything));
   });
 
   test('get app instance code, initialized', () {
     var agent = Agent('browser-extension-api-unit-test');
     agent.generateInstanceCode();
-    var code = agent.instanceCode;
+    var code = agent.getInstanceCode();
     logger.i(code);
     expect(code, '8736');
   });
@@ -32,7 +28,7 @@ void main() {
 
     var formFields = ["name"];
     var formValues = agent.extractFormValues(instanceCode, formFields);
-    logger.i(json.encode(formValues));
+    logger.i(jsonUtil.toJsonPretty(formValues));
     expect(formValues, isNotNull);
     expect(formValues, isNotEmpty);
   });
