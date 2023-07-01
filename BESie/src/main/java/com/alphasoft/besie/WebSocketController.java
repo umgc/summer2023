@@ -29,7 +29,8 @@ public class WebSocketController {
         Map <String, Object> parsedJsonFormMap = parseForm(form);
         log.info("parsed json form map - extensionToPhone: {}", parsedJsonFormMap.toString());
         Thread.sleep(2000); // simulated delay
-        return new OutboundMessage("MESSAGE RECEIVED FROM TOPIC FORM-MODEL -> " + HtmlUtils.htmlEscape(parsedJsonFormMap.toString()) + " -- Original string parsedJsonFormMap: " + HtmlUtils.htmlEscape(form));
+        //sending message to FORM-MODEL topic
+        return new OutboundMessage(HtmlUtils.htmlEscape(form));
     }
 
 
@@ -39,7 +40,8 @@ public class WebSocketController {
         Map <String, Object> parsedJsonFormMap = parseForm(form);
         log.info("parsed json form map - phoneToExtension: {}", parsedJsonFormMap.toString());
         Thread.sleep(2000); // simulated delay
-        return new OutboundMessage("MESSAGE RECEIVED FROM TOPIC FILLED-FORM -> " + HtmlUtils.htmlEscape(parsedJsonFormMap.toString()) + " -- Original string parsedJsonFormMap: " + HtmlUtils.htmlEscape(form));
+        //sending message to FILLED-FORM topic
+        return new OutboundMessage(HtmlUtils.htmlEscape(form));
     }
 
     @GetMapping("/ws/info/{t}")
