@@ -41,6 +41,7 @@ dependencies:
   path_provider: ^2.0.15
   stop_watch_timer: ^2.0.0
   uuid: ^3.0.6
+  permission_handler: ^10.4.1
 
 dev_dependencies:
   flutter_test:
