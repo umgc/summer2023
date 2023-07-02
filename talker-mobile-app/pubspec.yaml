@@ -42,6 +42,7 @@ dependencies:
   stop_watch_timer: ^2.0.0
   uuid: ^3.0.6
   permission_handler: ^10.4.1
+  panara_dialogs: ^0.1.4
 
 dev_dependencies:
   flutter_test:
