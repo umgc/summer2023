@@ -1,27 +1,62 @@
 import 'dart:io';
 import 'dart:convert';
-import 'recording.dart';
-import 'reminder.dart';
+import 'model/recording.dart';
+import 'model/reminder.dart';
+import 'model/user.dart';
+import 'package:path_provider/path_provider.dart';
 
-List<Recording> recordings = [];
+
 
 enum SortType { oldestFirst, newestFirst, aDescription, zDescription }
 
 class Agent {
   final String userId;
   String _instanceCode = '';
-  late String profile;
-  late List<Recording> recordingList;
-  late List<Reminder> reminderList;
+  late String? profile;
+  late List<Recording> recordingList = [];
+  late List<Reminder> reminderList = [];
 
   Agent(this.userId);
 
-  String getProfile() {
-    return this.profile;
+  Future<String> get _directoryPath async {
+    Directory directory = Platform.isAndroid
+        ? await getApplicationSupportDirectory() //Should be universal? https://pub.dev/packages/path_provider
+        : await getApplicationDocumentsDirectory(); //For IOS
+    return directory.path;
+  }
+
+  Future<File> get _remindersFile async {
+  final path = await _directoryPath;
+  return File('$path/reminders.json');
+  }
+
+  Future<List> listFilesInPath() async {
+    try {
+    var dir = new Directory(await _directoryPath);
+    List contents = await dir.listSync(recursive: true, followLinks: true);
+    return contents;
+    } catch (e) {
+        print(e);
+        return [];
+      }
+  }
+
+  String? getProfile() {
+    return profile;
   }
 
   void setProfile(String newProfile) {
     profile = newProfile;
+  }
+
+  void writeUserToFile() {
+    //;
+  }
+
+  Future<String?> readUserFromFile() async {
+    //;
+    return '';
+
   }
 
   String getInstanceCode() {
@@ -110,18 +145,52 @@ class Agent {
 
   //To Do: set up file IO for loading recording and reminder JSON from file/save to file
 
-  void writeRemindersToFile() {
-    //write list of reminders to local file
-    final File reminderFile = File('/path/reminders.json'); //load JSON File
-    //await readReminderData(reminderFile); //read data from json
+  void writeRemindersToFile() async {
 
-    reminderList //convert list data  to json
-        .map(
-          (reminder) => reminder.toJson(),
-        )
-        .toList();
-
-    reminderFile.writeAsStringSync(
-        json.encode(reminderList)); //write (the whole list) to json file
+    //Sample Data
+    Reminder reminder1 = Reminder(1, 1, 1, 'Description A', 'User');
+    Reminder reminder2 = Reminder(2, 1, 1, 'Description B', 'User');
+    Reminder reminder3 = Reminder(3, 1, 1, 'Description C', 'User');
+    Reminder reminder4 = Reminder(4, 1, 1, 'Description D', 'User');
+    Reminder reminder5 = Reminder(5, 1, 1, 'Description E', 'User');
+    List<Reminder> reminderList = [];
+    reminderList.add(reminder1);
+    reminderList.add(reminder2);
+    reminderList.add(reminder3);
+    reminderList.add(reminder4);
+    reminderList.add(reminder5);
+    final File file = await _remindersFile;
+    await file.writeAsString(json.encode(reminderList));
   }
-}
+
+  
+
+  Future<List<Reminder>> readRemindersFile() async {
+  try {
+  final file = await _remindersFile;
+  // Read the file
+  final fileContent = await file.readAsString();
+  var reminderObjectsJson = jsonDecode(fileContent!) as List;
+    List<Reminder> reminderList = reminderObjectsJson.map((reminderJson) => Reminder.fromJson(reminderJson)).toList();
+    this.reminderList = reminderList;
+    return reminderList;
+  //return fileContent;
+      } catch (e) {
+        print(e);
+       return [];
+      }
+  }
+
+  Future<String?> readRemindersFileJSON() async {
+  try {
+  final file = await _remindersFile;
+  // Read the file
+  final fileContent = await file.readAsString();
+  return fileContent;
+      } catch (e) {
+        print(e);
+        return '';
+      }
+    }
+
+  }
