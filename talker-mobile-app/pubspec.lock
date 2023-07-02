@@ -163,6 +163,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.0"
+  panara_dialogs:
+    dependency: "direct main"
+    description:
+      name: panara_dialogs
+      sha256: "0260305ffecc4c7e00655dd8824aa9ad4dc3fcb6ec9fcd97cd9fcf303db8205c"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.4"
   path:
     dependency: transitive
     description:
