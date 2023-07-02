@@ -18,6 +18,6 @@ chrome.runtime.onMessage.addListener((obj, sender, sendResponse) => {
         sendResponse({"formFields": formFields});
         return true;
     } else if (mode === 'FORM_FILL') {
-        // TODO fill form
+        console.log("Form values from BESie -> " + data);
     }
 });
