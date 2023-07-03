@@ -4,29 +4,36 @@ import com.alphasoft.besie.models.OutboundMessage;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.stereotype.Controller;
+//import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 
 
 @Log4j2
-@Controller
+@RestController
 //add CORS allowance for all origins
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 public class WebSocketController {
 
     private ObjectMapper objectMapper;
+    @Autowired
+    private JmsTemplate jmsTemplate;
+
     @MessageMapping("/fill") //this is actually /app/fill
     @SendTo("/topic/form-model")
     public OutboundMessage extensionToPhone(String form) throws InterruptedException {
         Map <String, Object> parsedJsonFormMap = parseForm(form);
         log.info("parsed json form map - extensionToPhone: {}", parsedJsonFormMap.toString());
         //sending message to FORM-MODEL topic
+        jmsTemplate.convertAndSend("/topic/form-model", form);
         return new OutboundMessage(form);
     }
 
