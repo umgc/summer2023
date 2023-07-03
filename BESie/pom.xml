@@ -17,10 +17,6 @@
         <java.version>17</java.version>
         <springboot.version>3.1.1</springboot.version>
     </properties>
-    <repositories>
-        <!-- ACTIVE MQ REPO - needed for Artemis Dependencies -->
-
-    </repositories>
     <dependencies>
         <!-- Spring Boot -->
         <dependency>
