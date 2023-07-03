@@ -1,5 +1,6 @@
 console.log("we're up");
 var stompClient = null;
+var stompClient2 = null;
 
 function connect() {
     var socket = new SockJS("http://localhost:8080/ws");
@@ -9,6 +10,17 @@ function connect() {
         //stompClient.subscribe('/topic/filled-form', function (msg) {
         //	console.log("from topic we have: " + msg);
         //});
+    });
+}
+
+function connectToActiveMQ() {
+    var socket = new SockJS("http://localhost:61616");
+    stompClient2 = Stomp.over(socket);
+    stompClient2.connect({'Access-Control-Allow-Origin':'*'}, function (frame) {
+            console.log("Connected " + frame);
+            stompClient.subscribe('/queue1', function (msg) {
+            console.log("from topic we have: " + msg);
+        });
     });
 }
 

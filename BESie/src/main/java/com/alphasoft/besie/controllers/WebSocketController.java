@@ -1,6 +1,5 @@
-package com.alphasoft.besie;
+package com.alphasoft.besie.controllers;
 
-import com.alphasoft.besie.models.GenericWebForm;
 import com.alphasoft.besie.models.OutboundMessage;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,7 +10,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.util.HtmlUtils;
 
 import java.util.Map;
 
@@ -28,7 +26,6 @@ public class WebSocketController {
     public OutboundMessage extensionToPhone(String form) throws InterruptedException {
         Map <String, Object> parsedJsonFormMap = parseForm(form);
         log.info("parsed json form map - extensionToPhone: {}", parsedJsonFormMap.toString());
-        Thread.sleep(2000); // simulated delay
         //sending message to FORM-MODEL topic
         return new OutboundMessage(form);
     }
@@ -39,7 +36,6 @@ public class WebSocketController {
     public OutboundMessage phoneToExtension(String form) throws InterruptedException {
         Map <String, Object> parsedJsonFormMap = parseForm(form);
         log.info("parsed json form map - phoneToExtension: {}", parsedJsonFormMap.toString());
-        Thread.sleep(2000); // simulated delay
         //sending message to FILLED-FORM topic
         return new OutboundMessage(form);
     }
