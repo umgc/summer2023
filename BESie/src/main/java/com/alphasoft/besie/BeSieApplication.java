@@ -8,5 +8,4 @@ public class BeSieApplication {
     public static void main(String[] args) {
         SpringApplication.run(BeSieApplication.class, args);
     }
-
 }
