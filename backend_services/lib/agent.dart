@@ -2,6 +2,8 @@ import 'dart:io';
 import 'dart:convert';
 import 'model/recording.dart';
 import 'model/reminder.dart';
+import 'package:uuid/uuid.dart';
+import 'package:path/path.dart' as Path;
 import 'model/user.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -9,10 +11,15 @@ import 'package:path_provider/path_provider.dart';
 
 enum SortType { oldestFirst, newestFirst, aDescription, zDescription }
 
+extension E on String {
+  String lastChars(int n) => substring(length - n);
+}
+
 class Agent {
   final String userId;
   String _instanceCode = '';
   late String? profile;
+  late String? browserRequest;
   late List<Recording> recordingList = [];
   late List<Reminder> reminderList = [];
 
@@ -28,6 +35,11 @@ class Agent {
   Future<File> get _remindersFile async {
   final path = await _directoryPath;
   return File('$path/reminders.json');
+  }
+
+  Future<File> getRecordingFile(String guid) async {
+  final path = Path.join(await _directoryPath, '${guid}.json');
+  return File(path);
   }
 
   Future<List> listFilesInPath() async {
@@ -145,6 +157,32 @@ class Agent {
 
   //To Do: set up file IO for loading recording and reminder JSON from file/save to file
 
+  Future<String> writeRecordingsToFile() async {
+
+    //Sample Data
+    
+    Recording recording1 = Recording('c74dcec0-6fb7-45a9-98da-472e13413dd8', 1, 'path', 'asdf', 'Description B', 'Description', 'User', 'location');
+    Recording recording2 = Recording('0a60bf00-a057-4ad7-87fd-534c7d407160', 2, 'path', 'asdf', 'Description B', 'Description', 'User', 'location');
+    Recording recording3 = Recording('e3bc7acc-3b20-4056-94b6-6199fdba5870', 3, 'path', 'asdf', 'Description C', 'Description', 'User', 'location');
+    Recording recording4 = Recording('866731c8-a9cd-408c-ae04-886f31a42493', 4, 'path', 'asdf', 'Description D', 'Description', 'User', 'location');
+    Recording recording5 = Recording('e7cb2be9-75f2-44a0-9976-df7dfc0e1363', 5, 'path', 'asdf', 'Description E', 'Description', 'User', 'location');
+    List<Recording> sampleRecordingList = [];
+    sampleRecordingList.add(recording1);
+    sampleRecordingList.add(recording2);
+    sampleRecordingList.add(recording3);
+    sampleRecordingList.add(recording4);
+    sampleRecordingList.add(recording5);
+
+    for (Recording rec in sampleRecordingList) {
+    var file = await getRecordingFile(rec.guid);
+    await file.writeAsString(json.encode(rec));
+    }
+
+    return sampleRecordingList.toString();
+
+  }
+
+
   void writeRemindersToFile() async {
 
     //Sample Data
@@ -191,6 +229,41 @@ class Agent {
         print(e);
         return '';
       }
+    }
+
+  Future<String?> readRecordingsFile() async {
+  List<Recording> newRecordingList = [];
+  List allFiles = await listFilesInPath();
+  //Obtain a list of Valid GUID.json recording values - length == 41
+  //Perform logic to split paths using slash / and look for results of proper length
+  List validRecordingFiles = [];
+  for (var filePath in allFiles) {
+    var fileComponents = filePath.toString().split('/');
+    for (String subString in fileComponents){
+      if (subString.toString().length == 42) { // Look for length 42 - includes trailing quote
+        //Drop trailing quote character
+        validRecordingFiles.add(subString.toString().substring(0, 41));
+      }
+    }
+  }
+
+  //Loop over valid JSON files, read, append
+  //String returnValue = '';
+  for (String jsonFile in validRecordingFiles) {
+    try {
+      final file = await getRecordingFile(jsonFile.toString().substring(0, 36));
+      final fileContent = await file.readAsString();
+      newRecordingList.add(Recording.fromJson(jsonDecode(fileContent)));
+    } catch (e) {
+      print (e);
+    }
+
+
+  }
+    this.recordingList = newRecordingList;
+
+    return recordingList.toString();
+
     }
 
   }
