@@ -58,7 +58,8 @@ class _InformationScreenState extends State<InformationScreen> {
               Container(
                   margin: const EdgeInsets.only(top: 10),
                   child: TextButton(
-                    onPressed: null,
+                    onPressed: () =>
+                        Navigator.pushNamed(context, '/guidedTour'),
                     style: TextButton.styleFrom(
                         minimumSize: const Size.fromHeight(50),
                         backgroundColor: const Color(0xFF8900F8),
