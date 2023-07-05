@@ -23,12 +23,14 @@ void main() {
 
   test('write reminders to reminders.json', () {
     var agent = Agent('browser-extension-api-unit-test');
+    agent.loadSampleReminderData;
     expect(() => agent.writeRemindersToFile(), returnsNormally);
   });
 
 
   test('read existing reminder JSON file and return a string', () async {
     var agent = Agent('Reminder-API-Unit-test');
+    agent.loadSampleReminderData();
     expect(() => agent.writeRemindersToFile(), returnsNormally);    
     List fileList = await agent.listFilesInPath();
     print(await fileList.toString());
@@ -42,6 +44,7 @@ void main() {
 
     test('write a reminder JSON file and return a list of directory contents', () async {
     var agent = Agent('Reminder-API-Unit-test');
+    agent.loadSampleReminderData;
     expect(() => agent.writeRemindersToFile(), returnsNormally);    
     List fileList = await agent.listFilesInPath();
     print(await fileList.toString());
@@ -55,6 +58,7 @@ void main() {
 
     test('read existing reminder.json file and return a List<Reminder> array', () async {
     var agent = Agent('User-API-Unit-test');
+    agent.loadSampleReminderData;
     expect(() => agent.writeRemindersToFile(), returnsNormally);    
     List<Reminder> testReminderList = await agent.readRemindersFile();
     print(await testReminderList.toString());
