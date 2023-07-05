@@ -45,31 +45,39 @@ class _GuidedTourScreenState extends State<GuidedTourScreen> {
               spacing: 20,
               dotHeight: 25,
               dotWidth: 25,
-              activeDotColor: const Color(0xFFCA595D),
+              activeDotColor: Color(0xFFCA595D),
             )),
       );
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: Colors.black,
-        body: Column(
-          children: [
-            Expanded(
-              child: CarouselSlider(
-                items: buildImages(),
-                carouselController: _controller,
-                options: CarouselOptions(
-                    viewportFraction: 1,
-                    height: double.infinity,
-                    onPageChanged: (index, reason) =>
-                        setState(() => activeIndex = index)),
-              ),
-            ),
-            buildIndicator(),
-          ],
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          onPressed: () => Navigator.pop(context),
+          icon: const Icon(
+            Icons.clear,
+            size: 30,
+          ),
         ),
+        backgroundColor: Colors.black,
+      ),
+      backgroundColor: Colors.black,
+      body: Column(
+        children: [
+          Expanded(
+            child: CarouselSlider(
+              items: buildImages(),
+              carouselController: _controller,
+              options: CarouselOptions(
+                  viewportFraction: 1,
+                  height: double.infinity,
+                  onPageChanged: (index, reason) =>
+                      setState(() => activeIndex = index)),
+            ),
+          ),
+          buildIndicator(),
+        ],
       ),
     );
   }
