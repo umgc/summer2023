@@ -1,11 +1,13 @@
 import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:panara_dialogs/panara_dialogs.dart';
 import 'package:provider/provider.dart';
 import 'package:talker_mobile_app/globals.dart';
 import 'package:talker_mobile_app/models/conversation.dart';
 import 'package:talker_mobile_app/state/conversations_provider.dart';
 
+import '../services/fileHelpers.dart';
 import '../widgets/transmogListItem.dart';
 
 class ConversationDetailsScreen extends StatefulWidget {
@@ -125,6 +127,22 @@ class _ConversationDetailsScreenState extends State<ConversationDetailsScreen> {
       );
     }
 
+    Future<void> onDeletePress() async {
+      PanaraConfirmDialog.show(context,
+          message:
+              "Are you sure you want to permanently delete this conversation?",
+          color: const Color(0xFF8900F8),
+          confirmButtonText: "OK",
+          cancelButtonText: "Cancel", onTapConfirm: () async {
+        conversationsProvider.removeConversation(conversation!);
+        await writeConversationsToJsonFile(conversationsProvider.conversations,
+            "${Globals.appDirectory?.path}/conversations.json");
+        Navigator.of(context).popUntil((route) => route.isFirst);
+      }, onTapCancel: () {
+        Navigator.of(context).pop();
+      }, panaraDialogType: PanaraDialogType.custom);
+    }
+
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -135,10 +153,10 @@ class _ConversationDetailsScreenState extends State<ConversationDetailsScreen> {
         ),
         centerTitle: true,
         backgroundColor: Colors.black,
-        actions: const <Widget>[
+        actions: <Widget>[
           IconButton(
-              onPressed: null,
-              icon: Icon(
+              onPressed: onDeletePress,
+              icon: const Icon(
                 Icons.delete,
                 color: Colors.white,
               ))
