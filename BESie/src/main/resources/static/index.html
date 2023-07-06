@@ -31,9 +31,16 @@
             <form class="form-inline">
                 <div class="form-group">
                     <label for="payload">Send this to app/fill endpoint:</label>
-                    <input type="text" id="payload" class="form-control" placeholder="Your name here...">
+                    <input type="text" id="payload" class="form-control" placeholder="Test data here...">
                 </div>
                 <button id="send" class="btn btn-default" type="submit">Send</button>
+            </form>
+            <form class="form-inline">
+                <div class="form-group">
+                    <label for="payload">Send this to app/filled-form endpoint:</label>
+                    <input type="text" id="payload2" class="form-control" placeholder="Test data here...">
+                </div>
+                <button id="send2" class="btn btn-default" type="submit">Send</button>
             </form>
         </div>
     </div>
@@ -42,7 +49,7 @@
             <table id="conversation" class="table table-striped">
                 <thead>
                 <tr>
-                    <th>messages retrieved by subscribing to <code>/topic/form-model</code>></th>
+                    <th>messages retrieved by subscribing to <code>/topic/form-model</code> and <code>topic/filled-form</code>></th>
                 </tr>
                 </thead>
                 <tbody id="conversations">

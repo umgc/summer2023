@@ -28,7 +28,6 @@ public class WebSocketController {
     public OutboundMessage extensionToPhone(String form) throws InterruptedException {
         Map<String, Object> parsedJsonFormMap = parseForm(form);
         log.info("parsed json form map - extensionToPhone: {}", parsedJsonFormMap.toString());
-        Thread.sleep(2000); // simulated delay
         // sending message to FORM-MODEL topic
         return new OutboundMessage(form);
     }
@@ -38,7 +37,6 @@ public class WebSocketController {
     public OutboundMessage phoneToExtension(String form) throws InterruptedException {
         Map<String, Object> parsedJsonFormMap = parseForm(form);
         log.info("parsed json form map - phoneToExtension: {}", parsedJsonFormMap.toString());
-        Thread.sleep(2000); // simulated delay
         // sending message to FILLED-FORM topic
         return new OutboundMessage(form);
     }
