@@ -27,11 +27,13 @@ void main() {
 
   test('write recordings to multiple reminder JSON files', () {
     var agent = Agent('Recording-extension-api-unit-test');
+    agent.loadSampleRecordingData;
     expect(() => agent.writeRecordingsToFile(), returnsNormally);
   });
 
     test('write recording JSON files and return a list of directory contents', () async {
     var agent = Agent('Recording-API-Unit-test');
+    agent.loadSampleRecordingData();
     logger.i(await agent.writeRecordingsToFile());    
     List fileList = await agent.listFilesInPath();
     print(await fileList.toString());
@@ -44,12 +46,13 @@ void main() {
 
   test('read existing recording JSON files and return list of files', () async {
     var agent = Agent('Recording-API-Unit-test');
+    expect(() => agent.loadSampleRecordingData(), returnsNormally);
     expect(() => agent.writeRecordingsToFile(), returnsNormally);
     Future<String?> result = agent.readRecordingsFile();
     expect(() => result, isNotNull);
     logger.i(await result);
     print(await result);
-    //expect(() => result, isNotEmpty);
+
 
   });
 
