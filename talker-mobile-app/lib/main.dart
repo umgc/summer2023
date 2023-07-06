@@ -12,7 +12,6 @@ import 'package:talker_mobile_app/state/conversations_provider.dart';
 import 'globals.dart';
 
 Future main() async {
-  await Future.delayed(const Duration(seconds: 1));
   WidgetsFlutterBinding.ensureInitialized();
   Globals.appDirectory = await getApplicationDocumentsDirectory();
 
