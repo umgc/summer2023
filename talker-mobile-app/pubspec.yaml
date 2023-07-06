@@ -2,7 +2,7 @@ name: talker_mobile_app
 description: Mobile app for STeMS system
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -19,7 +19,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
+  sdk: ">=3.0.0 <4.0.0"
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -31,6 +31,9 @@ dependencies:
   flutter:
     sdk: flutter
 
+  # backend services packge
+  backend_services:
+    path: ../backend_services
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -46,6 +49,17 @@ dependencies:
   carousel_slider: ^4.2.1
   smooth_page_indicator: ^1.1.0
   shared_preferences: ^2.2.0
+
+  #Run commands to generate splash screen
+  # 1. flutter clean
+  # 2. flutter pub get
+  # 3. flutter pub run flutter_native_splash:create
+
+flutter_native_splash:
+  android: true
+  ios: true
+
+  background_image: "assets/splashScreen.png"
 
 dev_dependencies:
   flutter_test:
@@ -63,7 +77,6 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
-
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
