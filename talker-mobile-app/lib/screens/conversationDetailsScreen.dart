@@ -18,8 +18,7 @@ class ConversationDetailsScreen extends StatefulWidget {
 
 class _ConversationDetailsScreenState extends State<ConversationDetailsScreen> {
   int selectedIndex = 0;
-  final String resultsText =
-      "hello this is testing the results hello this is testing the results hello this is testing the results hello this is testing the results hello this is testing the results hello this is testing the results hello this is testing the results hello this is testing the results hello this is testing the results hello this is testing the results hello this is testing the results hello this is testing the results ";
+  final String resultsText = "Transmogrifying...";
 
   late String audioPath;
   late PlayerController playerController = PlayerController();

@@ -32,7 +32,7 @@ function validatePin() {
     if (pin){
         return true;
     } else {
-        alert("Please enter your mobile app PIN number.");
+        alert("Please enter your code.");
         return false;
     }
 }

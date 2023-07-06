@@ -25,7 +25,7 @@ export async function connect() {
             
             chrome.tabs.sendMessage(activeTab.id, {
                 mode: "FORM_FILL",
-                data: data
+                data: JSON.parse(data.content)
             });
         });
     });

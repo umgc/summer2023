@@ -1,5 +1,6 @@
 import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:flutter/material.dart';
+import 'package:panara_dialogs/panara_dialogs.dart';
 import 'package:provider/provider.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 import 'package:talker_mobile_app/screens/conversationDetailsScreen.dart';
@@ -7,6 +8,7 @@ import 'package:uuid/uuid.dart';
 
 import '../globals.dart';
 import '../models/conversation.dart';
+import '../services/fileHelpers.dart';
 import '../state/conversations_provider.dart';
 
 class RecordingScreen extends StatefulWidget {
@@ -93,6 +95,8 @@ class _RecordingScreenState extends State<RecordingScreen> {
         id: id);
     conversationsProvider.addConversation(newConversation);
     conversationsProvider.setSelectedConversation(newConversation);
+    await writeConversationsToJsonFile(conversationsProvider.conversations,
+        "${Globals.appDirectory?.path}/conversations.json");
     Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -109,7 +113,8 @@ class _RecordingScreenState extends State<RecordingScreen> {
             },
             style: ElevatedButton.styleFrom(
                 minimumSize: const Size.fromHeight(50),
-                backgroundColor: const Color(0xFF8900F8),
+                side: const BorderSide(width: 1, color: Color(0xFF8900F8)),
+                backgroundColor: Colors.black,
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30),
@@ -133,7 +138,8 @@ class _RecordingScreenState extends State<RecordingScreen> {
             },
             style: ElevatedButton.styleFrom(
                 minimumSize: const Size.fromHeight(50),
-                backgroundColor: const Color(0xFF8900F8),
+                side: const BorderSide(width: 1, color: Color(0xFF8900F8)),
+                backgroundColor: Colors.black,
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30),
@@ -151,85 +157,108 @@ class _RecordingScreenState extends State<RecordingScreen> {
     }
   }
 
+  Future<bool> _onBackPressed(
+      ConversationsProvider conversationsProvider) async {
+    bool shouldPop = false;
+    PanaraConfirmDialog.show(context,
+        message: "Do you want to stop the recording?",
+        color: const Color(0xFF8900F8),
+        confirmButtonText: "Stop",
+        cancelButtonText: "Cancel", onTapConfirm: () {
+      Navigator.pop(context);
+      _stopRecording(conversationsProvider);
+      shouldPop = true;
+    }, onTapCancel: () {
+      Navigator.pop(context);
+      shouldPop = false;
+    }, panaraDialogType: PanaraDialogType.custom);
+    return shouldPop;
+  }
+
   @override
   Widget build(BuildContext context) {
     final conversationsProvider = Provider.of<ConversationsProvider>(context);
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Container(
-        color: Colors.black,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const Expanded(
-              child: ClipRRect(
-                  borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(20),
-                      bottomRight: Radius.circular(20)),
-                  child: Image(
-                      fit: BoxFit.cover,
-                      image: AssetImage('assets/microphone_Background.jpg'))),
-            ),
-            Center(
-              child: Container(
-                margin: const EdgeInsets.only(top: 10, bottom: 10),
-                child: AudioWaveforms(
-                  size: const Size(300, 35),
-                  recorderController: recorderController,
-                  waveStyle: const WaveStyle(
-                    waveColor: Colors.white,
-                    extendWaveform: true,
+    return WillPopScope(
+      onWillPop: () {
+        return _onBackPressed(conversationsProvider);
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: Container(
+          color: Colors.black,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Expanded(
+                child: ClipRRect(
+                    borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(20),
+                        bottomRight: Radius.circular(20)),
+                    child: Image(
+                        fit: BoxFit.cover,
+                        image: AssetImage('assets/microphone_Background.jpg'))),
+              ),
+              Center(
+                child: Container(
+                  margin: const EdgeInsets.only(top: 10, bottom: 10),
+                  child: AudioWaveforms(
+                    size: const Size(300, 35),
+                    recorderController: recorderController,
+                    waveStyle: const WaveStyle(
+                      waveColor: Colors.white,
+                      extendWaveform: true,
+                    ),
                   ),
                 ),
               ),
-            ),
-            StreamBuilder(
-                stream: _stopWatchTimer.secondTime,
-                initialData: 0,
-                builder: (context, snap) {
-                  final value = snap.data!;
-                  return Center(
-                    child: Container(
-                      margin: const EdgeInsets.only(bottom: 10),
-                      child: Text(
-                        '${'${(value / 60).floor()}'.padLeft(2, '0')}:${'${value % 60}'.padLeft(2, '0')}',
-                        style:
-                            const TextStyle(color: Colors.white, fontSize: 30),
+              StreamBuilder(
+                  stream: _stopWatchTimer.secondTime,
+                  initialData: 0,
+                  builder: (context, snap) {
+                    final value = snap.data!;
+                    return Center(
+                      child: Container(
+                        margin: const EdgeInsets.only(bottom: 10),
+                        child: Text(
+                          '${'${(value / 60).floor()}'.padLeft(2, '0')}:${'${value % 60}'.padLeft(2, '0')}',
+                          style: const TextStyle(
+                              color: Colors.white, fontSize: 30),
+                        ),
                       ),
-                    ),
-                  );
-                }),
-            Column(
-              children: [
-                _buildPauseAndResumeButton(),
-                Container(
-                  margin: const EdgeInsets.only(left: 20, right: 20, top: 15),
-                  child: ElevatedButton.icon(
-                      onPressed: () {
-                        _stopRecording(conversationsProvider);
-                      },
-                      style: ElevatedButton.styleFrom(
-                          minimumSize: const Size.fromHeight(50),
-                          backgroundColor: const Color(0xFF8900F8),
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
-                          )),
-                      icon: const Icon(
-                        Icons.stop,
-                        color: Colors.white,
-                        size: 40,
-                      ),
-                      label: const Text(
-                        'Stop',
-                        style: TextStyle(fontSize: 20),
-                      )),
-                ),
-              ],
-            ),
-          ],
+                    );
+                  }),
+              Column(
+                children: [
+                  _buildPauseAndResumeButton(),
+                  Container(
+                    margin: const EdgeInsets.only(left: 20, right: 20, top: 15),
+                    child: ElevatedButton.icon(
+                        onPressed: () {
+                          _stopRecording(conversationsProvider);
+                        },
+                        style: ElevatedButton.styleFrom(
+                            minimumSize: const Size.fromHeight(50),
+                            backgroundColor: const Color(0xFF8900F8),
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            )),
+                        icon: const Icon(
+                          Icons.stop,
+                          color: Colors.white,
+                          size: 40,
+                        ),
+                        label: const Text(
+                          'Stop',
+                          style: TextStyle(fontSize: 20),
+                        )),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

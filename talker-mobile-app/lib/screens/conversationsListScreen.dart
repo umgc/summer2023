@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:panara_dialogs/panara_dialogs.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:talker_mobile_app/enums/sorting_type.dart';
 import 'package:talker_mobile_app/models/conversation.dart';
 import 'package:talker_mobile_app/state/conversations_provider.dart';
@@ -17,6 +20,35 @@ class ConversationsListScreen extends StatefulWidget {
 class _ConversationsListScreenState extends State<ConversationsListScreen> {
   final controller = TextEditingController();
   String searchText = "";
+
+  @override
+  void initState() {
+    super.initState();
+    _getFirstLoadSetting();
+  }
+
+  Future<void> _getFirstLoadSetting() async {
+    final prefs = await SharedPreferences.getInstance();
+    var agreedToEula = prefs.getBool('agreedToEula');
+    if (agreedToEula != null && agreedToEula == true) {
+      return;
+    } else {
+      PanaraConfirmDialog.show(context,
+          imagePath: 'assets/warning.png',
+          barrierDismissible: false,
+          message:
+              "You are responsible for following all laws of the jurisdictions that you are in.",
+          color: const Color(0xFF8900F8),
+          confirmButtonText: "OK",
+          cancelButtonText: "View EULA", onTapConfirm: () {
+        prefs.setBool('agreedToEula', true);
+        Navigator.pop(context);
+      }, onTapCancel: () {
+        Navigator.pop(context);
+        Navigator.pushNamed(context, '/eula');
+      }, panaraDialogType: PanaraDialogType.custom);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,6 +102,17 @@ class _ConversationsListScreenState extends State<ConversationsListScreen> {
       setState(() {
         searchText = "";
       });
+    }
+
+    void onRecordPress() async {
+      PermissionStatus permissionStatus = await Permission.microphone.request();
+      if (permissionStatus.isGranted) {
+        Navigator.pushNamed(context, '/recording');
+      } else if (permissionStatus.isDenied) {
+        return;
+      } else if (permissionStatus.isPermanentlyDenied) {
+        openAppSettings();
+      }
     }
 
     return Scaffold(
@@ -209,7 +252,7 @@ class _ConversationsListScreenState extends State<ConversationsListScreen> {
               margin: const EdgeInsets.only(top: 10),
               child: ElevatedButton.icon(
                   onPressed: () {
-                    Navigator.pushNamed(context, '/recording');
+                    onRecordPress();
                   },
                   style: ElevatedButton.styleFrom(
                       minimumSize: const Size.fromHeight(50),

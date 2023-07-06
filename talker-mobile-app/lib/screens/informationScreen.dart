@@ -57,19 +57,42 @@ class _InformationScreenState extends State<InformationScreen> {
               ),
               Container(
                   margin: const EdgeInsets.only(top: 10),
-                  child: TextButton(
-                    onPressed: null,
-                    style: TextButton.styleFrom(
-                        minimumSize: const Size.fromHeight(50),
-                        backgroundColor: const Color(0xFF8900F8),
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        )),
-                    child: const Text(
-                      'Guided Tour',
-                      style: TextStyle(fontSize: 20, color: Colors.white),
-                    ),
+                  child: Column(
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(bottom: 15),
+                        child: TextButton(
+                          onPressed: () =>
+                              Navigator.pushNamed(context, '/eula'),
+                          style: TextButton.styleFrom(
+                              minimumSize: const Size.fromHeight(50),
+                              backgroundColor: const Color(0xFF8900F8),
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
+                              )),
+                          child: const Text(
+                            'EULA',
+                            style: TextStyle(fontSize: 20, color: Colors.white),
+                          ),
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () =>
+                            Navigator.pushNamed(context, '/guidedTour'),
+                        style: TextButton.styleFrom(
+                            minimumSize: const Size.fromHeight(50),
+                            backgroundColor: const Color(0xFF8900F8),
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            )),
+                        child: const Text(
+                          'Guided Tour',
+                          style: TextStyle(fontSize: 20, color: Colors.white),
+                        ),
+                      ),
+                    ],
                   )),
             ],
           ),
