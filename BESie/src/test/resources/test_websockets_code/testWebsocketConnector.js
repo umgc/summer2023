@@ -25,7 +25,8 @@ function sendForm(message) {
     let formPayload = {
         payload: form
     }
-    stompClient.send("/app/fill", {'key_of_header':'value_of_header'}, JSON.stringify(formPayload));
+    //change the value /app/filled-form to /app/fill to send to the other pipe
+    stompClient.send("/app/filled-form", {'key_of_header':'value_of_header'}, JSON.stringify(formPayload));
 }
 
 function disconnect() {
