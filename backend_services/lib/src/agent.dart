@@ -52,11 +52,13 @@ class Agent {
   void deleteRecording(String guid) {
     //Delete recording from memory and filesystem
     // Use the guid to identify the recording in question and the filepath to it and remove it from the system
-    var recordingFile = File('/path/to/recording/guid.json');
+    var recordingFile = File('/path/to/recording/' + guid + '.json');
+    var recordingAudio = File('/path/to/recording/' + guid + '.m4a');
     if (recordingFile.existsSync()){
         var content = recordingFile.readAsStringSync();
         if (content.contains(guid)) {
             recordingFile.deleteSync();
+            recordingAudio.deleteSync();
         }  else{
         print('Not the right recording');
         }
@@ -100,7 +102,17 @@ class Agent {
   }
 
   void deleteReminder(int reminderId) {
-    //delete a reminder from list and from file storage
+    var reminderFile('/path/to/recording/' + reminderId + '.json')
+    if (reminderFile.existsSync()){
+      var content = reminderFile.readAsStringSync();
+      if (content.contains(reminderId) {
+        recordingFile.deleteSync();
+      }  else{
+        print('Not the right reminder.');
+      }
+    } else {
+      print('Reminder file does not exist');
+    }
 
   }
 
