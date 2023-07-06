@@ -43,9 +43,7 @@ dependencies:
   audio_waveforms: ^1.0.4
   path_provider: ^2.0.15
   stop_watch_timer: ^2.0.0
-<<<<<<< HEAD
   uuid: ^3.0.6
-=======
 
   #Run commands to generate splash screen
   # 1. flutter clean
@@ -57,7 +55,6 @@ flutter_native_splash:
   ios: true
 
   background_image: "assets/splashScreen.png"
->>>>>>> 08074cb4bf646fc00aad20a5e69c6c5eb10a8b13
 
 dev_dependencies:
   flutter_test:
