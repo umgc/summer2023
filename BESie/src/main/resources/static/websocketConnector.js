@@ -1,4 +1,5 @@
 var stompClient = null;
+var stompClient2 = null;
 
 function setConnected(connected) {
     $("#connect").prop("disabled", connected);
@@ -13,23 +14,34 @@ function setConnected(connected) {
 }
 
 function connect() {
-    var socket = new SockJS('/ws');
+    let socket = new SockJS('/ws');
+    let socket2 = new SockJS('/ws');
     stompClient = Stomp.over(socket);
-    stompClient.connect({}, function (frame) {
+    stompClient2 = Stomp.over(socket2);
+    stompClient.connect({'Access-Control-Allow-Origin':'*'}, function (frame) {
         setConnected(true);
         console.log('Connected: ' + frame);
-        stompClient.subscribe('/topic/form-model', function (greeting) {
-            showMessages(JSON.parse(greeting.body).content);
+        stompClient.subscribe('/topic/form-model', function (msg) {
+            showMessages("From /topic/form-model: " + JSON.parse(msg.body).content);
+        });
+    });
+    //connection to the second pipe
+    stompClient2.connect({'Access-Control-Allow-Origin':'*'}, function (frame) {
+        setConnected(true);
+        console.log('Connected: ' + frame);
+        stompClient2.subscribe('/topic/filled-form', function (msg) {
+            showMessages("From /topic/filled-form: " + JSON.parse(msg.body).content);
         });
     });
 }
 
 function disconnect() {
-    if (stompClient !== null) {
+    if (stompClient !== null || stompClient2 !== null) {
         stompClient.disconnect();
+        stompClient2.disconnect();
     }
     setConnected(false);
-    console.log("Disconnected");
+    console.log("Disconnected both clients");
 }
 
 function sendFormPayload() {
@@ -39,6 +51,15 @@ function sendFormPayload() {
     };
     console.log(JSON.stringify(payload));
     stompClient.send("/app/fill", {}, JSON.stringify(payload));
+}
+
+function sendFormPayload2() {
+    let payload = {
+        payload: $("#payload2").val(),
+        formId: 112554665
+    };
+    console.log(JSON.stringify(payload));
+    stompClient2.send("/app/filled-form", {}, JSON.stringify(payload));
 }
 
 function showMessages(message) {
@@ -52,5 +73,6 @@ $(function () {
     $( "#connect" ).click(function() { connect(); });
     $( "#disconnect" ).click(function() { disconnect(); });
     $( "#send" ).click(function() { sendFormPayload(); });
+    $("#send2").click(function () {sendFormPayload2();});
 });
 

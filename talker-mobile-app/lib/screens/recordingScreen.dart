@@ -1,9 +1,15 @@
-import 'dart:io';
-
 import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:panara_dialogs/panara_dialogs.dart';
+import 'package:provider/provider.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
+import 'package:talker_mobile_app/screens/conversationDetailsScreen.dart';
+import 'package:uuid/uuid.dart';
+
+import '../globals.dart';
+import '../models/conversation.dart';
+import '../services/fileHelpers.dart';
+import '../state/conversations_provider.dart';
 
 class RecordingScreen extends StatefulWidget {
   const RecordingScreen({Key? key}) : super(key: key);
@@ -14,11 +20,10 @@ class RecordingScreen extends StatefulWidget {
 
 class _RecordingScreenState extends State<RecordingScreen> {
   late final RecorderController recorderController;
-  late Directory appDirectory;
   final _stopWatchTimer = StopWatchTimer(mode: StopWatchMode.countUp);
 
   String? path;
-  bool isRecording = false;
+  String id = const Uuid().v1();
   bool isPaused = false;
 
   @override
@@ -29,10 +34,8 @@ class _RecordingScreenState extends State<RecordingScreen> {
     _startRecording();
   }
 
-  void _getDir() async {
-    appDirectory = await getApplicationDocumentsDirectory();
-    path = "${appDirectory.path}/recording.m4a";
-    setState(() {});
+  void _getDir() {
+    path = "${Globals.appDirectory?.path}/$id";
   }
 
   @override
@@ -56,7 +59,6 @@ class _RecordingScreenState extends State<RecordingScreen> {
     _stopWatchTimer.onStartTimer();
     setState(() {
       isPaused = false;
-      isRecording = true;
     });
   }
 
@@ -73,45 +75,81 @@ class _RecordingScreenState extends State<RecordingScreen> {
     _stopWatchTimer.onStartTimer();
     setState(() {
       isPaused = false;
-      isRecording = true;
     });
   }
 
-  void _stopRecording() async {
+  void _stopRecording(ConversationsProvider conversationsProvider) async {
     await recorderController.stop();
     _stopWatchTimer.onStopTimer();
     setState(() {
-      isRecording = false;
       isPaused = false;
     });
+    var seconds = _stopWatchTimer.secondTime;
+    var recordedDate = DateTime.now();
+    Conversation newConversation = Conversation(
+        title: 'NewConversation',
+        recordedDate: recordedDate,
+        duration: Duration(seconds: seconds.value),
+        content: '',
+        audioFilePath: path.toString(),
+        id: id);
+    conversationsProvider.addConversation(newConversation);
+    conversationsProvider.setSelectedConversation(newConversation);
+    await writeConversationsToJsonFile(conversationsProvider.conversations,
+        "${Globals.appDirectory?.path}/conversations.json");
+    Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+            builder: (context) => const ConversationDetailsScreen()));
   }
 
   Widget _buildPauseAndResumeButton() {
     if (!isPaused) {
-      return TextButton(
-          onPressed: () {
-            _pauseRecording();
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.white,
-            shape: const CircleBorder(),
-            padding: const EdgeInsets.all(5),
-          ),
-          child: const Icon(Icons.pause, color: Colors.black, size: 25));
-    } else {
-      return Padding(
-        padding: const EdgeInsets.only(left: 20, right: 20),
-        child: TextButton(
+      return Container(
+        margin: const EdgeInsets.only(left: 20, right: 20),
+        child: ElevatedButton.icon(
             onPressed: () {
-              _resumeRecording();
+              _pauseRecording();
             },
-            style: TextButton.styleFrom(
-                backgroundColor: const Color(0xFF8900F8),
+            style: ElevatedButton.styleFrom(
+                minimumSize: const Size.fromHeight(50),
+                side: const BorderSide(width: 1, color: Color(0xFF8900F8)),
+                backgroundColor: Colors.black,
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30),
                 )),
-            child: const Text(
+            icon: const Icon(
+              Icons.pause,
+              color: Colors.white,
+              size: 40,
+            ),
+            label: const Text(
+              'Pause',
+              style: TextStyle(fontSize: 20),
+            )),
+      );
+    } else {
+      return Container(
+        margin: const EdgeInsets.only(left: 20, right: 20),
+        child: ElevatedButton.icon(
+            onPressed: () {
+              _resumeRecording();
+            },
+            style: ElevatedButton.styleFrom(
+                minimumSize: const Size.fromHeight(50),
+                side: const BorderSide(width: 1, color: Color(0xFF8900F8)),
+                backgroundColor: Colors.black,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                )),
+            icon: const Icon(
+              Icons.mic_none,
+              color: Colors.white,
+              size: 40,
+            ),
+            label: const Text(
               'Resume',
               style: TextStyle(fontSize: 20),
             )),
@@ -119,65 +157,108 @@ class _RecordingScreenState extends State<RecordingScreen> {
     }
   }
 
+  Future<bool> _onBackPressed(
+      ConversationsProvider conversationsProvider) async {
+    bool shouldPop = false;
+    PanaraConfirmDialog.show(context,
+        message: "Do you want to stop the recording?",
+        color: const Color(0xFF8900F8),
+        confirmButtonText: "Stop",
+        cancelButtonText: "Cancel", onTapConfirm: () {
+      Navigator.pop(context);
+      _stopRecording(conversationsProvider);
+      shouldPop = true;
+    }, onTapCancel: () {
+      Navigator.pop(context);
+      shouldPop = false;
+    }, panaraDialogType: PanaraDialogType.custom);
+    return shouldPop;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text('Record Conversation'),
-        centerTitle: true,
-        backgroundColor: Colors.black,
-      ),
-      body: Container(
-        color: Colors.black,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const ClipRRect(
-                borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(20),
-                    bottomRight: Radius.circular(20)),
-                child: Image(
-                    image: AssetImage('assets/microphone_Background.jpg'))),
-            if (isRecording)
+    final conversationsProvider = Provider.of<ConversationsProvider>(context);
+
+    return WillPopScope(
+      onWillPop: () {
+        return _onBackPressed(conversationsProvider);
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: Container(
+          color: Colors.black,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Expanded(
+                child: ClipRRect(
+                    borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(20),
+                        bottomRight: Radius.circular(20)),
+                    child: Image(
+                        fit: BoxFit.cover,
+                        image: AssetImage('assets/microphone_Background.jpg'))),
+              ),
               Center(
-                child: AudioWaveforms(
-                  size: const Size(300, 45),
-                  recorderController: recorderController,
-                  waveStyle: const WaveStyle(
-                    waveColor: Colors.white,
-                    extendWaveform: true,
+                child: Container(
+                  margin: const EdgeInsets.only(top: 10, bottom: 10),
+                  child: AudioWaveforms(
+                    size: const Size(300, 35),
+                    recorderController: recorderController,
+                    waveStyle: const WaveStyle(
+                      waveColor: Colors.white,
+                      extendWaveform: true,
+                    ),
                   ),
                 ),
               ),
-            if (isRecording)
               StreamBuilder(
                   stream: _stopWatchTimer.secondTime,
                   initialData: 0,
                   builder: (context, snap) {
                     final value = snap.data!;
                     return Center(
-                      child: Text(
-                        '${'${(value / 60).floor()}'.padLeft(2, '0')}:${'${value % 60}'.padLeft(2, '0')}',
-                        style:
-                            const TextStyle(color: Colors.white, fontSize: 30),
+                      child: Container(
+                        margin: const EdgeInsets.only(bottom: 10),
+                        child: Text(
+                          '${'${(value / 60).floor()}'.padLeft(2, '0')}:${'${value % 60}'.padLeft(2, '0')}',
+                          style: const TextStyle(
+                              color: Colors.white, fontSize: 30),
+                        ),
                       ),
                     );
                   }),
-            if (isRecording) _buildPauseAndResumeButton(),
-            TextButton(
-              onPressed: () {
-                _stopRecording();
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-                shape: const CircleBorder(),
-                padding: const EdgeInsets.all(15),
+              Column(
+                children: [
+                  _buildPauseAndResumeButton(),
+                  Container(
+                    margin: const EdgeInsets.only(left: 20, right: 20, top: 15),
+                    child: ElevatedButton.icon(
+                        onPressed: () {
+                          _stopRecording(conversationsProvider);
+                        },
+                        style: ElevatedButton.styleFrom(
+                            minimumSize: const Size.fromHeight(50),
+                            backgroundColor: const Color(0xFF8900F8),
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            )),
+                        icon: const Icon(
+                          Icons.stop,
+                          color: Colors.white,
+                          size: 40,
+                        ),
+                        label: const Text(
+                          'Stop',
+                          style: TextStyle(fontSize: 20),
+                        )),
+                  ),
+                ],
               ),
-              child: const Icon(Icons.stop, color: Colors.white, size: 30),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

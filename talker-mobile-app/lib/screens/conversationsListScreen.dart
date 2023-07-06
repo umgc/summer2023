@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:panara_dialogs/panara_dialogs.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:talker_mobile_app/enums/sorting_type.dart';
 import 'package:talker_mobile_app/models/conversation.dart';
 import 'package:talker_mobile_app/state/conversations_provider.dart';
@@ -17,11 +20,41 @@ class ConversationsListScreen extends StatefulWidget {
 class _ConversationsListScreenState extends State<ConversationsListScreen> {
   final controller = TextEditingController();
   String searchText = "";
-  SortingType sortingType = SortingType.dateNewToOld;
+
+  @override
+  void initState() {
+    super.initState();
+    _getFirstLoadSetting();
+  }
+
+  Future<void> _getFirstLoadSetting() async {
+    final prefs = await SharedPreferences.getInstance();
+    var agreedToEula = prefs.getBool('agreedToEula');
+    if (agreedToEula != null && agreedToEula == true) {
+      return;
+    } else {
+      PanaraConfirmDialog.show(context,
+          imagePath: 'assets/warning.png',
+          barrierDismissible: false,
+          message:
+              "You are responsible for following all laws of the jurisdictions that you are in.",
+          color: const Color(0xFF8900F8),
+          confirmButtonText: "OK",
+          cancelButtonText: "View EULA", onTapConfirm: () {
+        prefs.setBool('agreedToEula', true);
+        Navigator.pop(context);
+      }, onTapCancel: () {
+        Navigator.pop(context);
+        Navigator.pushNamed(context, '/eula');
+      }, panaraDialogType: PanaraDialogType.custom);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final conversationsProvider = Provider.of<ConversationsProvider>(context);
+    final sortingType = Provider.of<ConversationsProvider>(context).sortingType;
+
     List<Conversation> filteredConversations =
         conversationsProvider.filterConversations(searchText);
 
@@ -39,54 +72,131 @@ class _ConversationsListScreenState extends State<ConversationsListScreen> {
       sortByDuration(filteredConversations, false);
     }
 
+    Widget buildConversationList() {
+      if (filteredConversations.isEmpty) {
+        return const Text("No Conversations Found",
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 20));
+      }
+      return Expanded(
+        child: ListView(
+          physics: const BouncingScrollPhysics(),
+          children: filteredConversations.map((conversation) {
+            return ConversationListItem(
+                conversation: conversation,
+                onTap: () => {
+                      conversationsProvider
+                          .setSelectedConversation(conversation),
+                      Navigator.pushNamed(context, '/conversationDetailsScreen')
+                    });
+          }).toList(),
+        ),
+      );
+    }
+
+    void clearSearchText() {
+      controller.clear();
+      setState(() {
+        searchText = "";
+      });
+    }
+
+    void onRecordPress() async {
+      PermissionStatus permissionStatus = await Permission.microphone.request();
+      if (permissionStatus.isGranted) {
+        Navigator.pushNamed(context, '/recording');
+      } else if (permissionStatus.isDenied) {
+        return;
+      } else if (permissionStatus.isPermanentlyDenied) {
+        openAppSettings();
+      }
+    }
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Conversations'),
+        title: const Text('ConvoBuddy'),
         centerTitle: true,
         backgroundColor: Colors.black,
+        actions: <Widget>[
+          IconButton(
+              onPressed: () => Navigator.pushNamed(context, '/information'),
+              icon: const Icon(
+                Icons.info_outline,
+                color: Colors.white,
+              ))
+        ],
       ),
       body: Container(
         color: Colors.black,
         padding: const EdgeInsets.only(top: 10, left: 10, right: 10),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Container(
+              margin: const EdgeInsets.only(bottom: 20),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  color: const Color(0xFF262626)),
               height: 45,
               child: Row(
                 children: [
                   PopupMenuButton(
+                    shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(15.0))),
+                    color: const Color(0xFF262626),
                     initialValue: sortingType,
                     onSelected: (SortingType sortType) {
                       setState(() {
-                        sortingType = sortType;
+                        conversationsProvider.setSortingType(sortType);
                       });
                     },
                     itemBuilder: (BuildContext context) =>
                         <PopupMenuEntry<SortingType>>[
                       const PopupMenuItem<SortingType>(
                         value: SortingType.dateNewToOld,
-                        child: Text('Date (New -> Old)'),
+                        child: Text(
+                          'Date (New ➔ Old)',
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
                       const PopupMenuItem<SortingType>(
                         value: SortingType.dateOldToNew,
-                        child: Text('Date (Old -> New)'),
+                        child: Text(
+                          'Date (Old ➔ New)',
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
                       const PopupMenuItem<SortingType>(
                         value: SortingType.titleAToZ,
-                        child: Text('Tag (A -> Z)'),
+                        child: Text(
+                          'Title (A ➔ Z)',
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
                       const PopupMenuItem<SortingType>(
                         value: SortingType.titleZToA,
-                        child: Text('Tag (Z -> A)'),
+                        child: Text(
+                          'Title (Z ➔ A)',
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
                       const PopupMenuItem<SortingType>(
                         value: SortingType.durationShortToLong,
-                        child: Text('Duration (Short -> Long)'),
+                        child: Text(
+                          'Duration (Short ➔ Long)',
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
                       const PopupMenuItem<SortingType>(
                         value: SortingType.durationLongToShort,
-                        child: Text('Duration (Long -> Short)'),
+                        child: Text(
+                          'Duration (Long ➔ Short)',
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
                     ],
                     icon: const Icon(
@@ -101,23 +211,34 @@ class _ConversationsListScreenState extends State<ConversationsListScreen> {
                       style: const TextStyle(color: Colors.white),
                       cursorColor: Colors.white,
                       decoration: InputDecoration(
+                          filled: true,
+                          fillColor: const Color(0xFF262626),
                           enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(20),
                               borderSide:
-                                  const BorderSide(color: Colors.white)),
+                                  const BorderSide(color: Colors.transparent)),
                           contentPadding: const EdgeInsets.all(0),
                           prefixIcon: const Icon(Icons.search),
-                          prefixIconColor: Colors.white,
-                          hintText: 'Conversation Title',
+                          prefixIconColor: searchText.isEmpty
+                              ? Colors.white
+                              : Colors.transparent,
+                          hintText: 'Search Conversations',
                           hintStyle: const TextStyle(color: Colors.grey),
+                          suffixIcon: IconButton(
+                            onPressed: () => clearSearchText(),
+                            icon: const Icon(Icons.clear),
+                            color: searchText.isNotEmpty
+                                ? Colors.white
+                                : Colors.transparent,
+                          ),
                           border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(20),
                               borderSide:
-                                  const BorderSide(color: Colors.white)),
+                                  const BorderSide(color: Colors.transparent)),
                           focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(20),
                               borderSide:
-                                  const BorderSide(color: Colors.white))),
+                                  const BorderSide(color: Colors.transparent))),
                       onChanged: (value) => setState(() {
                         searchText = value;
                       }),
@@ -126,25 +247,31 @@ class _ConversationsListScreenState extends State<ConversationsListScreen> {
                 ],
               ),
             ),
-            Expanded(
-              child: ListView(
-                physics: const BouncingScrollPhysics(),
-                children: filteredConversations.map((conversation) {
-                  return ConversationListItem(
-                      conversation: conversation, onTap: () => {});
-                }).toList(),
-              ),
+            buildConversationList(),
+            Container(
+              margin: const EdgeInsets.only(top: 10),
+              child: ElevatedButton.icon(
+                  onPressed: () {
+                    onRecordPress();
+                  },
+                  style: ElevatedButton.styleFrom(
+                      minimumSize: const Size.fromHeight(50),
+                      backgroundColor: const Color(0xFF8900F8),
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      )),
+                  icon: const Icon(
+                    Icons.mic_none,
+                    color: Colors.white,
+                  ),
+                  label: const Text(
+                    'Record',
+                    style: TextStyle(fontSize: 20),
+                  )),
             ),
           ],
         ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.pushNamed(context, '/recording');
-        },
-        backgroundColor: Colors.red,
-        child: const Icon(Icons.mic),
       ),
     );
   }
@@ -159,10 +286,12 @@ class _ConversationsListScreenState extends State<ConversationsListScreen> {
 
   void sortByTitle(List<Conversation> conversations, bool aToZ) {
     if (aToZ) {
-      conversations.sort((a, b) => a.title.compareTo(b.title));
+      conversations.sort(
+          (a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()));
       return;
     }
-    conversations.sort((a, b) => b.title.compareTo(a.title));
+    conversations
+        .sort((a, b) => b.title.toLowerCase().compareTo(a.title.toLowerCase()));
   }
 
   void sortByDuration(List<Conversation> conversations, bool shortestFirst) {
