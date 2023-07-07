@@ -19,8 +19,11 @@ class ConversationDetailsScreen extends StatefulWidget {
 }
 
 class _ConversationDetailsScreenState extends State<ConversationDetailsScreen> {
+  final controller = TextEditingController();
+  late ConversationsProvider conversationsProvider;
   int selectedIndex = 0;
   final String resultsText = "Transmogrifying...";
+  bool isEditing = false;
 
   late String audioPath;
   late PlayerController playerController = PlayerController();
@@ -28,12 +31,28 @@ class _ConversationDetailsScreenState extends State<ConversationDetailsScreen> {
   @override
   void initState() {
     super.initState();
+    conversationsProvider =
+        Provider.of<ConversationsProvider>(context, listen: false);
+    controller.text = conversationsProvider.selectedConversation!.title;
   }
 
   void _playOrPauseAudio() async {
     playerController.playerState == PlayerState.playing
         ? await playerController.pausePlayer()
         : await playerController.startPlayer(finishMode: FinishMode.pause);
+  }
+
+  Future<void> updateConversationTitle() async {
+    if (controller.text.trim().isEmpty) {
+      controller.text = conversationsProvider.selectedConversation!.title;
+    }
+    conversationsProvider.updateConversationTitle(
+        conversationsProvider.selectedConversation!.id, controller.text.trim());
+    setState(() {
+      isEditing = false;
+    });
+    writeConversationsToJsonFile(conversationsProvider.conversations,
+        "${Globals.appDirectory?.path}/conversations.json");
   }
 
   @override
@@ -44,7 +63,6 @@ class _ConversationDetailsScreenState extends State<ConversationDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final conversationsProvider = Provider.of<ConversationsProvider>(context);
     final Conversation? conversation =
         conversationsProvider.selectedConversation;
     var path = "${Globals.appDirectory?.path}/${conversation?.id}";
@@ -143,10 +161,69 @@ class _ConversationDetailsScreenState extends State<ConversationDetailsScreen> {
       }, panaraDialogType: PanaraDialogType.custom);
     }
 
+    void clearTitleText() {
+      controller.clear();
+    }
+
+    Widget buildTitleWidget() {
+      if (isEditing) {
+        return TextField(
+            onTapOutside: (event) {
+              FocusManager.instance.primaryFocus?.unfocus();
+              updateConversationTitle();
+            },
+            textInputAction: TextInputAction.done,
+            onSubmitted: (value) {
+              updateConversationTitle();
+            },
+            controller: controller,
+            textAlignVertical: TextAlignVertical.center,
+            cursorColor: Colors.white,
+            decoration: InputDecoration(
+                filled: true,
+                fillColor: const Color(0xFF262626),
+                enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    borderSide: const BorderSide(color: Colors.transparent)),
+                contentPadding: const EdgeInsets.all(0),
+                hintStyle: const TextStyle(color: Colors.grey),
+                suffixIcon: IconButton(
+                  onPressed: () => clearTitleText(),
+                  icon: const Icon(Icons.clear),
+                  color: Colors.white,
+                ),
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    borderSide: const BorderSide(color: Colors.transparent)),
+                focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    borderSide: const BorderSide(color: Colors.transparent))),
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: Colors.white));
+      }
+
+      return TextButton(
+          onPressed: () {
+            setState(() {
+              isEditing = true;
+            });
+          },
+          onLongPress: () {
+            setState(() {
+              isEditing = true;
+            });
+          },
+          child: Text(
+            conversation!.title,
+            style: const TextStyle(
+                color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+          ));
+    }
+
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        title: Text(conversation!.title),
+        title: buildTitleWidget(),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.of(context).pop(),
