@@ -26,6 +26,14 @@ class _AppInstanceScreenState extends State<AppInstanceScreen> {
   }
 
   @override
+  void initState() {
+    // Reset agent to get an uninitialized app instance code
+    _resetAgent();
+
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     var appCode = (() {
       try {

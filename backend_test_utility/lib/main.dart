@@ -3,9 +3,11 @@ import 'package:backend_test_utility/app_startup.dart';
 import 'package:backend_test_utility/test_screens/app_instance_screen.dart';
 import 'package:backend_test_utility/test_screens/websocket_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:backend_services/agent.dart';
 
 void main() async {
   await AppStartup.startup();
+  getIt<Agent>().generateInstanceCode();
 
   runApp(const MyApp());
 }
