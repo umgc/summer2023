@@ -3,6 +3,8 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'dart:async' as _i3;
+
 import 'package:backend_services/interfaces/recording_selection_activator.dart'
     as _i2;
 import 'package:mockito/mockito.dart' as _i1;
@@ -30,7 +32,7 @@ class MockRecordingSelectionActivator extends _i1.Mock
           #getSelectorCallback,
           [],
         ),
-        returnValue: () {},
-        returnValueForMissingStub: () {},
+        returnValue: () => _i3.Future<void>.value(),
+        returnValueForMissingStub: () => _i3.Future<void>.value(),
       ) as _i2.RecordingSelectionActivatorCallback);
 }

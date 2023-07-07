@@ -26,7 +26,8 @@ void main() {
   test('extract form values, app instance code initialized and passed in',
       () async {
     var agent = Agent('browser-extension-api-unit-test');
-    agent.setRecordingSelector(TestRecordingSelector());
+    var selectionActivator = TestRecordingSelectionActivator();
+    agent.setRecordingSelector(selectionActivator);
 
     agent.generateInstanceCode();
     var instanceCode = agent.getInstanceCode();
@@ -34,6 +35,7 @@ void main() {
     expect(instanceCode, isNotEmpty);
 
     var formFields = ["name"];
-    agent.receiveFormValuesRequest(BERequest(instanceCode, formFields));
+    await agent.receiveFormValuesRequest(BERequest(instanceCode, formFields));
+    expect(selectionActivator.didCallSelector, true);
   });
 }

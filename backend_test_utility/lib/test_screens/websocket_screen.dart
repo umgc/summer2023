@@ -17,11 +17,11 @@ class WebSocketScreen extends StatefulWidget {
 class _WebSocketScreenState extends State<WebSocketScreen> {
   String _statusMessage = '';
 
-  void _simulateRequest() {
+  void _simulateRequest() async {
     try {
       var code = getIt<Agent>().getInstanceCode();
       var fields = ['name'];
-      getIt<Agent>().receiveFormValuesRequest(BERequest(code, fields));
+      await getIt<Agent>().receiveFormValuesRequest(BERequest(code, fields));
       setState(() {
         _statusMessage = 'request received';
       });

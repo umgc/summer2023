@@ -1,4 +1,4 @@
-typedef RecordingSelectionActivatorCallback = void Function();
+typedef RecordingSelectionActivatorCallback = Future<void> Function();
 
 abstract class RecordingSelectionActivator {
   RecordingSelectionActivatorCallback getSelectorCallback();

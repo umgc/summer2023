@@ -8,6 +8,7 @@ import 'package:mockito/mockito.dart';
 
 import 'browser_extension_api_test.mocks.dart';
 
+// Run "dart run build_runner build" from the command line to regenerate RecordingSelectionActivator
 @GenerateNiceMocks([MockSpec<RecordingSelectionActivator>()])
 void main() {
   var logger = Logger();
@@ -25,11 +26,11 @@ void main() {
     expect(code, '8736');
   });
 
-  test('receive form fill request', () {
+  test('receive form fill request', () async {
     var agent = Agent('browser-extension-api-unit-test');
     var mockSelector = MockRecordingSelectionActivator();
     var didCallSelector = false;
-    when(mockSelector.getSelectorCallback()).thenAnswer(((realInvocation) => () {
+    when(mockSelector.getSelectorCallback()).thenAnswer(((realInvocation) => () async {
       didCallSelector = true;
     }));
 
@@ -42,7 +43,7 @@ void main() {
 
     var formFields = ["name"];
     var request = BERequest(instanceCode, formFields);
-    agent.receiveFormValuesRequest(request);
+    await agent.receiveFormValuesRequest(request);
     verify(mockSelector.getSelectorCallback()).called(1);
 
     expect(didCallSelector, true);

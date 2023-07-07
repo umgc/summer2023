@@ -33,12 +33,19 @@ class Agent {
   late String _wsUrl;
   late String _formFillRequestTopic;
   late String _formFillResponseTopic;
-  late RecordingSelectionActivator? _recordingSelector;
+  late RecordingSelectionActivator? _recordingSelectionActivator;
 
   Agent(this.userId);
 
-  initialize(RecordingSelectionActivator recordingSelector) {
-    setRecordingSelector(recordingSelector);
+  // RecordingSelectionActivator object with callback is required to initialize the Agent. Expected
+  // flow is when the browser extension API receives a request over BESie on the fill-form topic, it
+  // checks the app instance code andcalls the previously provided recordingSelectionActivator. The
+  // activator is responsible for displaying the UI for the user to select a recording, and that UI
+  // is responsible for calling back to Agent.extractFormValues with the selected recording guid. At
+  // that point, the browser extension API will query ChatGPT and then send the results back to BESie
+  // on the filled-form topic.
+  initialize(RecordingSelectionActivator recordingSelectionActivator) {
+    setRecordingSelector(recordingSelectionActivator);
 
     _wsUrl = _getEnvValue('WS_URL');
     _formFillRequestTopic = _getEnvValue('FORM_FILL_REQUEST_TOPIC');
@@ -54,11 +61,12 @@ class Agent {
     _logger.i("Shutdown called on Agent");
     if(_webSocketClient != null) {
       _webSocketClient!.disconnect();
+      _webSocketClient = null;
     }
   }
 
-  void setRecordingSelector(RecordingSelectionActivator recordingSelector) {
-    _recordingSelector = recordingSelector;
+  void setRecordingSelector(RecordingSelectionActivator recordingSelectionActivator) {
+    _recordingSelectionActivator = recordingSelectionActivator;
   }
 
   //#region Environment variables
@@ -137,18 +145,18 @@ class Agent {
     return _instanceCode;
   }
 
-  void receiveFormValuesRequest(BERequest request) {
+  Future<void> receiveFormValuesRequest(BERequest request) async {
     if (request.pin != _instanceCode) {
       _logger.i("Ignoring browser extension request with pin of '${request.pin}'.");
       return;
     }
 
     // trigger recording selection UI
-    var callback = _recordingSelector!.getSelectorCallback();
+    var callback = _recordingSelectionActivator!.getSelectorCallback();
     return callback();
   }
 
-  void extractFormValues(String instanceCode, String recordingGuid) {
+  void extractFormValues(String recordingGuid) async {
     var request = _beService.getLastRequest();
     if (request == null) {
       throw "No request for form values has been received.";
@@ -161,7 +169,14 @@ class Agent {
     var response = BEResponse({
       "id": 123456,
       "first_name": "Rick",
+      "firstNameField": "Rick",
+      "lastNameField": "Sanchez",
       "last_name": "Sanchez",
+      "customerName": "Rick Sanchez",
+      "email": "rick@c137.biz",
+      "emailField": "rick@c137.biz",
+      "password":"M3gaSe3dz",
+      "country": "US",
       "zipcode": 21211
     });
     sendFormValueResponse(response);
