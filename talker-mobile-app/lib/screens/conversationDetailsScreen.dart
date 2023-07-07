@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:ui';
+
 import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -24,9 +27,14 @@ class _ConversationDetailsScreenState extends State<ConversationDetailsScreen> {
   int selectedIndex = 0;
   final String resultsText = "Transmogrifying...";
   bool isEditing = false;
-
   late String audioPath;
-  late PlayerController playerController = PlayerController();
+  late PlayerController playerController;
+  late StreamSubscription<PlayerState> playerStateSubscription;
+
+  final playerWaveStyle = const PlayerWaveStyle(
+      scaleFactor: 125,
+      fixedWaveColor: Colors.grey,
+      liveWaveColor: Colors.white);
 
   @override
   void initState() {
@@ -34,12 +42,31 @@ class _ConversationDetailsScreenState extends State<ConversationDetailsScreen> {
     conversationsProvider =
         Provider.of<ConversationsProvider>(context, listen: false);
     controller.text = conversationsProvider.selectedConversation!.title;
+    var path =
+        "${Globals.appDirectory?.path}/${conversationsProvider.selectedConversation?.id}";
+    playerController = PlayerController();
+    _preparePlayer(path);
+    playerStateSubscription = playerController.onPlayerStateChanged.listen((_) {
+      setState(() {});
+    });
+  }
+
+  void _preparePlayer(String path) async {
+    var screenWidth =
+        (window.physicalSize.shortestSide / window.devicePixelRatio);
+    playerController.preparePlayer(
+        path: path,
+        shouldExtractWaveform: true,
+        noOfSamples: playerWaveStyle.getSamplesForWidth(screenWidth - 150),
+        volume: 3.0);
   }
 
   void _playOrPauseAudio() async {
-    playerController.playerState == PlayerState.playing
-        ? await playerController.pausePlayer()
-        : await playerController.startPlayer(finishMode: FinishMode.pause);
+    if (playerController.playerState == PlayerState.playing) {
+      await playerController.pausePlayer();
+    } else {
+      await playerController.startPlayer(finishMode: FinishMode.pause);
+    }
   }
 
   Future<void> updateConversationTitle() async {
@@ -57,22 +84,15 @@ class _ConversationDetailsScreenState extends State<ConversationDetailsScreen> {
 
   @override
   void dispose() {
-    super.dispose();
+    playerStateSubscription.cancel();
     playerController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final Conversation? conversation =
         conversationsProvider.selectedConversation;
-    var path = "${Globals.appDirectory?.path}/${conversation?.id}";
-    playerController = PlayerController();
-    playerController.preparePlayer(
-        path: path,
-        shouldExtractWaveform: true,
-        noOfSamples: const PlayerWaveStyle()
-            .getSamplesForWidth(MediaQuery.of(context).size.width - 100),
-        volume: 3.0);
 
     String getFormattedDuration() {
       final minutes = conversation?.duration.inMinutes;
@@ -272,8 +292,12 @@ class _ConversationDetailsScreenState extends State<ConversationDetailsScreen> {
                       children: [
                         IconButton(
                             onPressed: _playOrPauseAudio,
-                            icon: const Icon(Icons.play_arrow_rounded,
-                                color: Colors.white, size: 40)),
+                            icon: Icon(
+                                playerController.playerState.isPlaying
+                                    ? Icons.pause
+                                    : Icons.play_arrow_rounded,
+                                color: Colors.white,
+                                size: 40)),
                         Expanded(
                           child: AudioFileWaveforms(
                             enableSeekGesture: true,
@@ -282,10 +306,7 @@ class _ConversationDetailsScreenState extends State<ConversationDetailsScreen> {
                                 MediaQuery.of(context).size.width - 100, 90),
                             playerController: playerController,
                             continuousWaveform: true,
-                            playerWaveStyle: const PlayerWaveStyle(
-                                scaleFactor: 200,
-                                fixedWaveColor: Colors.grey,
-                                liveWaveColor: Colors.white),
+                            playerWaveStyle: playerWaveStyle,
                           ),
                         )
                       ],
