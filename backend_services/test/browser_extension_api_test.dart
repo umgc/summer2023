@@ -1,8 +1,14 @@
-import 'package:backend_services/src/utilities/json_utility.dart';
+import 'package:backend_services/interfaces/recording_selection_activator.dart';
+import 'package:backend_services/model/be_request.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:backend_services/agent.dart';
 import 'package:logger/logger.dart';
+import 'package:mockito/annotations.dart';
+import 'package:mockito/mockito.dart';
 
+import 'browser_extension_api_test.mocks.dart';
+
+@GenerateNiceMocks([MockSpec<RecordingSelectionActivator>()])
 void main() {
   var logger = Logger();
 
@@ -19,17 +25,26 @@ void main() {
     expect(code, '8736');
   });
 
-  test('extract form values, app instance code initialized and passed in', () {
+  test('receive form fill request', () {
     var agent = Agent('browser-extension-api-unit-test');
+    var mockSelector = MockRecordingSelectionActivator();
+    var didCallSelector = false;
+    when(mockSelector.getSelectorCallback()).thenAnswer(((realInvocation) => () {
+      didCallSelector = true;
+    }));
+
+    agent.setRecordingSelector(mockSelector);
+
     agent.generateInstanceCode();
     var instanceCode = agent.getInstanceCode();
     expect(instanceCode, isNotNull);
     expect(instanceCode, isNotEmpty);
 
     var formFields = ["name"];
-    var formValues = agent.extractFormValues(instanceCode, formFields);
-    logger.i(jsonUtil.toJsonPretty(formValues));
-    expect(formValues, isNotNull);
-    expect(formValues, isNotEmpty);
-  }, skip: true);
+    var request = BERequest(instanceCode, formFields);
+    agent.receiveFormValuesRequest(request);
+    verify(mockSelector.getSelectorCallback()).called(1);
+
+    expect(didCallSelector, true);
+  });
 }

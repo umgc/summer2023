@@ -1,10 +1,11 @@
 import 'package:backend_test_utility/ambients.dart';
 import 'package:backend_test_utility/app_startup.dart';
 import 'package:backend_test_utility/test_screens/app_instance_screen.dart';
+import 'package:backend_test_utility/test_screens/websocket_screen.dart';
 import 'package:flutter/material.dart';
 
-void main() {
-  AppStartup.startup();
+void main() async {
+  await AppStartup.startup();
 
   runApp(const MyApp());
 }
@@ -51,6 +52,11 @@ class _MainScreenState extends State<MainScreen> {
                 buttonKey: WidgetKeys.appInstanceCodeTestsButton,
                 builder: (context) =>
                     const AppInstanceScreen(title: 'App Instance Tests')),
+            ScreenMenuItem(
+                title: 'WebSocket Tests',
+                buttonKey: WidgetKeys.webSocketTestsButton,
+                builder: (context) =>
+                    const WebSocketScreen(title: 'WebSocket Tests')),
           ])),
         ]));
   }

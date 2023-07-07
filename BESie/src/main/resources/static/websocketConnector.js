@@ -46,7 +46,8 @@ function disconnect() {
 
 function sendFormPayload() {
     let payload = {
-        payload: $("#payload").val(),
+        pin: $("#pin").val(),
+        form: $("#payload").val(),
         formId: 112554665
     };
     console.log(JSON.stringify(payload));
