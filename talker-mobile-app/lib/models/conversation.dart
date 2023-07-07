@@ -1,6 +1,6 @@
 class Conversation {
   final String id;
-  final String title;
+  String title;
   final DateTime recordedDate;
   final Duration duration;
   final String content;
