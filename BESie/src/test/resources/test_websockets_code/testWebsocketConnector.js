@@ -16,9 +16,9 @@ function connect() {
 
 function sendForm(message) {
     let form = {
-        id: 123456,
-        first_name: "Rick",
-        last_name: "Sanchez",
+        form_id: 12345,
+        first_name: "Oleksiy",
+        last_name: "Blavat",
         zipcode: 21211,
         other: message
     };
