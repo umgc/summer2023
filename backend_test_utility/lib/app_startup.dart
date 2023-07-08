@@ -8,7 +8,7 @@ class AppStartup {
   static Future<void> startup() async {
     getIt.registerSingleton<Agent>(Agent('backend-test-utility'), dispose: (param) => param.shutdown());
     await dotenv.load();
-    getIt<Agent>().initialize(TestRecordingSelectionActivator());
+    getIt<Agent>().initialize(TestRecordingSelectionActivator(getIt<Agent>()));
   }
 
   static void reset() {

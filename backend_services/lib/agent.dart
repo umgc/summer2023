@@ -31,6 +31,7 @@ class Agent {
 
   WebSocketClient? _webSocketClient;
   late String _wsUrl;
+  late int _wsConnectionTimeoutMs;
   late String _formFillRequestTopic;
   late String _formFillResponseTopic;
   late RecordingSelectionActivator? _recordingSelectionActivator;
@@ -48,12 +49,13 @@ class Agent {
     setRecordingSelector(recordingSelectionActivator);
 
     _wsUrl = _getEnvValue('WS_URL');
+    _wsConnectionTimeoutMs = int.parse(_getEnvValue('WS_CONNECTION_TIMEOUT_MS'));
     _formFillRequestTopic = _getEnvValue('FORM_FILL_REQUEST_TOPIC');
     _formFillResponseTopic = _getEnvValue('FORM_FILL_RESPONSE_TOPIC');
     List<WebSocketListener> listeners = [
       WebSocketListener(_formFillRequestTopic, (frame) => _beService.handleRequestFrame(frame, receiveFormValuesRequest))
     ];
-    _webSocketClient = WebSocketClient(_wsUrl, listeners);
+    _webSocketClient = WebSocketClient(_wsUrl, _wsConnectionTimeoutMs, listeners);
     _webSocketClient!.connect();
   }
 
@@ -150,6 +152,7 @@ class Agent {
       _logger.i("Ignoring browser extension request with pin of '${request.pin}'.");
       return;
     }
+    _beService.storeRequest(request);
 
     // trigger recording selection UI
     var callback = _recordingSelectionActivator!.getSelectorCallback();

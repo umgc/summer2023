@@ -21,16 +21,17 @@ class DummyConversationSelectionActivator implements RecordingSelectionActivator
           message: "This is where the conversation selection should happen.",
           buttonText: "Okay",
           onTapDismiss: () {
-              Navigator.pop(rootContext);
+            // This will call ChatGPT to extact form values from the selected conversation
+            // and send the results back to the browser extension through BESie
+            var recordingGuid = 'some-recording-guid'; // here would go the conversation guid
+            getIt<Agent>().extractFormValues(recordingGuid);
+
+            Navigator.pop(rootContext);
           },
           panaraDialogType: PanaraDialogType.normal,
           barrierDismissible: false, 
       );
 
-      // This will call ChatGPT to extact form values from the selected conversation
-      // and send the results back to the browser extension through BESie
-      var recordingGuid = 'some-recording-guid'; // here would go the conversation guid
-      getIt<Agent>().extractFormValues(recordingGuid);
     };
   }
 }
