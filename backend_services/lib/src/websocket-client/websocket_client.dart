@@ -14,6 +14,7 @@ class WebSocketClient {
   WebSocketClient(this._wsUrl, this._listeners);
 
   void connect() {
+    _logger.i("Opening connection to websocket server at '$_wsUrl'.");
     _webSocketClient = StompClient(
         config: StompConfig.SockJS(
             url: _wsUrl,
