@@ -46,6 +46,7 @@ function disconnect() {
 
 function sendFormPayload() {
     let payload = {
+        pin: $("#pin").val(),
         firstName: "string",
         lastName: "string",
         zipcode: "integer",

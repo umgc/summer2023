@@ -1,5 +1,5 @@
-import 'dart:convert';
-
+import 'package:backend_services/model/be_request.dart';
+import 'package:backend_test_utility/test_recording_selection_activator.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:backend_services/agent.dart';
@@ -26,15 +26,16 @@ void main() {
   test('extract form values, app instance code initialized and passed in',
       () async {
     var agent = Agent('browser-extension-api-unit-test');
+    var selectionActivator = TestRecordingSelectionActivator();
+    agent.setRecordingSelector(selectionActivator);
+
     agent.generateInstanceCode();
     var instanceCode = agent.getInstanceCode();
     expect(instanceCode, isNotNull);
     expect(instanceCode, isNotEmpty);
 
     var formFields = ["name"];
-    var formValues = agent.extractFormValues(instanceCode, formFields);
-    logger.i(json.encode(formValues));
-    expect(formValues, isNotNull);
-    expect(formValues, isNotEmpty);
+    await agent.receiveFormValuesRequest(BERequest(instanceCode, formFields));
+    expect(selectionActivator.didCallSelector, true);
   });
 }
