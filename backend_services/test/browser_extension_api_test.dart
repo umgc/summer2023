@@ -31,8 +31,8 @@ void main() {
     var mockSelector = MockRecordingSelectionActivator();
     var didCallSelector = false;
     when(mockSelector.getSelectorCallback()).thenAnswer(((realInvocation) => () async {
-      didCallSelector = true;
-    }));
+          didCallSelector = true;
+        }));
 
     agent.setRecordingSelector(mockSelector);
 
