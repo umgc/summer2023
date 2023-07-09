@@ -31,7 +31,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  # backend services packge
+  # backend services package
   backend_services:
     path: ../backend_services
 
