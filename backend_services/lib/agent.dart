@@ -8,6 +8,8 @@ import 'package:backend_services/src/websocket-client/websocket_client.dart';
 import 'package:backend_services/src/websocket-client/websocket_listener.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:logger/logger.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:timezone/timezone.dart' as tz;
 
 import 'interfaces/recording_selection_activator.dart';
 import 'model/recording.dart';
@@ -35,6 +37,9 @@ class Agent {
   late String _formFillResponseTopic;
   late RecordingSelectionActivator? _recordingSelectionActivator;
 
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+
   Agent(this.userId);
 
   // RecordingSelectionActivator object with callback is required to initialize the Agent. Expected
@@ -51,7 +56,10 @@ class Agent {
     _formFillRequestTopic = _getEnvValue('FORM_FILL_REQUEST_TOPIC');
     _formFillResponseTopic = _getEnvValue('FORM_FILL_RESPONSE_TOPIC');
     List<WebSocketListener> listeners = [
-      WebSocketListener(_formFillRequestTopic, (frame) => _beService.handleRequestFrame(frame, receiveFormValuesRequest))
+      WebSocketListener(
+          _formFillRequestTopic,
+          (frame) =>
+              _beService.handleRequestFrame(frame, receiveFormValuesRequest))
     ];
     _webSocketClient = WebSocketClient(_wsUrl, listeners);
     _webSocketClient!.connect();
@@ -59,13 +67,14 @@ class Agent {
 
   shutdown() {
     _logger.i("Shutdown called on Agent");
-    if(_webSocketClient != null) {
+    if (_webSocketClient != null) {
       _webSocketClient!.disconnect();
       _webSocketClient = null;
     }
   }
 
-  void setRecordingSelector(RecordingSelectionActivator recordingSelectionActivator) {
+  void setRecordingSelector(
+      RecordingSelectionActivator recordingSelectionActivator) {
     _recordingSelectionActivator = recordingSelectionActivator;
   }
 
@@ -147,7 +156,8 @@ class Agent {
 
   Future<void> receiveFormValuesRequest(BERequest request) async {
     if (request.pin != _instanceCode) {
-      _logger.i("Ignoring browser extension request with pin of '${request.pin}'.");
+      _logger.i(
+          "Ignoring browser extension request with pin of '${request.pin}'.");
       return;
     }
 
@@ -175,7 +185,7 @@ class Agent {
       "customerName": "Rick Sanchez",
       "email": "rick@c137.biz",
       "emailField": "rick@c137.biz",
-      "password":"M3gaSe3dz",
+      "password": "M3gaSe3dz",
       "country": "US",
       "zipcode": 21211
     });
@@ -359,6 +369,37 @@ class Agent {
       print(e);
       return '';
     }
+  }
+
+  Future<void> scheduleReminder(Reminder reminder) async {
+    var androidInitializationSettings =
+        AndroidInitializationSettings('app_icon');
+    var initializationSettings =
+        InitializationSettings(android: androidInitializationSettings);
+
+    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+
+    var androidPlatformChannelSpecifics = AndroidNotificationDetails(
+      '$reminder.reminderId',
+      reminder.reminderDescription,
+      importance: Importance.high,
+      priority: Priority.high,
+    );
+
+    var platformChannelSpecifics =
+        NotificationDetails(android: androidPlatformChannelSpecifics);
+
+    await flutterLocalNotificationsPlugin.zonedSchedule(
+        0,
+        'Reminder Notification',
+        reminder.reminderDescription,
+        tz.TZDateTime.now(tz.local)
+            .add(Duration(hours: reminder.notifyTimestamp)),
+        platformChannelSpecifics,
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.absoluteTime,
+        matchDateTimeComponents: DateTimeComponents.time);
   }
 
   Future<String?> readRecordingsFile() async {
