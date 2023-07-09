@@ -9,8 +9,13 @@
       <excludeFolder url="file://$MODULE_DIR$/personal_transcription_assistant/build" />
       <excludeFolder url="file://$MODULE_DIR$/personal_transcription_assistant/.dart_tool" />
       <excludeFolder url="file://$MODULE_DIR$/personal_transcription_assistant/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/talker-mobile-app/build" />
+      <excludeFolder url="file://$MODULE_DIR$/talker-mobile-app/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/talker-mobile-app/.dart_tool" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Dart SDK" level="project" />
+    <orderEntry type="library" name="Dart Packages" level="project" />
   </component>
 </module>
