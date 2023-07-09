@@ -12,9 +12,10 @@ class TestRecordingSelectionActivator implements RecordingSelectionActivator {
   @override
   RecordingSelectionActivatorCallback getSelectorCallback() {
     return () async {
-      _logger.i('Recording selector callback called.'); 
+      _logger.i('Recording selector callback called.');
       didCallSelector = true;
-      var recordingGuid = 'some-recording-guid';
+      _agent.loadSampleRecordingData();
+      var recordingGuid = '173d6dc0-fb47-4284-bd09-9465177f8eea';
       _agent.extractFormValues(recordingGuid);
     };
   }

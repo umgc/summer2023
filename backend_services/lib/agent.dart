@@ -8,6 +8,7 @@ import 'package:backend_services/src/websocket-client/websocket_client.dart';
 import 'package:backend_services/src/websocket-client/websocket_listener.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:logger/logger.dart';
+import 'package:collection/collection.dart';
 
 import 'interfaces/recording_selection_activator.dart';
 import 'model/recording.dart';
@@ -35,39 +36,42 @@ class Agent {
   late String _formFillRequestTopic;
   late String _formFillResponseTopic;
   late RecordingSelectionActivator? _recordingSelectionActivator;
+  late String _openAIApiKey;
 
   Agent(this.userId);
 
-  // RecordingSelectionActivator object with callback is required to initialize the Agent. Expected
-  // flow is when the browser extension API receives a request over BESie on the fill-form topic, it
-  // checks the app instance code andcalls the previously provided recordingSelectionActivator. The
-  // activator is responsible for displaying the UI for the user to select a recording, and that UI
-  // is responsible for calling back to Agent.extractFormValues with the selected recording guid. At
-  // that point, the browser extension API will query ChatGPT and then send the results back to BESie
-  // on the filled-form topic.
+  // RecordingSelectionActivator object with callback is required to initialize the Agent.
+  // See the README.md for details.
   initialize(RecordingSelectionActivator recordingSelectionActivator) {
     setRecordingSelector(recordingSelectionActivator);
 
     _wsUrl = _getEnvValue('WS_URL');
-    _wsConnectionTimeoutMs = int.parse(_getEnvValue('WS_CONNECTION_TIMEOUT_MS'));
+    _wsConnectionTimeoutMs =
+        int.parse(_getEnvValue('WS_CONNECTION_TIMEOUT_MS'));
     _formFillRequestTopic = _getEnvValue('FORM_FILL_REQUEST_TOPIC');
     _formFillResponseTopic = _getEnvValue('FORM_FILL_RESPONSE_TOPIC');
+    _openAIApiKey = _getEnvValue('OPENAI_API_KEY');
     List<WebSocketListener> listeners = [
-      WebSocketListener(_formFillRequestTopic, (frame) => _beService.handleRequestFrame(frame, receiveFormValuesRequest))
+      WebSocketListener(
+          _formFillRequestTopic,
+          (frame) =>
+              _beService.handleRequestFrame(frame, receiveFormValuesRequest))
     ];
-    _webSocketClient = WebSocketClient(_wsUrl, _wsConnectionTimeoutMs, listeners);
+    _webSocketClient =
+        WebSocketClient(_wsUrl, _wsConnectionTimeoutMs, listeners);
     _webSocketClient!.connect();
   }
 
   shutdown() {
     _logger.i("Shutdown called on Agent");
-    if(_webSocketClient != null) {
+    if (_webSocketClient != null) {
       _webSocketClient!.disconnect();
       _webSocketClient = null;
     }
   }
 
-  void setRecordingSelector(RecordingSelectionActivator recordingSelectionActivator) {
+  void setRecordingSelector(
+      RecordingSelectionActivator recordingSelectionActivator) {
     _recordingSelectionActivator = recordingSelectionActivator;
   }
 
@@ -149,7 +153,8 @@ class Agent {
 
   Future<void> receiveFormValuesRequest(BERequest request) async {
     if (request.pin != _instanceCode) {
-      _logger.i("Ignoring browser extension request with pin of '${request.pin}'.");
+      _logger.i(
+          "Ignoring browser extension request with pin of '${request.pin}'.");
       return;
     }
     _beService.storeRequest(request);
@@ -159,30 +164,37 @@ class Agent {
     return callback();
   }
 
-  void extractFormValues(String recordingGuid) async {
+  Future<void> extractFormValues(String recordingGuid) async {
     var request = _beService.getLastRequest();
     if (request == null) {
       throw "No request for form values has been received.";
     }
 
-    // TODO: send to chatgpt
+    final recordingTranscript = getRecordingTranscript(recordingGuid);
 
-    // TODO: parse chatgpt response into browser extension response object
+    // send to chatgpt
+    final gpt = GptCalls(_openAIApiKey);
+    final completion = await gpt.extractFormValues(
+        recordingTranscript,
+        'This Profile',
+        request.form); //Todo implement user profile argument if desired
 
-    var response = BEResponse({
-      "id": 123456,
-      "first_name": "Rick",
-      "firstNameField": "Rick",
-      "lastNameField": "Sanchez",
-      "last_name": "Sanchez",
-      "customerName": "Rick Sanchez",
-      "email": "rick@c137.biz",
-      "emailField": "rick@c137.biz",
-      "password":"M3gaSe3dz",
-      "country": "US",
-      "zipcode": 21211
-    });
-    sendFormValueResponse(response);
+    var json = jsonDecode(completion);
+    _logger.d("Form filler completion JSON:\n$json");
+
+    sendFormValueResponse(BEResponse(json));
+  }
+
+  String getRecordingTranscript(String recordingGuid) {
+    var recording =
+        recordingList.firstWhereOrNull((rec) => rec.guid == recordingGuid);
+    if (recording == null) {
+      throw "Recording with guid $recordingGuid not found.";
+    }
+    if (recording.transcript == null || recording.transcript == "") {
+      throw "Recording with guid $recordingGuid does not have a transcript.";
+    }
+    return recording.transcript!;
   }
 
   void sendFormValueResponse(BEResponse response) {
@@ -283,12 +295,35 @@ class Agent {
         'path', 'asdf', 'Description D', 'Description', 'User', 'location');
     Recording recording5 = Recording('e7cb2be9-75f2-44a0-9976-df7dfc0e1363', 5,
         'path', 'asdf', 'Description E', 'Description', 'User', 'location');
+    Recording recording6 = Recording(
+        '173d6dc0-fb47-4284-bd09-9465177f8eea',
+        5,
+        'path',
+        'My name is George Washington and I cannot tell a lie. My email address is george_washington@aol.com.\n' +
+            '''George Washington was born at his family's plantation on Popes Creek in Westmoreland County, Virginia, on February 22, 1732, to Augustine and Mary Ball Washington. George's father was a leading planter in the area and served as a justice of the county court.
+
+Augustine Washington's first wife, Jane Butler, died in 1729, leaving him with two sons, Lawrence and Augustine, Jr., and a daughter, Jane. George was the eldest of Augustine and Mary's six children: George, Elizabeth, Samuel, John Augustine, Charles, and Mildred.
+
+Ferry Farm
+Around 1734, the family moved up the Potomac River to another Washington property, Little Hunting Creek Plantation (later renamed Mount Vernon). In 1738, they moved again to Ferry Farm, a plantation on the Rappahannock River near Fredericksburg, Virginia, where George spent much of his youth.
+
+Little is known of George Washington's childhood, and it remains the most poorly understood part of his life. When he was eleven years old, his father Augustine died, leaving most of his property to George's adult half brothers. The income from what remained was just sufficient to maintain Mary Washington and her children. As the oldest of Mary's children, George undoubtedly helped his mother manage the Rappahannock River plantation where they lived. There he learned the importance of hard work and efficiency.
+
+Washington's Education
+Unlike many of his contemporaries, Washington never attended college or received a formal education. His two older half brothers, Lawrence and Augustine, attended Appleby Grammar School in England. However, after the death of their father, the family limited funds for education. Private tutors and possibly a local school in Fredericksburg provided George and his siblings with the only formal instruction he would receive.
+
+In addition to reading, writing, and basic legal forms, George studied geometry and trigonometry—in preparation for his first career as a surveyor—and manners—which would shape his character and conduct for the rest of his life.''',
+        'Description E',
+        'Description',
+        'User',
+        'location');
     List<Recording> sampleRecordingList = [
       recording1,
       recording2,
       recording3,
       recording4,
-      recording5
+      recording5,
+      recording6
     ];
 
     recordingList = sampleRecordingList;
@@ -406,7 +441,7 @@ class Agent {
         requestTranscript = rec.transcript!;
       }
     }
-    GptCalls newGpt = new GptCalls();
+    GptCalls newGpt = new GptCalls(_openAIApiKey);
     final completion = await newGpt.getOpenAiSummary(requestTranscript,
         'This Profile'); //Todo implement user profile argument if desired
 
