@@ -23,8 +23,6 @@ Speaker1: Did you get Mike's invitation to the party?
 
 Speaker2: Yes, I'm looking forward to it.''';
 
-  String formFillerPrompt =
-      "You are a form filler service. I will give you a transcript and list of field names and I want you to extract the values for the fields out of the information in the transcript. The field values should be in JSON format.";
   //String remindersPrompt;
 
   Future<String?> getOpenAiSummary(
@@ -53,11 +51,16 @@ Speaker2: Yes, I'm looking forward to it.''';
       String transcript, String userProfile, dynamic fields) async {
     OpenAI.apiKey = _openAIApiKey;
 
-    // ignore: prefer_interpolation_to_compose_strings
-    String formFillerPromptToSend = formFillerPrompt +
-        "\nHere is additional information about the user:\n$userProfile" +
-        "\nHere are the list of fields in JSON format:\n$fields" +
-        "\nHere is the transcript I want you to extract field values from:\n$transcript";
+    String formFillerPromptToSend = 
+'''You are a form filler service. I will give you a transcript and list of field 
+names and I want you to extract the values for the fields out of the information 
+in the transcript. The field values should be in JSON format.
+Here is additional information about the user:
+$userProfile
+Here are the list of fields in JSON format:
+$fields
+Here is the transcript I want you to extract field values from:
+$transcript''';
 
     List<OpenAIChatCompletionChoiceMessageModel> messages = [
       OpenAIChatCompletionChoiceMessageModel(
