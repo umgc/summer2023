@@ -9,6 +9,9 @@
       <excludeFolder url="file://$MODULE_DIR$/personal_transcription_assistant/build" />
       <excludeFolder url="file://$MODULE_DIR$/personal_transcription_assistant/.dart_tool" />
       <excludeFolder url="file://$MODULE_DIR$/personal_transcription_assistant/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/talker-mobile-app/build" />
+      <excludeFolder url="file://$MODULE_DIR$/talker-mobile-app/.pub" />
+      <excludeFolder url="file://$MODULE_DIR$/talker-mobile-app/.dart_tool" />
       <excludeFolder url="file://$MODULE_DIR$/.idea/libraries" />
       <excludeFolder url="file://$MODULE_DIR$/talker-mobile-app/android/.gradle" />
       <excludeFolder url="file://$MODULE_DIR$/talker-mobile-app/.idea" />
