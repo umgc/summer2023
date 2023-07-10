@@ -6,18 +6,22 @@ import 'package:stomp_dart_client/stomp_frame.dart';
 
 class WebSocketClient {
   final String _wsUrl;
+  final int _wsConnectTimeoutMs;
   final List<WebSocketListener> _listeners;
   final Logger _logger = Logger();
   StompClient? _webSocketClient;
   bool _isConnected = false;
 
-  WebSocketClient(this._wsUrl, this._listeners);
+  WebSocketClient(this._wsUrl, this._wsConnectTimeoutMs, this._listeners);
 
   void connect() {
+    _logger.i("Opening connection to websocket server at '$_wsUrl'.");
     _webSocketClient = StompClient(
         config: StompConfig.SockJS(
             url: _wsUrl,
+            connectionTimeout: Duration(milliseconds: _wsConnectTimeoutMs),
             onConnect: _onConnectCallback,
+            onDisconnect: _onDisconnectCallback,
             onStompError: _onStompError,
             onDebugMessage: _onStompDebugMessage,
             onWebSocketError: _onWebSocketError));
@@ -38,6 +42,10 @@ class WebSocketClient {
         _logger.i('Listening for ${listener.topic}...');
       }
     }
+  }
+
+  void _onDisconnectCallback(StompFrame disconnectFrame) {
+    _logger.i('STOMP over WebSocket disconnected unexpectedly.');
   }
 
   send(String topic, String json) {

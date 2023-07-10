@@ -12,15 +12,3 @@ class BERequest {
     'form': form,
   };
 }
-
-// class BERequest {
-//   final BERequestContent content;
-//   BERequest(this.content);
-  
-//   BERequest.fromJson(Map<String, dynamic> json)
-//       : content = json['content'];
-
-//   Map<String, dynamic> toJson() => {
-//     'content': content
-//   };
-// }

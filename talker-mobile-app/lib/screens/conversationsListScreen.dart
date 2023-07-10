@@ -1,3 +1,4 @@
+import 'package:backend_services/agent.dart';
 import 'package:flutter/material.dart';
 import 'package:panara_dialogs/panara_dialogs.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -5,8 +6,10 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:talker_mobile_app/enums/sorting_type.dart';
 import 'package:talker_mobile_app/models/conversation.dart';
+import 'package:talker_mobile_app/services/DummyConversationSelectionActivator.dart';
 import 'package:talker_mobile_app/state/conversations_provider.dart';
 
+import '../globals.dart';
 import '../widgets/conversationListItem.dart';
 
 class ConversationsListScreen extends StatefulWidget {
@@ -25,6 +28,7 @@ class _ConversationsListScreenState extends State<ConversationsListScreen> {
   void initState() {
     super.initState();
     _getFirstLoadSetting();
+    getIt<Agent>().initialize(DummyConversationSelectionActivator(context));
   }
 
   Future<void> _getFirstLoadSetting() async {

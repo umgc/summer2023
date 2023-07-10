@@ -1,4 +1,6 @@
+import 'package:backend_services/agent.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:talker_mobile_app/screens/conversationDetailsScreen.dart';
@@ -14,7 +16,10 @@ import 'globals.dart';
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
   Globals.appDirectory = await getApplicationDocumentsDirectory();
-
+  await dotenv.load();
+  getIt.registerSingleton<Agent>(Agent('convobuddy-app'), dispose: (agent) => agent.shutdown());
+  getIt<Agent>().generateInstanceCode();
+  
   runApp(ChangeNotifierProvider<ConversationsProvider>(
     create: (_) => ConversationsProvider(),
     child: MaterialApp(

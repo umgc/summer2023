@@ -26,7 +26,7 @@ void main() {
   test('extract form values, app instance code initialized and passed in',
       () async {
     var agent = Agent('browser-extension-api-unit-test');
-    var selectionActivator = TestRecordingSelectionActivator();
+    var selectionActivator = TestRecordingSelectionActivator(agent);
     agent.setRecordingSelector(selectionActivator);
 
     agent.generateInstanceCode();

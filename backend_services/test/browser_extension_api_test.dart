@@ -30,9 +30,10 @@ void main() {
     var agent = Agent('browser-extension-api-unit-test');
     var mockSelector = MockRecordingSelectionActivator();
     var didCallSelector = false;
-    when(mockSelector.getSelectorCallback()).thenAnswer(((realInvocation) => () async {
-          didCallSelector = true;
-        }));
+    when(mockSelector.getSelectorCallback())
+        .thenAnswer(((realInvocation) => () async {
+              didCallSelector = true;
+            }));
 
     agent.setRecordingSelector(mockSelector);
 
