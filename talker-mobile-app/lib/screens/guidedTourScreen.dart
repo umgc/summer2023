@@ -54,6 +54,7 @@ class _GuidedTourScreenState extends State<GuidedTourScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
+          key: const Key('btnExitTour'),
           onPressed: () => Navigator.pop(context),
           icon: const Icon(
             Icons.clear,
@@ -67,6 +68,7 @@ class _GuidedTourScreenState extends State<GuidedTourScreen> {
         children: [
           Expanded(
             child: CarouselSlider(
+              key: const Key('carSldrImages'),
               items: buildImages(),
               carouselController: _controller,
               options: CarouselOptions(

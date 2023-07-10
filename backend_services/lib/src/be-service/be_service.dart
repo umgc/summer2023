@@ -20,7 +20,6 @@ class BEService {
     _logger.d("Received form fill request, processing request");
     var request = parseRequestFromFrame(frame);
     if(request != null) {
-      _storeRequest(request);
       try {
         handleRequest(request);
       } catch(error) {
@@ -29,7 +28,7 @@ class BEService {
     }
   }
 
-  void _storeRequest(BERequest request) {
+  void storeRequest(BERequest request) {
     _request = request;
   }
 
