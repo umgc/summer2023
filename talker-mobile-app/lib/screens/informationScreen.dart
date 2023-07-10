@@ -24,6 +24,7 @@ class _InformationScreenState extends State<InformationScreen> {
           margin:
               const EdgeInsets.only(left: 15, right: 15, top: 10, bottom: 10),
           child: Column(
+            key: const Key('colInfo'),
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
@@ -44,7 +45,9 @@ class _InformationScreenState extends State<InformationScreen> {
                       padding: const EdgeInsets.only(
                           left: 20, right: 20, top: 20, bottom: 20),
                       color: Colors.black,
-                      child: const Text("8736",
+                      child: const Text(
+                          key: Key('txtBrowserCode'),
+                          "8736",
                           style: TextStyle(fontSize: 75, color: Colors.white)),
                     ),
                     const Text("Browser Extension Code",
@@ -62,6 +65,7 @@ class _InformationScreenState extends State<InformationScreen> {
                       Container(
                         margin: EdgeInsets.only(bottom: 15),
                         child: TextButton(
+                          key: const Key('btnEULA'),
                           onPressed: () =>
                               Navigator.pushNamed(context, '/eula'),
                           style: TextButton.styleFrom(
@@ -78,6 +82,7 @@ class _InformationScreenState extends State<InformationScreen> {
                         ),
                       ),
                       TextButton(
+                        key: const Key('btnTour'),
                         onPressed: () =>
                             Navigator.pushNamed(context, '/guidedTour'),
                         style: TextButton.styleFrom(
