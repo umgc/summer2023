@@ -246,12 +246,14 @@ class _ConversationDetailsScreenState extends State<ConversationDetailsScreen> {
         title: buildTitleWidget(),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
+          key: const Key('btnBack'),
           onPressed: () => Navigator.of(context).pop(),
         ),
         centerTitle: true,
         backgroundColor: Colors.black,
         actions: <Widget>[
           IconButton(
+              key: const Key('btnDelete'),
               onPressed: onDeletePress,
               icon: const Icon(
                 Icons.delete,
@@ -262,11 +264,13 @@ class _ConversationDetailsScreenState extends State<ConversationDetailsScreen> {
       body: Container(
         margin: const EdgeInsets.only(left: 10, top: 25, right: 10),
         child: Column(
+          key: const Key('ctnrColumns'),
           children: [
             renderDateAndDuration(),
             renderTransmogRow(),
             Expanded(
               child: Column(
+                key: const Key('colResults'),
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Container(
@@ -277,6 +281,7 @@ class _ConversationDetailsScreenState extends State<ConversationDetailsScreen> {
                         color: Color(0xFF262626),
                         borderRadius: BorderRadius.all(Radius.circular(30))),
                     child: Text(resultsText,
+                        key: const Key('txtResults'),
                         style: const TextStyle(
                             color: Colors.white, fontSize: 16, height: 1.5)),
                   ),
@@ -288,9 +293,11 @@ class _ConversationDetailsScreenState extends State<ConversationDetailsScreen> {
                         color: Color(0xFF8900F8),
                         borderRadius: BorderRadius.all(Radius.circular(10))),
                     child: Row(
+                      key: const Key('audioPlayer'),
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         IconButton(
+                            key: const Key('btnPlayPause'),
                             onPressed: _playOrPauseAudio,
                             icon: Icon(
                                 playerController.playerState.isPlaying
@@ -300,6 +307,7 @@ class _ConversationDetailsScreenState extends State<ConversationDetailsScreen> {
                                 size: 40)),
                         Expanded(
                           child: AudioFileWaveforms(
+                            key: const Key('audioWave'),
                             enableSeekGesture: true,
                             waveformType: WaveformType.fitWidth,
                             size: Size(

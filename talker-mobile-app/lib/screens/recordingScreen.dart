@@ -108,6 +108,7 @@ class _RecordingScreenState extends State<RecordingScreen> {
       return Container(
         margin: const EdgeInsets.only(left: 20, right: 20),
         child: ElevatedButton.icon(
+            key: const Key('btnPause'),
             onPressed: () {
               _pauseRecording();
             },
@@ -133,6 +134,7 @@ class _RecordingScreenState extends State<RecordingScreen> {
       return Container(
         margin: const EdgeInsets.only(left: 20, right: 20),
         child: ElevatedButton.icon(
+            key: const Key('btnResume'),
             onPressed: () {
               _resumeRecording();
             },
@@ -204,6 +206,7 @@ class _RecordingScreenState extends State<RecordingScreen> {
                 child: Container(
                   margin: const EdgeInsets.only(top: 10, bottom: 10),
                   child: AudioWaveforms(
+                    key: const Key('audoWave'),
                     size: const Size(300, 35),
                     recorderController: recorderController,
                     waveStyle: const WaveStyle(
@@ -222,6 +225,7 @@ class _RecordingScreenState extends State<RecordingScreen> {
                       child: Container(
                         margin: const EdgeInsets.only(bottom: 10),
                         child: Text(
+                          key: const Key('timerRecording'),
                           '${'${(value / 60).floor()}'.padLeft(2, '0')}:${'${value % 60}'.padLeft(2, '0')}',
                           style: const TextStyle(
                               color: Colors.white, fontSize: 30),
@@ -235,6 +239,7 @@ class _RecordingScreenState extends State<RecordingScreen> {
                   Container(
                     margin: const EdgeInsets.only(left: 20, right: 20, top: 15),
                     child: ElevatedButton.icon(
+                        key: const Key('btnStopRecording'),
                         onPressed: () {
                           _stopRecording(conversationsProvider);
                         },
