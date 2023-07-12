@@ -27,7 +27,8 @@ linter:
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options
 
-# Allow references to backend_services by path without warning
-# analyzer:
-#   errors:
+analyzer:
+  errors:
+# Allow references to backend_services/src by path without warning
 #     implementation_imports: ignore
+    avoid_print: ignore
