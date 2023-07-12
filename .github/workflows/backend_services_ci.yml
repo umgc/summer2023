@@ -7,6 +7,15 @@ on:
       - 'backend_services/**'
       - 'backend_test_utility/**'
 
+  pull_request:
+    branches: ["development"]
+    paths:
+      - 'backend_services/**'
+      - 'backend_test_utility/**'
+    
+  # allow action to be run from github UI
+  workflow_dispatch:
+
 jobs:
   build:    
     name: Build backend_services
