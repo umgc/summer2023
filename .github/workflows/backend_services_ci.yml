@@ -44,6 +44,7 @@ jobs:
         run: flutter pub get
         working-directory: ./backend_services
         
+      # A lot to fix here, holding off
       # - name: Analyze backend_services project
       #   run: flutter analyze
       #   working-directory: ./backend_services
@@ -57,9 +58,9 @@ jobs:
         run: flutter pub get
         working-directory: ./backend_services
         
-      # - name: Analyze backend_test_utility project
-      #   run: flutter analyze
-      #   working-directory: ./backend_test_utility
+      - name: Analyze backend_test_utility project
+        run: flutter analyze
+        working-directory: ./backend_test_utility
       
       - name: Run backend_test_utility unit tests
         run: flutter test --coverage
