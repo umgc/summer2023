@@ -128,6 +128,12 @@ class ConversationsProvider with ChangeNotifier {
     return filteredConversations;
   }
 
+  void updateConversationTitle(String id, String newTitle) {
+    var conversation = conversations.firstWhere((convo) => convo.id == id);
+    conversation.title = newTitle;
+    notifyListeners();
+  }
+
   void setSelectedConversation(Conversation conversation) {
     _selectedConversation = conversation;
     notifyListeners();

@@ -1,7 +1,6 @@
 import 'package:backend_test_utility/ambients.dart';
 import 'package:backend_test_utility/app_startup.dart';
 import 'package:flutter/material.dart';
-import 'package:backend_test_utility/ambients.dart';
 import 'package:backend_services/agent.dart';
 
 class AppInstanceScreen extends StatefulWidget {
@@ -24,6 +23,14 @@ class _AppInstanceScreenState extends State<AppInstanceScreen> {
     setState(() {
       AppStartup.reset();
     });
+  }
+
+  @override
+  void initState() {
+    // Reset agent to get an uninitialized app instance code
+    _resetAgent();
+
+    super.initState();
   }
 
   @override

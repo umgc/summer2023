@@ -46,18 +46,23 @@ function disconnect() {
 
 function sendFormPayload() {
     let payload = {
-        payload: $("#payload").val(),
-        formId: 112554665
-    };
+        pin: $("#pin").val(),
+        firstName: "string",
+        lastName: "string",
+        zipcode: "integer",
+        other: $('#payload').val()
+    }
     console.log(JSON.stringify(payload));
     stompClient.send("/app/fill", {}, JSON.stringify(payload));
 }
 
 function sendFormPayload2() {
     let payload = {
-        payload: $("#payload2").val(),
-        formId: 112554665
-    };
+        firstName: "Jane",
+        lastName: "Smith",
+        zipcode: 21211,
+        other: $('#payload2').val()
+    }
     console.log(JSON.stringify(payload));
     stompClient2.send("/app/filled-form", {}, JSON.stringify(payload));
 }
@@ -73,6 +78,6 @@ $(function () {
     $( "#connect" ).click(function() { connect(); });
     $( "#disconnect" ).click(function() { disconnect(); });
     $( "#send" ).click(function() { sendFormPayload(); });
-    $("#send2").click(function () {sendFormPayload2();});
+    $( "#send2" ).click(function () {sendFormPayload2();});
 });
 

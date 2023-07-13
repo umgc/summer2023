@@ -31,7 +31,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  # backend services packge
+  # backend services package
   backend_services:
     path: ../backend_services
 
@@ -49,17 +49,9 @@ dependencies:
   carousel_slider: ^4.2.1
   smooth_page_indicator: ^1.1.0
   shared_preferences: ^2.2.0
-
-  #Run commands to generate splash screen
-  # 1. flutter clean
-  # 2. flutter pub get
-  # 3. flutter pub run flutter_native_splash:create
-
-flutter_native_splash:
-  android: true
-  ios: true
-
-  background_image: "assets/splashScreen.png"
+  flutter_launcher_icons: "^0.13.1"
+  get_it: ^7.6.0
+  flutter_dotenv: ^5.1.0
 
 dev_dependencies:
   flutter_test:
@@ -88,12 +80,20 @@ flutter:
   #   - images/a_dot_ham.jpeg
   assets:
     - assets/
+    - .env
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
 
   # For details regarding adding assets from package dependencies, see
   # https://flutter.dev/assets-and-images/#from-packages
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "./android/app/src/main/icons/icon48.png"
+  min_sdk_android: 21
+  remove_alpha_ios: true
 
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a
