@@ -1,25 +1,29 @@
+import 'dart:io';
+
+import 'package:backend_services/agent.dart';
 import 'package:backend_services/interfaces/recording_selection_activator.dart';
 import 'package:backend_services/model/be_request.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:backend_services/agent.dart';
 import 'package:logger/logger.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:path_provider/path_provider.dart';
 
 import 'browser_extension_api_test.mocks.dart';
 
 // Run "dart run build_runner build" from the command line to regenerate RecordingSelectionActivator
 @GenerateNiceMocks([MockSpec<RecordingSelectionActivator>()])
-void main() {
+void main() async {
+  Directory directory = await getApplicationDocumentsDirectory();
   var logger = Logger();
 
   test('get app instance code, not initialized', () {
-    var agent = Agent('browser-extension-api-unit-test');
+    var agent = Agent('browser-extension-api-unit-test', directory);
     expect(() => agent.getInstanceCode(), throwsA(anything));
   });
 
   test('get app instance code, initialized', () {
-    var agent = Agent('browser-extension-api-unit-test');
+    var agent = Agent('browser-extension-api-unit-test', directory);
     agent.generateInstanceCode();
     var code = agent.getInstanceCode();
     logger.i(code);
@@ -27,7 +31,7 @@ void main() {
   });
 
   test('receive form fill request', () async {
-    var agent = Agent('browser-extension-api-unit-test');
+    var agent = Agent('browser-extension-api-unit-test', directory);
     var mockSelector = MockRecordingSelectionActivator();
     var didCallSelector = false;
     when(mockSelector.getSelectorCallback())
