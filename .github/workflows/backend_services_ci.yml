@@ -44,10 +44,10 @@ jobs:
         run: flutter pub get
         working-directory: ./backend_services
 
-      # A lot to fix here, holding off
-      # - name: Analyze backend_services project
-      #   run: flutter analyze
-      #   working-directory: ./backend_services
+      # Allow violation of info suggestions
+      - name: Analyze backend_services project
+        run: flutter analyze --no-fatal-infos
+        working-directory: ./backend_services
 
       - name: Run backend_services unit tests
         run: flutter test --coverage
@@ -58,10 +58,10 @@ jobs:
         run: flutter pub get
         working-directory: ./backend_services
 
-      # Too sensitive, fails on suggestions
-      # - name: Analyze backend_test_utility project
-      #   run: flutter analyze
-      #   working-directory: ./backend_test_utility
+      # Allow violation of info suggestions
+      - name: Analyze backend_test_utility project
+        run: flutter analyze --no-fatal-infos
+        working-directory: ./backend_test_utility
 
       - name: Run backend_test_utility unit tests
         run: flutter test --coverage
