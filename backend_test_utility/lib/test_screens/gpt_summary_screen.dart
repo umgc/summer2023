@@ -35,7 +35,8 @@ class _GptSummaryScreenState extends State<GptSummaryScreen> {
   void initState() {
     AppStartup.reset();
     getIt<Agent>().generateInstanceCode();
-    _statusMessage = EnvironmentVars.openAIApiKey;
+    final apiKey = EnvironmentVars.openAIApiKey;
+    _statusMessage = 'OpenAI Key: ${apiKey.substring(0, 5)}...';
     super.initState();
   }
 

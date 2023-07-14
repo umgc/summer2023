@@ -7,7 +7,8 @@ import 'package:backend_test_utility/test_screens/websocket_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:backend_services/agent.dart';
 
-void main() async {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await AppStartup.startup();
   getIt<Agent>().generateInstanceCode();
 

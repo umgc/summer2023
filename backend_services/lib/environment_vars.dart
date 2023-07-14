@@ -24,10 +24,10 @@ class EnvironmentVars {
 
   static String get testSecret {
     try {
-      const key = 'TEST_SECRET';
-      const valueFromEnv = String.fromEnvironment(key);
+      const name = 'TEST_SECRET';
+      const valueFromEnv = String.fromEnvironment(name);
       if (valueFromEnv.isNotEmpty) return valueFromEnv;
-      return _getFromEnv(key);
+      return _getFromEnv(name);
     } catch (error) {
       return error.toString();
     }
@@ -44,10 +44,10 @@ class EnvironmentVars {
   static String get formFillResponseTopic =>
       _getFromEnv('FORM_FILL_RESPONSE_TOPIC');
 
-  static String _getFromEnv(String key) {
-    final envValue = dotenv.env[key];
-    if (envValue == null) throw "Missing environment variable '$key'.";
-    if (envValue.isEmpty) throw "Environment variable '$key' is empty.";
+  static String _getFromEnv(String name) {
+    final envValue = dotenv.env[name];
+    if (envValue == null) throw "Missing environment variable '$name'.";
+    if (envValue.isEmpty) throw "Environment variable '$name' is empty.";
     return envValue;
   }
 }
