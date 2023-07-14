@@ -1,4 +1,5 @@
 import 'package:audio_waveforms/audio_waveforms.dart';
+import 'package:backend_services/backend_services_exports.dart';
 import 'package:flutter/material.dart';
 import 'package:panara_dialogs/panara_dialogs.dart';
 import 'package:provider/provider.dart';
@@ -7,9 +8,7 @@ import 'package:talker_mobile_app/screens/conversationDetailsScreen.dart';
 import 'package:uuid/uuid.dart';
 
 import '../globals.dart';
-import '../models/conversation.dart';
 import '../services/fileHelpers.dart';
-import '../state/conversations_provider.dart';
 
 class RecordingScreen extends StatefulWidget {
   const RecordingScreen({Key? key}) : super(key: key);
@@ -87,10 +86,8 @@ class _RecordingScreenState extends State<RecordingScreen> {
     var seconds = _stopWatchTimer.secondTime;
     var recordedDate = DateTime.now();
     Conversation newConversation = Conversation(
-        title: 'NewConversation',
         recordedDate: recordedDate,
         duration: Duration(seconds: seconds.value),
-        content: '',
         audioFilePath: path.toString(),
         id: id);
     conversationsProvider.addConversation(newConversation);

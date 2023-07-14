@@ -2,13 +2,12 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:audio_waveforms/audio_waveforms.dart';
+import 'package:backend_services/backend_services_exports.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:panara_dialogs/panara_dialogs.dart';
 import 'package:provider/provider.dart';
 import 'package:talker_mobile_app/globals.dart';
-import 'package:talker_mobile_app/models/conversation.dart';
-import 'package:talker_mobile_app/state/conversations_provider.dart';
 
 import '../services/fileHelpers.dart';
 import '../widgets/transmogListItem.dart';

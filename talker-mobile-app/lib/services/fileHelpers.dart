@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import '../models/conversation.dart';
+import 'package:backend_services/backend_services_exports.dart';
 
 List<Conversation> getConversationsFromJsonFile(String filePath) {
   var fileExists = File(filePath).existsSync();
