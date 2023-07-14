@@ -1,7 +1,5 @@
 import 'package:backend_services/interfaces/recording_selection_activator.dart';
 import 'package:backend_services/model/be_request.dart';
-import 'package:backend_services/src/gpt-service/GptCalls.dart';
-import 'package:backend_services/src/test-data/test_conversations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:backend_services/agent.dart';
 import 'package:logger/logger.dart';
