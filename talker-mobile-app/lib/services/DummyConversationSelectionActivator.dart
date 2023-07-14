@@ -1,8 +1,8 @@
-import 'package:backend_services/agent.dart';
+// import 'package:backend_services/agent.dart';
 import 'package:backend_services/interfaces/recording_selection_activator.dart';
 import 'package:flutter/material.dart';
 import 'package:panara_dialogs/panara_dialogs.dart';
-import 'package:talker_mobile_app/globals.dart';
+// import 'package:talker_mobile_app/globals.dart';
 
 class DummyConversationSelectionActivator
     implements RecordingSelectionActivator {

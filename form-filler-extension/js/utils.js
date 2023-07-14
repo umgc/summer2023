@@ -12,7 +12,7 @@ export async function getActiveTabURL() {
     return tabs[0];
 }
 
-const serviceUrl = "http://localhost:8080/ws";
+const serviceUrl = "http://44.202.25.184:8080/ws";
 var stompClient;
 export async function connect() {
     let socket = new SockJS(serviceUrl);

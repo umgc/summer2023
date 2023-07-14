@@ -1,9 +1,12 @@
 import 'package:dart_openai/dart_openai.dart';
+import 'package:logger/logger.dart';
 
 class GptCalls {
   GptCalls(this._openAIApiKey);
 
-  String _openAIApiKey;
+  final String _openAIApiKey;
+
+  final Logger _logger = Logger();
 
   //String browserRequest;
   //String userProfile;
@@ -47,20 +50,23 @@ Speaker2: Yes, I'm looking forward to it.''';
     // Possible Error: RequestFailedException (RequestFailedException{message: That model is currently overloaded with other requests. You can retry your request, or contact us through our help center at help.openai.com if the error persists. (Please include the request ID d946214a3b7fa731346976ac8a39e724 in your message.), statusCode: 503})
   }
 
-  Future<String> extractFormValues(
+  Future<String> extractFormValuesFromTranscript(
       String transcript, String userProfile, dynamic fields) async {
     OpenAI.apiKey = _openAIApiKey;
 
-    String formFillerPromptToSend = 
-'''You are a form filler service. I will give you a transcript and list of field 
+    String formFillerPromptToSend =
+        '''You are a form filler service. I will give you a transcript and list of field 
 names and I want you to extract the values for the fields out of the information 
-in the transcript. The field values should be in JSON format.
+in the transcript. The field values should be in JSON format. 
 Here is additional information about the user:
 $userProfile
 Here are the list of fields in JSON format:
 $fields
 Here is the transcript I want you to extract field values from:
-$transcript''';
+$transcript
+Please ensure that every field in the list of fields has a value filled in, and make up answers if no relevant information is available.''';
+
+    _logger.i(formFillerPromptToSend);
 
     List<OpenAIChatCompletionChoiceMessageModel> messages = [
       OpenAIChatCompletionChoiceMessageModel(

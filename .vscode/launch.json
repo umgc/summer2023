@@ -1,0 +1,68 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "backend_services",
+      "cwd": "backend_services",
+      "request": "launch",
+      "type": "dart"
+    },
+    {
+      "name": "backend_services (profile mode)",
+      "cwd": "backend_services",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "profile"
+    },
+    {
+      "name": "backend_services (release mode)",
+      "cwd": "backend_services",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "release"
+    },
+    {
+      "name": "backend_test_utility",
+      "cwd": "backend_test_utility",
+      "request": "launch",
+      "type": "dart"
+    },
+    {
+      "name": "backend_test_utility (profile mode)",
+      "cwd": "backend_test_utility",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "profile"
+    },
+    {
+      "name": "backend_test_utility (release mode)",
+      "cwd": "backend_test_utility",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "release"
+    },
+    {
+      "name": "talker-mobile-app",
+      "cwd": "talker-mobile-app",
+      "request": "launch",
+      "type": "dart"
+    },
+    {
+      "name": "talker-mobile-app (profile mode)",
+      "cwd": "talker-mobile-app",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "profile"
+    },
+    {
+      "name": "talker-mobile-app (release mode)",
+      "cwd": "talker-mobile-app",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "release"
+    }
+  ]
+}

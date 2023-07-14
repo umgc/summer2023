@@ -24,9 +24,9 @@ class Conversation {
         recordedDate = DateTime.parse(json['recordedDate']),
         duration = Duration(milliseconds: int.parse(json['duration'])),
         title = json['title'],
-        transcript = json['transcript'],
-        customDescription = json['customDescription'],
-        gptDescription = json['gptDescription'];
+        transcript = json['transcript'] ?? '',
+        customDescription = json['customDescription'] ?? '',
+        gptDescription = json['gptDescription'] ?? '';
 
   Map<String, dynamic> toJson() => {
         'id': id,
