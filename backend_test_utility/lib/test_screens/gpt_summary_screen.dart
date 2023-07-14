@@ -1,8 +1,6 @@
-import 'package:backend_services/environment_vars.dart';
+import 'package:backend_services/backend_services_exports.dart';
 import 'package:backend_test_utility/ambients.dart';
-import 'package:backend_test_utility/app_startup.dart';
 import 'package:flutter/material.dart';
-import 'package:backend_services/agent.dart';
 
 class GptSummaryScreen extends StatefulWidget {
   const GptSummaryScreen({super.key, required this.title});
@@ -33,10 +31,8 @@ class _GptSummaryScreenState extends State<GptSummaryScreen> {
 
   @override
   void initState() {
-    AppStartup.reset();
-    getIt<Agent>().generateInstanceCode();
     final apiKey = EnvironmentVars.openAIApiKey;
-    _statusMessage = 'OpenAI Key: ${apiKey.substring(0, 5)}...';
+    _statusMessage = 'OpenAI Key: ${apiKey.substring(0, 7)}...';
     super.initState();
   }
 

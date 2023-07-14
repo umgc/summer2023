@@ -1,4 +1,4 @@
-import 'package:backend_services/environment_vars.dart';
+import 'package:backend_services/backend_services_exports.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';

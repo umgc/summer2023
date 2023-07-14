@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:backend_services/environment_vars.dart';
 import 'package:backend_services/model/be_request.dart';
 import 'package:backend_services/model/be_response.dart';
 import 'package:backend_services/src/be-service/be_service.dart';
+import 'package:backend_services/src/environment_vars.dart';
 import 'package:backend_services/src/gpt-service/GptCalls.dart';
 import 'package:backend_services/src/state-management/conversations_provider.dart';
 import 'package:backend_services/src/websocket-client/websocket_client.dart';

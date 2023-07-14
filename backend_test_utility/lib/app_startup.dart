@@ -6,11 +6,15 @@ import 'ambients.dart';
 
 class AppStartup {
   static Future<void> startup() async {
+    await dotenv.load();
+    _intializeGetIt();
+  }
+
+  static void _intializeGetIt() {
     getIt.registerSingleton<Agent>(
         Agent('backend-test-utility',
             conversations: TestConversations.sampleConversations),
         dispose: (param) => param.shutdown());
-    await dotenv.load();
     getIt<Agent>().initialize(TestSelectionAndExtractionActivator(
         getIt<Agent>(), '173d6dc0-fb47-4284-bd09-9465177f8eea'));
   }
@@ -18,6 +22,6 @@ class AppStartup {
   static void reset() {
     getIt.reset(dispose: true);
     getIt = GetIt.asNewInstance();
-    startup();
+    _intializeGetIt();
   }
 }
