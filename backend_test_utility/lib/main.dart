@@ -1,6 +1,8 @@
 import 'package:backend_test_utility/ambients.dart';
 import 'package:backend_test_utility/app_startup.dart';
+import 'package:backend_services/environment_vars.dart';
 import 'package:backend_test_utility/test_screens/app_instance_screen.dart';
+import 'package:backend_test_utility/test_screens/gpt_summary_screen.dart';
 import 'package:backend_test_utility/test_screens/websocket_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:backend_services/agent.dart';
@@ -49,6 +51,10 @@ class _MainScreenState extends State<MainScreen> {
         body: Column(children: [
           Expanded(
               child: ListView(children: [
+            ListTile(
+              leading: const Text('Test Secret:'),
+              title: Text(EnvironmentVars.testSecret),
+            ),
             ScreenMenuItem(
                 title: 'App Instance Tests',
                 buttonKey: WidgetKeys.appInstanceCodeTestsButton,
@@ -59,6 +65,11 @@ class _MainScreenState extends State<MainScreen> {
                 buttonKey: WidgetKeys.webSocketTestsButton,
                 builder: (context) =>
                     const WebSocketScreen(title: 'WebSocket Tests')),
+            ScreenMenuItem(
+                title: 'GPT Summary Tests',
+                buttonKey: WidgetKeys.gptSummaryTestsButton,
+                builder: (context) =>
+                    const GptSummaryScreen(title: 'GPT Summary Tests')),
           ])),
         ]));
   }

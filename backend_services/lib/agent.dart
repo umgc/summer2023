@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:backend_services/environment_vars.dart';
 import 'package:backend_services/model/be_request.dart';
 import 'package:backend_services/model/be_response.dart';
 import 'package:backend_services/src/be-service/be_service.dart';
@@ -9,7 +10,6 @@ import 'package:backend_services/src/state-management/conversations_provider.dar
 import 'package:backend_services/src/websocket-client/websocket_client.dart';
 import 'package:backend_services/src/websocket-client/websocket_listener.dart';
 import 'package:collection/collection.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -30,12 +30,7 @@ class Agent {
   final BEService _beService = BEService();
 
   WebSocketClient? _webSocketClient;
-  late String _wsUrl;
-  late int _wsConnectionTimeoutMs;
-  late String _formFillRequestTopic;
-  late String _formFillResponseTopic;
   late RecordingSelectionActivator? _recordingSelectionActivator;
-  late String _openAIApiKey;
 
   late final ConversationsProvider conversationsProvider;
 
@@ -48,25 +43,15 @@ class Agent {
   initialize(RecordingSelectionActivator recordingSelectionActivator) {
     setRecordingSelector(recordingSelectionActivator);
 
-    _wsUrl = _getEnvValue('WS_URL');
-    _wsConnectionTimeoutMs =
-        int.parse(_getEnvValue('WS_CONNECTION_TIMEOUT_MS'));
-    _formFillRequestTopic = _getEnvValue('FORM_FILL_REQUEST_TOPIC');
-    _formFillResponseTopic = _getEnvValue('FORM_FILL_RESPONSE_TOPIC');
-    initializeOpenAIApiKey();
     List<WebSocketListener> listeners = [
       WebSocketListener(
-          _formFillRequestTopic,
+          EnvironmentVars.formFillRequestTopic,
           (frame) =>
               _beService.handleRequestFrame(frame, receiveFormValuesRequest))
     ];
-    _webSocketClient =
-        WebSocketClient(_wsUrl, _wsConnectionTimeoutMs, listeners);
+    _webSocketClient = WebSocketClient(EnvironmentVars.wsUrl,
+        int.parse(EnvironmentVars.wsConnectionTimeoutMs), listeners);
     _webSocketClient!.connect();
-  }
-
-  initializeOpenAIApiKey() {
-    _openAIApiKey = _getEnvValue('OPENAI_API_KEY');
   }
 
   shutdown() {
@@ -81,18 +66,6 @@ class Agent {
       RecordingSelectionActivator recordingSelectionActivator) {
     _recordingSelectionActivator = recordingSelectionActivator;
   }
-
-  //#region Environment variables
-
-  String _getEnvValue(String variableName) {
-    var value = dotenv.env[variableName];
-    if (value?.isEmpty ?? true) {
-      throw "$variableName variable from .env file is empty.";
-    }
-    return value!;
-  }
-
-  //#endregion
 
   Future<String> get _directoryPath async {
     Directory directory = Platform.isAndroid
@@ -180,7 +153,7 @@ class Agent {
     final recordingTranscript = getRecordingTranscript(recordingGuid);
 
     // send to chatgpt
-    final gpt = GptCalls(_openAIApiKey);
+    final gpt = GptCalls(EnvironmentVars.openAIApiKey);
     final completion = await gpt.extractFormValuesFromTranscript(
         recordingTranscript,
         'This Profile',
@@ -206,7 +179,8 @@ class Agent {
 
   void sendFormValueResponse(BEResponse response) {
     if (_webSocketClient != null) {
-      _webSocketClient!.send(_formFillResponseTopic, jsonEncode(response));
+      _webSocketClient!
+          .send(EnvironmentVars.formFillResponseTopic, jsonEncode(response));
     }
   }
 
@@ -384,7 +358,7 @@ class Agent {
   Future<String?> getOpenAiSummary(String guid) async {
     String requestTranscript = getRecordingTranscript(guid);
 
-    GptCalls newGpt = GptCalls(_openAIApiKey);
+    GptCalls newGpt = GptCalls(EnvironmentVars.openAIApiKey);
     final completion = await newGpt.getOpenAiSummary(requestTranscript,
         'This Profile'); //Todo implement user profile argument if desired
 

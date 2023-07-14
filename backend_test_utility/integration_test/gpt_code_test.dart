@@ -1,3 +1,4 @@
+import 'package:backend_services/environment_vars.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
@@ -11,13 +12,11 @@ void main() async {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   await dotenv.load();
-  final openAIApiKey = dotenv.env['OPENAI_API_KEY']!;
   final logger = Logger();
 
   test('Send transcript to OpenAI for summary', () async {
     var agent = Agent('browser-extension-api-unit-test',
         conversations: TestConversations.sampleConversations);
-    agent.initializeOpenAIApiKey();
     print(agent.conversationsProvider.conversations.toString());
     String? result =
         await agent.getOpenAiSummary('c74dcec0-6fb7-45a9-98da-472e13413dd8');
@@ -45,7 +44,7 @@ void main() async {
     ];
 
     // send to chatgpt
-    final gpt = GptCalls(openAIApiKey);
+    final gpt = GptCalls(EnvironmentVars.openAIApiKey);
     final completion = await gpt.extractFormValuesFromTranscript(
         conversation.transcript,
         'This Profile',
