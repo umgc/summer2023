@@ -1,7 +1,5 @@
 import 'package:backend_services/interfaces/recording_selection_activator.dart';
 import 'package:backend_services/model/be_request.dart';
-import 'package:backend_services/src/gpt-service/GptCalls.dart';
-import 'package:backend_services/src/test-data/test_conversations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:backend_services/agent.dart';
 import 'package:logger/logger.dart';
@@ -65,30 +63,5 @@ void main() {
     verify(mockSelector.getSelectorCallback()).called(1);
 
     expect(didCallSelector, true);
-  });
-
-  test('Send transcript and form values to OpenAI for form fill', () async {
-    final agent = Agent('browser-extension-api-unit-test',
-        conversations: TestConversations.sampleConversations);
-    final recordingTranscript =
-        agent.getRecordingTranscript('173d6dc0-fb47-4284-bd09-9465177f8eea');
-
-    final formFields = [
-      "firstName",
-      "lastName",
-      "email",
-      "address",
-      "city",
-      "state",
-      "zip"
-    ];
-
-    // send to chatgpt
-    final gpt = GptCalls('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');
-    final completion = await gpt.extractFormValuesFromTranscript(
-        recordingTranscript,
-        'This Profile',
-        formFields); //Todo implement user profile argument if desired
-    logger.i(completion);
   });
 }
