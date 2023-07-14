@@ -240,6 +240,7 @@ class Agent {
 
   String processReminders(String guid) {
     //Send to ChatGPT, create reminders, return a string to UI
+    // Send Recording to chatGPT and ask it to return any reminders that need to be made based on the recording's transcription
     return 'Lunch 1200 Wednesday, Birthday party 1000 Saturday';
   }
   */
@@ -254,11 +255,18 @@ class Agent {
     return reminderList;
   }
 
-  void deleteReminder(int reminderId) {
-    //delete a reminder from list and from file storage
+  void deleteReminder(int reminderId) async {
+    var reminderListFile = await _remindersFile;
+    var reminderToDelete = reminderId;
+    String reminderListString = await reminderListFile.readAsString();
+    List<dynamic> reminderEntries = json.decode(reminderListString);
+    reminderEntries.removeWhere((entry) => entry['reminderId'] == reminderId);
+    reminderListFile.writeAsString(json.encode(reminderEntries));
+    reminderList
+        .removeWhere((Reminder) => Reminder.reminderId == reminderToDelete);
   }
 
-  void addReminder(Reminder newReminder) {
+  void addReminder(Reminder newReminder) async {
     //add a reminder to the list and file storage
   }
 
