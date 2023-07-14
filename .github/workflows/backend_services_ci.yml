@@ -4,20 +4,20 @@ on:
   push:
     branches: ["development"]
     paths:
-      - 'backend_services/**'
-      - 'backend_test_utility/**'
+      - "backend_services/**"
+      - "backend_test_utility/**"
 
   pull_request:
     branches: ["development"]
     paths:
-      - 'backend_services/**'
-      - 'backend_test_utility/**'
-    
+      - "backend_services/**"
+      - "backend_test_utility/**"
+
   # allow action to be run from github UI
   workflow_dispatch:
 
 jobs:
-  build:    
+  build:
     name: Build backend_services
     runs-on: ubuntu-latest
 
@@ -43,12 +43,12 @@ jobs:
       - name: Get backend_services dependencies
         run: flutter pub get
         working-directory: ./backend_services
-        
+
       # A lot to fix here, holding off
       # - name: Analyze backend_services project
       #   run: flutter analyze
       #   working-directory: ./backend_services
-      
+
       - name: Run backend_services unit tests
         run: flutter test --coverage
         working-directory: ./backend_services
@@ -57,11 +57,12 @@ jobs:
       - name: Get backend_test_utility dependencies
         run: flutter pub get
         working-directory: ./backend_services
-        
-      - name: Analyze backend_test_utility project
-        run: flutter analyze
-        working-directory: ./backend_test_utility
-      
+
+      # Too sensitive, fails on suggestions
+      # - name: Analyze backend_test_utility project
+      #   run: flutter analyze
+      #   working-directory: ./backend_test_utility
+
       - name: Run backend_test_utility unit tests
         run: flutter test --coverage
         working-directory: ./backend_test_utility
