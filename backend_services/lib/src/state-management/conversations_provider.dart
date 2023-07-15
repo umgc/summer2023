@@ -38,6 +38,12 @@ class ConversationsProvider with ChangeNotifier {
     writeConversationsToJsonFile();
   }
 
+  void removeAllConversations() {
+    _conversations.clear();
+    notifyListeners();
+    writeConversationsToJsonFile();
+  }
+
   void updateConversationTitle(String id, String newTitle) {
     Conversation? conversation =
         conversations.firstWhereOrNull((convo) => convo.id == id);

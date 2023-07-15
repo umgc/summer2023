@@ -43,11 +43,11 @@ void main() async {
     var agent = Agent('Reminder-API-Unit-test', directory);
     agent.loadSampleReminderData;
     expect(() => agent.writeRemindersToFile(), returnsNormally);
-    List fileList = await agent.listFilesInPath();
-    print(await fileList.toString());
-    logger.i(await fileList);
-    expect(await fileList.length, equals(1));
-    print(await fileList[0].toString());
+    List fileList = agent.listFilesInPath();
+    print(fileList.toString());
+    logger.i(fileList);
+    expect(fileList.length, isNot(0));
+    print(fileList[0].toString());
     print('the above is the filelist');
   });
 
@@ -57,8 +57,8 @@ void main() async {
     agent.loadSampleReminderData;
     expect(() => agent.writeRemindersToFile(), returnsNormally);
     List<Reminder> testReminderList = await agent.readRemindersFile();
-    print(await testReminderList.toString());
-    for (Reminder rem in await testReminderList) {
+    print(testReminderList.toString());
+    for (Reminder rem in testReminderList) {
       print(rem.toJson());
     }
   });

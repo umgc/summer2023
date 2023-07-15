@@ -13,36 +13,17 @@ void main() async {
 
   final logger = Logger();
 
-//todo
-
-//todo load recordings from files
-
-//todo save recordingList to files
-
-//todo create recording
-
-//todo delete recording
-
-  // test('write recordings to multiple reminder JSON files', () {
-  //   var agent = Agent('Recording-extension-api-unit-test');
-  //   expect(() => agent.writeRecordingsToFile(), returnsNormally);
-  // });
-
-  // test('write recording JSON files and return a list of directory contents',
-  //     () async {
-  //   var agent = Agent('Recording-API-Unit-test');
-  //   agent.loadSampleRecordingData();
-  //   logger.i(await agent.writeRecordingsToFile());
-  //   List fileList = await agent.listFilesInPath();
-  //   print(await fileList.toString());
-  //   logger.i(await fileList);
-  //   expect(await fileList.length, equals(5));
-  // });
-
   test('read existing recording JSON files and return list of files', () async {
     var agent = Agent('Recording-API-Unit-test', directory);
     expect(() => agent.conversationsProvider.conversations, returnsNormally);
-    // expect(() => agent.writeRecordingsToFile(), returnsNormally);
+
+    agent.conversationsProvider.removeAllConversations();
+    expect(agent.conversationsProvider.conversations.length, 0);
+    agent.loadSampleConversations();
+    logger.i(
+        "test conversations count: ${agent.conversationsProvider.conversations.length}");
+    expect(agent.conversationsProvider.conversations.length, isNot(0));
+
     var result = agent.conversationsProvider.conversations.toString();
     expect(result, isNotNull);
     logger.i(result);

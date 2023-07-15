@@ -10,7 +10,7 @@ void main() {
 
   testWidgets('test_utility main screen smoke test',
       (WidgetTester tester) async {
-    app.main();
+    await app.main();
 
     // Build our app and trigger a frame.
     await tester.pumpAndSettle();

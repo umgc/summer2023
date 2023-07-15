@@ -25,7 +25,7 @@ class _WebSocketScreenState extends State<WebSocketScreen> {
       setState(() {
         _statusMessage = 'request received';
       });
-    } catch(error) {
+    } catch (error) {
       setState(() {
         _statusMessage = error.toString();
       });
@@ -42,7 +42,6 @@ class _WebSocketScreenState extends State<WebSocketScreen> {
 
   @override
   void initState() {
-    AppStartup.reset();
     getIt<Agent>().generateInstanceCode();
     super.initState();
   }

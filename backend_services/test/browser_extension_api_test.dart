@@ -7,7 +7,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:logger/logger.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:path_provider/path_provider.dart';
 
 import 'browser_extension_api_test.mocks.dart';
 
@@ -29,7 +28,7 @@ class TestRecordingSelectionActivator implements RecordingSelectionActivator {
 // Run "dart run build_runner build" from the command line to regenerate RecordingSelectionActivator
 @GenerateNiceMocks([MockSpec<RecordingSelectionActivator>()])
 void main() async {
-  Directory directory = await getApplicationDocumentsDirectory();
+  Directory directory = Directory('fakepath');
   var logger = Logger();
 
   test('get app instance code, not initialized', () {
