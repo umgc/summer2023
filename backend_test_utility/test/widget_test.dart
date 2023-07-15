@@ -4,7 +4,7 @@ import 'package:backend_test_utility/main.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  dotenv.testLoad(mergeWith: {"TEST_SECRET": "set for unit test"});
+  dotenv.testLoad(mergeWith: {"TEST_SECRETS": "set for unit test"});
 
   testWidgets('test_utility widget smoke test with environment variable',
       (WidgetTester tester) async {
