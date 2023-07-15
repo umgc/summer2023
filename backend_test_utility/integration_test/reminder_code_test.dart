@@ -29,7 +29,7 @@ void main() async {
     var agent = Agent('Reminder-API-Unit-test', directory);
     agent.loadSampleReminderData();
     expect(() => agent.writeRemindersToFile(), returnsNormally);
-    List fileList = await agent.listFilesInPath();
+    List fileList = agent.listFilesInPath();
     print(fileList.toString());
     Future<String?> json = agent.readRemindersFileJSON();
     print(await json);
