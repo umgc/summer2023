@@ -263,7 +263,7 @@ class Agent {
     reminderEntries.removeWhere((entry) => entry['reminderId'] == reminderId);
     reminderListFile.writeAsString(json.encode(reminderEntries));
     reminderList
-        .removeWhere((Reminder) => Reminder.reminderId == reminderToDelete);
+        .removeWhere((reminder) => reminder.reminderId == reminderToDelete);
   }
 
   void addReminder(Reminder newReminder) async {
