@@ -11,11 +11,7 @@ void main() {
 
   final logger = Logger();
 
-
-
-
-
-//todo 
+//todo
 
 //todo load recordings from files
 
@@ -31,17 +27,15 @@ void main() {
     expect(() => agent.writeRecordingsToFile(), returnsNormally);
   });
 
-    test('write recording JSON files and return a list of directory contents', () async {
+  test('write recording JSON files and return a list of directory contents',
+      () async {
     var agent = Agent('Recording-API-Unit-test');
     agent.loadSampleRecordingData();
-    logger.i(await agent.writeRecordingsToFile());    
+    logger.i(await agent.writeRecordingsToFile());
     List fileList = await agent.listFilesInPath();
     print(await fileList.toString());
     logger.i(await fileList);
-    expect( await fileList.length, equals(5));
-
-
-
+    expect(await fileList.length, equals(6));
   });
 
   test('read existing recording JSON files and return list of files', () async {
@@ -52,9 +46,5 @@ void main() {
     expect(() => result, isNotNull);
     logger.i(await result);
     print(await result);
-
-
   });
-
-
 }

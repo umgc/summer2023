@@ -217,10 +217,10 @@ class Agent {
     return recordingList;
   }
 
-  void deleteRecording(String guid) {
+  void deleteRecording(String guid) async {
     //Delete recording from memory and filesystem
     // Use the guid to identify the recording in question and the filepath to it and remove it from the system
-    var recordingFile = getRecordingFile(guid);
+    var recordingFile = await getRecordingFile(guid);
     if (recordingFile.existsSync()) {
       var content = recordingFile.readAsStringSync();
       if (content.contains(guid)) {
@@ -271,7 +271,7 @@ class Agent {
     reminderEntries.removeWhere((entry) => entry['reminderId'] == reminderId);
     reminderListFile.writeAsString(json.encode(reminderEntries));
     reminderList
-        .removeWhere((Reminder) => Reminder.reminderId == reminderToDelete);
+        .removeWhere((reminder) => reminder.reminderId == reminderToDelete);
   }
 
   void addReminder(Reminder newReminder) async {
