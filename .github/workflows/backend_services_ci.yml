@@ -39,7 +39,6 @@ jobs:
           channel: "stable"
           cache: true # speed up flutter sdk setup
 
-
       # backend_services
       - name: Get backend_services dependencies
         run: flutter pub get
@@ -53,7 +52,6 @@ jobs:
       - name: Run backend_services unit tests
         run: flutter test --coverage
         working-directory: ./backend_services
-
 
       # backend_test_utility
       - name: Copy .env.release to .env
@@ -75,9 +73,9 @@ jobs:
         working-directory: ./backend_test_utility
 
       - name: Build backend_test_utility apk
-        run: flutter build apk --dart-define=TEST_SECRET="${{secrets.TEST_SECRET}}" --dart-define=OPENAI_API_KEY="${{secrets.OPENAI_API_KEY}}"
+        run: flutter build apk --dart-define=TEST_SECRETS="${{secrets.TEST_SECRETS}}" --dart-define=OPENAI_API_KEY="${{secrets.OPENAI_API_KEY}}"
         working-directory: ./backend_test_utility
-        
+
       - name: Upload generated apk to workflow artifacts
         uses: actions/upload-artifact@v1
         with:
