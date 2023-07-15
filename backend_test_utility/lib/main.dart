@@ -18,6 +18,8 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
+  static const String mainTitle = 'Test Utility Main Screen';
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -27,7 +29,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      home: const MainScreen(title: 'Test Utility Main Screen'),
+      home: const MainScreen(title: mainTitle),
     );
   }
 }
@@ -52,10 +54,6 @@ class _MainScreenState extends State<MainScreen> {
         body: Column(children: [
           Expanded(
               child: ListView(children: [
-            ListTile(
-              leading: const Text('Test Secret:'),
-              title: Text(EnvironmentVars.testSecret),
-            ),
             ScreenMenuItem(
                 title: 'App Instance Tests',
                 buttonKey: WidgetKeys.appInstanceCodeTestsButton,
