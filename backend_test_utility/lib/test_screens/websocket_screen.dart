@@ -1,7 +1,6 @@
 import 'package:backend_services/model/be_request.dart';
 import 'package:backend_services/model/be_response.dart';
 import 'package:backend_test_utility/ambients.dart';
-import 'package:backend_test_utility/app_startup.dart';
 import 'package:flutter/material.dart';
 import 'package:backend_services/agent.dart';
 
@@ -25,7 +24,7 @@ class _WebSocketScreenState extends State<WebSocketScreen> {
       setState(() {
         _statusMessage = 'request received';
       });
-    } catch(error) {
+    } catch (error) {
       setState(() {
         _statusMessage = error.toString();
       });
@@ -42,7 +41,6 @@ class _WebSocketScreenState extends State<WebSocketScreen> {
 
   @override
   void initState() {
-    AppStartup.reset();
     getIt<Agent>().generateInstanceCode();
     super.initState();
   }
