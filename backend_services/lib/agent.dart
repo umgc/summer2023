@@ -5,16 +5,13 @@ import 'package:backend_services/backend_services_exports.dart';
 import 'package:backend_services/model/be_request.dart';
 import 'package:backend_services/model/be_response.dart';
 import 'package:backend_services/src/be-service/be_service.dart';
-import 'package:backend_services/src/environment_vars.dart';
 import 'package:backend_services/src/gpt-service/GptCalls.dart';
-import 'package:backend_services/src/state-management/conversations_provider.dart';
 import 'package:backend_services/src/websocket-client/websocket_client.dart';
 import 'package:backend_services/src/websocket-client/websocket_listener.dart';
 import 'package:collection/collection.dart';
 import 'package:logger/logger.dart';
 
 import 'interfaces/recording_selection_activator.dart';
-import 'model/conversation.dart';
 import 'model/reminder.dart';
 
 // enum SortType { oldestFirst, newestFirst, aDescription, zDescription }
