@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:backend_services/backend_services_exports.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -9,18 +11,14 @@ import 'package:talker_mobile_app/screens/eulaScreen.dart';
 import 'package:talker_mobile_app/screens/guidedTourScreen.dart';
 import 'package:talker_mobile_app/screens/informationScreen.dart';
 import 'package:talker_mobile_app/screens/recordingScreen.dart';
-import 'package:talker_mobile_app/services/fileHelpers.dart';
 
 import 'globals.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  Globals.appDirectory = await getApplicationDocumentsDirectory();
-  List<Conversation> conversations = getConversationsFromJsonFile(
-      "${Globals.appDirectory?.path}/conversations.json");
+  Directory directory = await getApplicationDocumentsDirectory();
   await dotenv.load();
-  getIt.registerSingleton<Agent>(
-      Agent('convobuddy-app', conversations: conversations),
+  getIt.registerSingleton<Agent>(Agent('convobuddy-app', directory),
       dispose: (agent) => agent.shutdown());
   getIt<Agent>().generateInstanceCode();
 
