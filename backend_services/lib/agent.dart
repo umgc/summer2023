@@ -1,19 +1,17 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:backend_services/backend_services_exports.dart';
 import 'package:backend_services/model/be_request.dart';
 import 'package:backend_services/model/be_response.dart';
 import 'package:backend_services/src/be-service/be_service.dart';
 import 'package:backend_services/src/gpt-service/GptCalls.dart';
-import 'package:backend_services/src/state-management/conversations_provider.dart';
 import 'package:backend_services/src/websocket-client/websocket_client.dart';
 import 'package:backend_services/src/websocket-client/websocket_listener.dart';
 import 'package:collection/collection.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:logger/logger.dart';
 
 import 'interfaces/recording_selection_activator.dart';
-import 'model/conversation.dart';
 import 'model/reminder.dart';
 
 // enum SortType { oldestFirst, newestFirst, aDescription, zDescription }
@@ -29,12 +27,7 @@ class Agent {
   final BEService _beService = BEService();
 
   WebSocketClient? _webSocketClient;
-  late String _wsUrl;
-  late int _wsConnectionTimeoutMs;
-  late String _formFillRequestTopic;
-  late String _formFillResponseTopic;
   late RecordingSelectionActivator? _recordingSelectionActivator;
-  late String _openAIApiKey;
   late final Directory _appDirectory;
 
   late final ConversationsProvider conversationsProvider;
@@ -49,25 +42,15 @@ class Agent {
   initialize(RecordingSelectionActivator recordingSelectionActivator) {
     setRecordingSelector(recordingSelectionActivator);
 
-    _wsUrl = _getEnvValue('WS_URL');
-    _wsConnectionTimeoutMs =
-        int.parse(_getEnvValue('WS_CONNECTION_TIMEOUT_MS'));
-    _formFillRequestTopic = _getEnvValue('FORM_FILL_REQUEST_TOPIC');
-    _formFillResponseTopic = _getEnvValue('FORM_FILL_RESPONSE_TOPIC');
-    initializeOpenAIApiKey();
     List<WebSocketListener> listeners = [
       WebSocketListener(
-          _formFillRequestTopic,
+          EnvironmentVars.formFillRequestTopic,
           (frame) =>
               _beService.handleRequestFrame(frame, receiveFormValuesRequest))
     ];
-    _webSocketClient =
-        WebSocketClient(_wsUrl, _wsConnectionTimeoutMs, listeners);
+    _webSocketClient = WebSocketClient(EnvironmentVars.wsUrl,
+        int.parse(EnvironmentVars.wsConnectionTimeoutMs), listeners);
     _webSocketClient!.connect();
-  }
-
-  initializeOpenAIApiKey() {
-    _openAIApiKey = _getEnvValue('OPENAI_API_KEY');
   }
 
   shutdown() {
@@ -83,36 +66,25 @@ class Agent {
     _recordingSelectionActivator = recordingSelectionActivator;
   }
 
-  //#region Environment variables
-
-  String _getEnvValue(String variableName) {
-    var value = dotenv.env[variableName];
-    if (value?.isEmpty ?? true) {
-      throw "$variableName variable from .env file is empty.";
-    }
-    return value!;
-  }
-
-  //#endregion
-
   Future<File> get _remindersFile async {
     final path = _appDirectory.path;
     return File('$path/reminders.json');
   }
 
-  // Future<File> getRecordingFile(String guid) async {
-  //   final path = path_package.join(await _directoryPath, '${guid}.json');
-  //   return File(path);
-  // }
-
-  Future<List> listFilesInPath() async {
+  List<FileSystemEntity> listFilesInPath() {
     try {
       var dir = Directory(_appDirectory.path);
-      List contents = await dir.listSync(recursive: true, followLinks: true);
+      var contents = dir.listSync(recursive: true, followLinks: true);
       return contents;
     } catch (e) {
       print(e);
       return [];
+    }
+  }
+
+  void loadSampleConversations() {
+    for (var convo in TestConversations.sampleConversations) {
+      conversationsProvider.addConversation(convo);
     }
   }
 
@@ -152,6 +124,10 @@ class Agent {
     return _instanceCode;
   }
 
+  void resetAppInstanceCode() {
+    _instanceCode = '';
+  }
+
   Future<void> receiveFormValuesRequest(BERequest request) async {
     if (request.pin != _instanceCode) {
       _logger.i(
@@ -174,7 +150,7 @@ class Agent {
     final recordingTranscript = getRecordingTranscript(recordingGuid);
 
     // send to chatgpt
-    final gpt = GptCalls(_openAIApiKey);
+    final gpt = GptCalls(EnvironmentVars.openAIApiKey);
     final completion = await gpt.extractFormValuesFromTranscript(
         recordingTranscript,
         'This Profile',
@@ -200,44 +176,12 @@ class Agent {
 
   void sendFormValueResponse(BEResponse response) {
     if (_webSocketClient != null) {
-      _webSocketClient!.send(_formFillResponseTopic, jsonEncode(response));
+      _webSocketClient!
+          .send(EnvironmentVars.formFillResponseTopic, jsonEncode(response));
     }
   }
 
   //#endregion
-
-  // String createRecording(String filename) {
-  //   //Insantiate a new recording object given a particular file
-  //   //generate a new GUID
-  //   String guid = 'abc37428-e345-492f-8a32-bbbb183d763f';
-  //   return guid;
-  // }
-
-  // List<Conversation> listRecordings(String sortOption) {
-  //   //sort based on sort type, return full list of recording objects
-  //   return recordingList;
-  // }
-
-  // void deleteRecording(String guid) {
-  //   //Delete recording from memory and filesystem
-  //   // Use the guid to identify the recording in question and the filepath to it and remove it from the system
-  //   var recordingFile = File('/path/to/recording/guid.json');
-  //   if (recordingFile.existsSync()) {
-  //     var content = recordingFile.readAsStringSync();
-  //     if (content.contains(guid)) {
-  //       recordingFile.deleteSync();
-  //     } else {
-  //       print('Not the right recording');
-  //     }
-  //   } else {
-  //     print('Recording file does not exist');
-  //   }
-  // }
-
-  // List<Conversation> searchRecordings(String searchTerm) {
-  //   //Search through recordings, return subset of recording objects
-  //   return recordingList;
-  // }
 
   void convertSpeechToText(String guid) {
     //send API call to STT provider, store results to Recording Object, save
@@ -270,19 +214,6 @@ class Agent {
   void addReminder(Reminder newReminder) {
     //add a reminder to the list and file storage
   }
-
-  //To Do: set up file IO for loading recording and reminder JSON from file/save to file
-
-  // Future<String> writeRecordingsToFile() async {
-  //   //Writes all data stored in recordingList to individual files named <guid>.json
-
-  //   for (Conversation rec in recordingList) {
-  //     //Iterate over list of all recordings and write
-  //     var file = await getRecordingFile(rec.id);
-  //     await file.writeAsString(json.encode(rec));
-  //   }
-  //   return recordingList.toString();
-  // }
 
   void loadSampleReminderData() async {
     //Generate sample reminder data from literals
@@ -341,44 +272,10 @@ class Agent {
     }
   }
 
-  // Future<String?> readRecordingsFile() async {
-  //   List<Conversation> newRecordingList = [];
-  //   List allFiles = await listFilesInPath();
-  //   //Obtain a list of Valid GUID.json recording values - length == 41
-  //   //Perform logic to split paths using slash / and look for results of proper length
-  //   List validRecordingFiles = [];
-  //   for (var filePath in allFiles) {
-  //     var fileComponents = filePath.toString().split('/');
-  //     for (String subString in fileComponents) {
-  //       if (subString.toString().length == 42) {
-  //         // Look for length 42 - includes trailing quote
-  //         //Drop trailing quote character
-  //         validRecordingFiles.add(subString.toString().substring(0, 41));
-  //       }
-  //     }
-  //   }
-  //
-  //   //Loop over valid JSON files, read, append
-  //   //String returnValue = '';
-  //   for (String jsonFile in validRecordingFiles) {
-  //     try {
-  //       final file =
-  //           await getRecordingFile(jsonFile.toString().substring(0, 36));
-  //       final fileContent = await file.readAsString();
-  //       newRecordingList.add(Conversation.fromJson(jsonDecode(fileContent)));
-  //     } catch (e) {
-  //       print(e);
-  //     }
-  //   }
-  //   this.recordingList = newRecordingList;
-
-  //   return recordingList.toString();
-  // }
-
   Future<String?> getOpenAiSummary(String guid) async {
     String requestTranscript = getRecordingTranscript(guid);
 
-    GptCalls newGpt = GptCalls(_openAIApiKey);
+    GptCalls newGpt = GptCalls(EnvironmentVars.openAIApiKey);
     final completion = await newGpt.getOpenAiSummary(requestTranscript,
         'This Profile'); //Todo implement user profile argument if desired
 

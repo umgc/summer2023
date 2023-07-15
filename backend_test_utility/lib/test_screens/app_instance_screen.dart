@@ -1,5 +1,4 @@
 import 'package:backend_test_utility/ambients.dart';
-import 'package:backend_test_utility/app_startup.dart';
 import 'package:flutter/material.dart';
 import 'package:backend_services/agent.dart';
 
@@ -19,17 +18,15 @@ class _AppInstanceScreenState extends State<AppInstanceScreen> {
     });
   }
 
-  void _resetAgent() {
+  void _resetAppInstanceCode() {
     setState(() {
-      AppStartup.reset();
+      getIt<Agent>().resetAppInstanceCode();
     });
   }
 
   @override
   void initState() {
-    // Reset agent to get an uninitialized app instance code
-    _resetAgent();
-
+    _resetAppInstanceCode();
     super.initState();
   }
 
@@ -65,7 +62,7 @@ class _AppInstanceScreenState extends State<AppInstanceScreen> {
           ListTile(
               title: ElevatedButton(
                   key: WidgetKeys.resetAgentButton,
-                  onPressed: () => _resetAgent(),
+                  onPressed: () => _resetAppInstanceCode(),
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Theme.of(context).colorScheme.error,
                     backgroundColor:
