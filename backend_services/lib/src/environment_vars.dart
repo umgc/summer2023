@@ -23,17 +23,6 @@ class EnvironmentVars {
     return _getFromEnv(name);
   }
 
-  static String get testSecret {
-    try {
-      const name = 'TEST_SECRETS';
-      const valueFromEnv = String.fromEnvironment(name);
-      if (valueFromEnv.isNotEmpty) return valueFromEnv;
-      return _getFromEnv(name);
-    } catch (error) {
-      return error.toString();
-    }
-  }
-
   static String get wsUrl => _getFromEnv('WS_URL');
 
   static String get wsConnectionTimeoutMs =>
