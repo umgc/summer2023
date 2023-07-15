@@ -31,8 +31,14 @@ class _GptSummaryScreenState extends State<GptSummaryScreen> {
 
   @override
   void initState() {
-    final apiKey = EnvironmentVars.openAIApiKey;
-    _statusMessage = 'OpenAI Key: ${apiKey.substring(0, 7)}...';
+    try {
+      final apiKey = EnvironmentVars.openAIApiKey;
+      const maxDisplayLength = 7;
+      _statusMessage =
+          "OpenAI Key: ${apiKey.length > maxDisplayLength ? '${apiKey.substring(0, maxDisplayLength)}...' : apiKey}";
+    } catch (error) {
+      _statusMessage = error.toString();
+    }
     super.initState();
   }
 
