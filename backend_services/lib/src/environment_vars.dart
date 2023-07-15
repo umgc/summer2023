@@ -7,13 +7,14 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 // See this (currently) open issue against flutter: https://github.com/flutter/flutter/issues/55870
 //
 // If you want a variable that is always pulled from the .env file, use:
-//  return getFromEnv('VARIABLE_NAME');
+//   return getFromEnv('VARIABLE_NAME');
+//
 // If you want a variable that can be overridden by the build via --dart-define
 // flutter command argument, use the following sequence:
-//  const name = 'VARIABLE_NAME';
-//  const valueFromEnv = String.fromEnvironment(name);
-//  if (valueFromEnv.isNotEmpty) return valueFromEnv;
-//  return getFromEnv(name);
+//   const name = 'VARIABLE_NAME';
+//   const valueFromEnv = String.fromEnvironment(name);
+//   if (valueFromEnv.isNotEmpty) return valueFromEnv;
+//   return getFromEnv(name);
 class EnvironmentVars {
   static String get openAIApiKey {
     const name = 'OPENAI_API_KEY';
