@@ -4,3 +4,4 @@ export 'package:backend_services/src/state-management/conversations_provider.dar
 export 'package:backend_services/src/state-management/sorting_type.dart';
 export 'package:backend_services/src/test-data/test_conversations.dart';
 export 'package:backend_services/src/environment_vars.dart';
+export 'package:backend_services/src/transcribe-dirization-service/audioFileUpload.dart';

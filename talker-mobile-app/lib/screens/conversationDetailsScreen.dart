@@ -7,9 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:panara_dialogs/panara_dialogs.dart';
 import 'package:provider/provider.dart';
-import 'package:talker_mobile_app/globals.dart';
 
-import '../services/fileHelpers.dart';
 import '../widgets/transmogListItem.dart';
 
 class ConversationDetailsScreen extends StatefulWidget {
@@ -42,7 +40,7 @@ class _ConversationDetailsScreenState extends State<ConversationDetailsScreen> {
         Provider.of<ConversationsProvider>(context, listen: false);
     controller.text = conversationsProvider.selectedConversation!.title;
     var path =
-        "${Globals.appDirectory?.path}/${conversationsProvider.selectedConversation?.id}";
+        "${conversationsProvider.appDirectory.path}/${conversationsProvider.selectedConversation?.id}";
     playerController = PlayerController();
     _preparePlayer(path);
     playerStateSubscription = playerController.onPlayerStateChanged.listen((_) {
@@ -77,8 +75,6 @@ class _ConversationDetailsScreenState extends State<ConversationDetailsScreen> {
     setState(() {
       isEditing = false;
     });
-    writeConversationsToJsonFile(conversationsProvider.conversations,
-        "${Globals.appDirectory?.path}/conversations.json");
   }
 
   @override
@@ -172,8 +168,6 @@ class _ConversationDetailsScreenState extends State<ConversationDetailsScreen> {
           confirmButtonText: "OK",
           cancelButtonText: "Cancel", onTapConfirm: () async {
         conversationsProvider.removeConversation(conversation!);
-        await writeConversationsToJsonFile(conversationsProvider.conversations,
-            "${Globals.appDirectory?.path}/conversations.json");
         Navigator.of(context).popUntil((route) => route.isFirst);
       }, onTapCancel: () {
         Navigator.of(context).pop();

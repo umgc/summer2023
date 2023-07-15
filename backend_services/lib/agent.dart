@@ -11,7 +11,6 @@ import 'package:backend_services/src/websocket-client/websocket_client.dart';
 import 'package:backend_services/src/websocket-client/websocket_listener.dart';
 import 'package:collection/collection.dart';
 import 'package:logger/logger.dart';
-import 'package:path_provider/path_provider.dart';
 
 import 'interfaces/recording_selection_activator.dart';
 import 'model/conversation.dart';
@@ -31,11 +30,13 @@ class Agent {
 
   WebSocketClient? _webSocketClient;
   late RecordingSelectionActivator? _recordingSelectionActivator;
+  late final Directory _appDirectory;
 
   late final ConversationsProvider conversationsProvider;
 
-  Agent(this.userId, {List<Conversation> conversations = const []}) {
-    conversationsProvider = ConversationsProvider(conversations);
+  Agent(this.userId, Directory appDirectory) {
+    _appDirectory = appDirectory;
+    conversationsProvider = ConversationsProvider(_appDirectory);
   }
 
   // RecordingSelectionActivator object with callback is required to initialize the Agent.
@@ -67,15 +68,8 @@ class Agent {
     _recordingSelectionActivator = recordingSelectionActivator;
   }
 
-  Future<String> get _directoryPath async {
-    Directory directory = Platform.isAndroid
-        ? await getApplicationSupportDirectory() //Should be universal? https://pub.dev/packages/path_provider
-        : await getApplicationDocumentsDirectory(); //For IOS
-    return directory.path;
-  }
-
   Future<File> get _remindersFile async {
-    final path = await _directoryPath;
+    final path = _appDirectory.path;
     return File('$path/reminders.json');
   }
 
@@ -86,8 +80,8 @@ class Agent {
 
   Future<List> listFilesInPath() async {
     try {
-      var dir = Directory(await _directoryPath);
-      List contents = dir.listSync(recursive: true, followLinks: true);
+      var dir = Directory(_appDirectory.path);
+      List contents = await dir.listSync(recursive: true, followLinks: true);
       return contents;
     } catch (e) {
       print(e);
