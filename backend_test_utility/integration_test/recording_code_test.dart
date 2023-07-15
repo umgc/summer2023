@@ -40,7 +40,7 @@ void main() async {
   // });
 
   test('read existing recording JSON files and return list of files', () async {
-    var agent = Agent('Recording-API-Unit-test', conversations: TestConversations.sampleConversations);
+    var agent = Agent('Recording-API-Unit-test', directory);
     expect(() => agent.conversationsProvider.conversations, returnsNormally);
     // expect(() => agent.writeRecordingsToFile(), returnsNormally);
     var result = agent.conversationsProvider.conversations.toString();

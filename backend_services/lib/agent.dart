@@ -11,7 +11,6 @@ import 'package:backend_services/src/websocket-client/websocket_listener.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:logger/logger.dart';
-import 'package:path_provider/path_provider.dart';
 
 import 'interfaces/recording_selection_activator.dart';
 import 'model/conversation.dart';
@@ -108,7 +107,7 @@ class Agent {
 
   Future<List> listFilesInPath() async {
     try {
-      var dir = new Directory(_appDirectory.path);
+      var dir = Directory(_appDirectory.path);
       List contents = await dir.listSync(recursive: true, followLinks: true);
       return contents;
     } catch (e) {

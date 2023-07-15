@@ -1,13 +1,14 @@
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:integration_test/integration_test.dart';
+import 'dart:io';
+
 import 'package:backend_services/agent.dart';
-import 'package:logger/logger.dart';
 import 'package:backend_services/src/gpt-service/GptCalls.dart';
 import 'package:backend_services/src/test-data/test_conversations.dart';
 import 'package:collection/collection.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:integration_test/integration_test.dart';
+import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart';
-import 'dart:io';
 
 void main() async {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
