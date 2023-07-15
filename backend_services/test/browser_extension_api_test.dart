@@ -11,6 +11,21 @@ import 'package:path_provider/path_provider.dart';
 
 import 'browser_extension_api_test.mocks.dart';
 
+class TestRecordingSelectionActivator implements RecordingSelectionActivator {
+  TestRecordingSelectionActivator();
+
+  final _logger = Logger();
+  bool didCallSelector = false;
+
+  @override
+  RecordingSelectionActivatorCallback getSelectorCallback() {
+    return () async {
+      _logger.i('Recording selector callback called.');
+      didCallSelector = true;
+    };
+  }
+}
+
 // Run "dart run build_runner build" from the command line to regenerate RecordingSelectionActivator
 @GenerateNiceMocks([MockSpec<RecordingSelectionActivator>()])
 void main() async {

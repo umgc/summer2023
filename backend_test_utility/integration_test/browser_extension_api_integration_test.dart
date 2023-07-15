@@ -30,7 +30,7 @@ void main() async {
   test('extract form values, app instance code initialized and passed in',
       () async {
     var agent = Agent('browser-extension-api-unit-test', directory);
-    var selectionActivator = TestRecordingSelectionActivator(agent);
+    var selectionActivator = TestRecordingSelectionActivator();
     agent.setRecordingSelector(selectionActivator);
 
     agent.generateInstanceCode();
