@@ -1,7 +1,7 @@
 class Reminder {
   final int reminderId;
-  final int createTimestamp;
-  final int notifyTimestamp;
+  final DateTime createTimestamp;
+  final DateTime notifyTimestamp;
   late String reminderDescription;
   late String userId;
 
@@ -9,15 +9,15 @@ class Reminder {
 
   Reminder.fromJson(Map<String, dynamic> json)
       : reminderId = json['reminderId'] as int,
-        createTimestamp = json['createTimestamp'] as int,
-        notifyTimestamp = json['notifyTimestamp'] as int,
+        createTimestamp = DateTime.parse(json['createTimestamp']),
+        notifyTimestamp = DateTime.parse(json['notifyTimestamp']),
         reminderDescription = json['reminderDescription'] as String,
         userId = json['userId'] as String;
 
   Map<String, dynamic> toJson() => {
         'reminderId': reminderId,
-        'createTimestamp': createTimestamp,
-        'notifyTimestamp': notifyTimestamp,
+        'createTimestamp': createTimestamp.toIso8601String(),
+        'notifyTimestamp': notifyTimestamp.toIso8601String(),
         'reminderDescription': reminderDescription,
         'userId': userId,
       };

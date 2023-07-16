@@ -49,4 +49,28 @@ void main() async {
         formFields); //Todo implement user profile argument if desired
     logger.i(completion);
   });
+
+    test('Send transcript to OpenAI for Restaurant Order', () async {
+    final conversation = TestConversations.sampleConversations.firstWhereOrNull(
+        (convo) => convo.id == '0a60bf00-a057-4ad7-87fd-534c7d407160');
+    final gpt = GptCalls(EnvironmentVars.openAIApiKey);
+    expect(conversation, isNotNull);
+    expect(conversation!.transcript, isNotEmpty);
+
+    String? result =
+        await gpt.getRestaurantOrder(conversation.transcript, 'User profile.');
+    logger.i(result);
+  });
+
+      test('Send transcript to OpenAI for Reminders', () async {
+    final conversation = TestConversations.sampleConversations.firstWhereOrNull(
+        (convo) => convo.id == 'e3bc7acc-3b20-4056-94b6-6199fdba5870');
+    final gpt = GptCalls(EnvironmentVars.openAIApiKey);
+    expect(conversation, isNotNull);
+    expect(conversation!.transcript, isNotEmpty);
+
+    String? result =
+        await gpt.getReminders(conversation.transcript, 'User profile.', conversation.recordedDate);
+    logger.i(result);
+  });
 }

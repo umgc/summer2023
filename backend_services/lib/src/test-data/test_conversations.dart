@@ -22,7 +22,31 @@ class TestConversations {
         duration: Duration(minutes: 2),
         recordedDate: DateTime.now().add(-Duration(hours: 4)),
         title: 'Description B',
-        transcript: '',
+        transcript: '''spk_0: Do I dare ask?
+
+spk_1: Yes, I'll start with the carpaccio and then I'll have the grilled prawns. 
+
+spk_2: That sounds great. Same for me.
+
+spk_0: And for the gentleman?
+
+spk_3: Yeah, I'll have the Thai chicken pizza.But hey, look, if I get it without the nuts and leaks and stuff, is it cheaper?
+
+spk_0: You'd think.  How about you miss?
+
+spk_4: Okay, I will have the side salad.
+
+spk_0: And would that be on the side of it?
+
+spk_4: I don't know. Why don't you just put it right here next to my water?
+
+spk_0: And for you?
+
+spk_5: I'm going to have a cup of the cucumber soup.
+
+spk_6: I will have the cajun cat fish. 
+
+spk_0: Anything else?''',
         customDescription: 'Description',
         gptDescription: '');
     Conversation recording3 = Conversation(
@@ -31,7 +55,13 @@ class TestConversations {
         duration: Duration(minutes: 5),
         recordedDate: DateTime.now().add(-Duration(hours: 2)),
         title: 'Description C',
-        transcript: '',
+        transcript: '''spk_0: Make sure you take your medication every morning at 08:00 a.m. and every evening at 07:00 p.m..
+
+spk_1: Set my alarm for 08:00 a.m. Monday through Friday and 09:00 a.m. Saturday and Sunday.  When I wake up, remind me that I'm staying in the memory care Village, room 312, and I need the day and the date for that day.
+
+spk_0: Remember to call your kids on Saturdays at 10:00 a.m.
+
+spk_1: Remind me every day at 04:30 p.m. that dinner is in the cafeteria at 05:00. It's down the hall and to the left.''',
         customDescription: 'Description',
         gptDescription: '');
     Conversation recording4 = Conversation(
