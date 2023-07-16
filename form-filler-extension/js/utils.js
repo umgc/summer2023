@@ -12,7 +12,7 @@ export async function getActiveTabURL() {
     return tabs[0];
 }
 
-const ServiceURL_DEV = "http://localhost:8080";
+const ServiceURL_DEV = "http://localhost:8080/ws";
 const serviceUrl_PROD = "http://44.202.25.184:8080/ws";
 const serviceUrl = ServiceURL_DEV;
 
