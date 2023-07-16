@@ -219,11 +219,11 @@ class Agent {
     //Generate sample reminder data from literals
 
     //Sample Data
-    Reminder reminder1 = Reminder(1, 1, 1, 'Description A', 'User');
-    Reminder reminder2 = Reminder(2, 1, 1, 'Description B', 'User');
-    Reminder reminder3 = Reminder(3, 1, 1, 'Description C', 'User');
-    Reminder reminder4 = Reminder(4, 1, 1, 'Description D', 'User');
-    Reminder reminder5 = Reminder(5, 1, 1, 'Description E', 'User');
+    Reminder reminder1 = Reminder(1, DateTime.now().add(-Duration(hours: 1)), DateTime.now().add(Duration(hours: 1)), 'Description A', 'User');
+    Reminder reminder2 = Reminder(2, DateTime.now().add(-Duration(hours: 4)), DateTime.now().add(Duration(hours: 4)), 'Description B', 'User');
+    Reminder reminder3 = Reminder(3, DateTime.now().add(-Duration(hours: 34)), DateTime.now().add(Duration(hours: 36)), 'Description C', 'User');
+    Reminder reminder4 = Reminder(4, DateTime.now().add(-Duration(hours: 72)), DateTime.now().add(Duration(hours: 72)), 'Description D', 'User');
+    Reminder reminder5 = Reminder(5, DateTime.now().add(-Duration(hours: 168)), DateTime.now().add(Duration(hours: 168)), 'Description E', 'User');
     List<Reminder> sampleReminderList = [
       reminder1,
       reminder2,
