@@ -13,14 +13,15 @@ import 'package:logger/logger.dart';
 
 import 'interfaces/recording_selection_activator.dart';
 import 'model/reminder.dart';
+import 'model/user.dart';
 
 // enum SortType { oldestFirst, newestFirst, aDescription, zDescription }
 
 class Agent {
-  final String userId;
+  String userId;
   String _instanceCode = '';
   final Logger _logger = Logger();
-  late String? profile;
+  String? profile = '';
   late String? browserRequest;
   // late List<Conversation> recordingList = [];
   late List<Reminder> reminderList = [];
@@ -71,6 +72,11 @@ class Agent {
     return File('$path/reminders.json');
   }
 
+  Future<File> get _userFile async {
+    final path = _appDirectory.path;
+    return File('$path/user.json');
+  }
+
   List<FileSystemEntity> listFilesInPath() {
     try {
       var dir = Directory(_appDirectory.path);
@@ -98,13 +104,30 @@ class Agent {
     profile = newProfile;
   }
 
-  void writeUserToFile() {
-    //;
+  void writeUserToFile() async {
+    //Write Data to file 'user.json'
+
+    final File file = await _userFile;
+    await file.writeAsString(json.encode(User(userId, _instanceCode, profile)));
+
   }
 
-  Future<String?> readUserFromFile() async {
-    //;
-    return '';
+  Future<User?> readUserFromFile() async {
+      try {
+      final file = await _userFile;
+      // Read the file
+      final fileContent = await file.readAsString();
+      final userJson = jsonDecode(fileContent);
+      final User userObject = User.fromJson(userJson);
+      userId = userObject.userId;
+      profile = userObject.profile;
+      _instanceCode = userObject.instanceCode;
+      return userObject;
+      //return fileContent;
+    } catch (e) {
+      print(e);
+    return null;
+  }
   }
 
   //#endregion
@@ -182,7 +205,7 @@ class Agent {
   }
 
   //#endregion
-
+  /*
   void convertSpeechToText(String guid) {
     //send API call to STT provider, store results to Recording Object, save
   }
@@ -196,6 +219,7 @@ class Agent {
     //Send to ChatGPT, create reminders, return a string to UI
     return 'Lunch 1200 Wednesday, Birthday party 1000 Saturday';
   }
+  */
 
   List<Conversation> globalSearch(String searchTerm) {
     //Search recordings, return subset of recordings to UI based on search term
