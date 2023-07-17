@@ -114,7 +114,8 @@ class Agent {
     //Write Data to file 'user.json'
 
     final File file = await _userFile;
-    await file.writeAsString(json.encode(User(userId, _instanceCode, profile)));
+    final String appCode = await _beService.loadAppInstanceCode();
+    await file.writeAsString(json.encode(User(userId, appCode, profile)));
   }
 
   Future<User?> readUserFromFile() async {
@@ -126,7 +127,7 @@ class Agent {
       final User userObject = User.fromJson(userJson);
       userId = userObject.userId;
       profile = userObject.profile;
-      _instanceCode = userObject.instanceCode;
+      await _beService.saveAppInstanceCode(userObject.instanceCode);
       return userObject;
       //return fileContent;
     } catch (e) {
