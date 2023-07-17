@@ -69,8 +69,7 @@ void main() async {
     var storage = TestStorage();
     var filename = 'nonexistantFile.json';
 
-    expectLater(
-        () async => await storage.loadFromPath(filename, AnObject.fromJson),
+    expectLater(storage.loadFromPath(filename, AnObject.fromJson),
         throwsA(isException));
   });
 }
