@@ -1,0 +1,7 @@
+*.png
+target/
+local.log
+.idea
+*.iml
+.DS_Store
+**/logs/*
