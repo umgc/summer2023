@@ -1,4 +1,6 @@
+import 'package:backend_services/backend_services_exports.dart';
 import 'package:flutter/material.dart';
+import 'package:talker_mobile_app/globals.dart';
 
 class InformationScreen extends StatefulWidget {
   const InformationScreen({Key? key}) : super(key: key);
@@ -8,6 +10,21 @@ class InformationScreen extends StatefulWidget {
 }
 
 class _InformationScreenState extends State<InformationScreen> {
+  String _appCode = '....';
+
+  @override
+  void initState() {
+    super.initState();
+
+    getIt<Agent>().getInstanceCode().then((value) async {
+      return value;
+    }).then((code) {
+      setState(() {
+        _appCode = code;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,10 +62,11 @@ class _InformationScreenState extends State<InformationScreen> {
                       padding: const EdgeInsets.only(
                           left: 20, right: 20, top: 20, bottom: 20),
                       color: Colors.black,
-                      child: const Text(
-                          key: Key('txtBrowserCode'),
-                          "8736",
-                          style: TextStyle(fontSize: 75, color: Colors.white)),
+                      child: Text(
+                          key: const Key('txtBrowserCode'),
+                          _appCode,
+                          style: const TextStyle(
+                              fontSize: 75, color: Colors.white)),
                     ),
                     const Text("Browser Extension Code",
                         style: TextStyle(

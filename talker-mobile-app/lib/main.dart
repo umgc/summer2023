@@ -20,7 +20,7 @@ Future main() async {
   await dotenv.load();
   getIt.registerSingleton<Agent>(Agent('convobuddy-app', directory),
       dispose: (agent) => agent.shutdown());
-  getIt<Agent>().generateInstanceCode();
+  await getIt<Agent>().generateInstanceCodeIfNone();
 
   runApp(ChangeNotifierProvider<ConversationsProvider>(
     create: (_) => getIt<Agent>().conversationsProvider,
