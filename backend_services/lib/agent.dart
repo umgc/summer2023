@@ -24,9 +24,9 @@ class Agent {
   String userId;
   final Logger _logger = Logger();
   String? profile = '';
-  // late List<Conversation> recordingList = [];
   late List<Reminder> reminderList = [];
   late BEService _beService;
+  static const int numAppInstanceCodeDigits = 4;
 
   WebSocketClient? _webSocketClient;
   late RecordingSelectionActivator? _recordingSelectionActivator;
@@ -128,6 +128,8 @@ class Agent {
       userId = userObject.userId;
       profile = userObject.profile;
       await _beService.saveAppInstanceCode(userObject.instanceCode);
+      // Generate new code if user code is empty or invalid
+      await generateInstanceCodeIfNone();
       return userObject;
       //return fileContent;
     } catch (e) {
@@ -151,14 +153,19 @@ class Agent {
   Future<String> generateInstanceCodeIfNone() async {
     var appCode = await _beService.loadAppInstanceCode();
 
-    if (appCode.isEmpty) {
-      //Some code to generate a new InstanceCode
-      final random = Random();
-      final number = random.nextInt(9000) + 1000;
-      appCode = number.toString().padLeft(4, '0');
+    if (appCode.isEmpty || appCode.length != numAppInstanceCodeDigits) {
+      appCode = _generateNewInstanceCode();
       await _beService.saveAppInstanceCode(appCode);
     }
 
+    return appCode;
+  }
+
+  String _generateNewInstanceCode() {
+    //Some code to generate a new InstanceCode
+    final random = Random();
+    final number = random.nextInt(9000) + 1000;
+    final appCode = number.toString().padLeft(numAppInstanceCodeDigits, '0');
     return appCode;
   }
 
