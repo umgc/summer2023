@@ -13,7 +13,7 @@ class WidgetKeys {
   // App Instance Code Tests
   static const Key appCodeTextField = Key("app-code-text-field");
   static const Key generateAppCodeButton = Key("generate-app-code-button");
-  static const Key resetAgentButton = Key("reset-agent-button");
+  static const Key resetAppCodeButton = Key("reset-app-code-button");
 
   // WebSocket Tests
   static const Key webSocketStatusTextField =

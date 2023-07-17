@@ -1,11 +1,14 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:backend_services/backend_services_exports.dart';
+import 'package:backend_services/interfaces/json_storage.dart';
 import 'package:backend_services/model/be_request.dart';
 import 'package:backend_services/model/be_response.dart';
 import 'package:backend_services/src/be-service/be_service.dart';
 import 'package:backend_services/src/gpt-service/GptCalls.dart';
+import 'package:backend_services/src/local-storage/index.dart';
 import 'package:backend_services/src/websocket-client/websocket_client.dart';
 import 'package:backend_services/src/websocket-client/websocket_listener.dart';
 import 'package:collection/collection.dart';
@@ -18,13 +21,11 @@ import 'model/reminder.dart';
 
 class Agent {
   final String userId;
-  String _instanceCode = '';
   final Logger _logger = Logger();
   late String? profile;
-  late String? browserRequest;
   // late List<Conversation> recordingList = [];
   late List<Reminder> reminderList = [];
-  final BEService _beService = BEService();
+  late BEService _beService;
 
   WebSocketClient? _webSocketClient;
   late RecordingSelectionActivator? _recordingSelectionActivator;
@@ -34,6 +35,7 @@ class Agent {
 
   Agent(this.userId, Directory appDirectory) {
     _appDirectory = appDirectory;
+    _beService = BEService(LocalStorageService(_appDirectory.path));
     conversationsProvider = ConversationsProvider(_appDirectory);
   }
 
@@ -51,6 +53,10 @@ class Agent {
     _webSocketClient = WebSocketClient(EnvironmentVars.wsUrl,
         int.parse(EnvironmentVars.wsConnectionTimeoutMs), listeners);
     _webSocketClient!.connect();
+  }
+
+  setBeStorageService(JsonStorage storageService) {
+    _beService = BEService(storageService);
   }
 
   shutdown() {
@@ -111,25 +117,35 @@ class Agent {
 
   //#region Browser Extension API
 
-  String getInstanceCode() {
-    if (_instanceCode.isEmpty) {
+  Future<String> getInstanceCode() async {
+    final instanceCode = await _beService.loadAppInstanceCode();
+    if (instanceCode.isEmpty) {
       throw 'Instance code has not been initialized yet.';
     }
-    return _instanceCode;
+    return instanceCode;
   }
 
-  String generateInstanceCode() {
-    //Some code to generate a new InstanceCode
-    _instanceCode = '8736';
-    return _instanceCode;
+  Future<String> generateInstanceCodeIfNone() async {
+    var appCode = await _beService.loadAppInstanceCode();
+
+    if (appCode.isEmpty) {
+      //Some code to generate a new InstanceCode
+      final random = Random();
+      final number = random.nextInt(9000) + 1000;
+      appCode = number.toString().padLeft(4, '0');
+      await _beService.saveAppInstanceCode(appCode);
+    }
+
+    return appCode;
   }
 
-  void resetAppInstanceCode() {
-    _instanceCode = '';
+  Future<void> resetAppInstanceCode() async {
+    await _beService.saveAppInstanceCode('');
   }
 
   Future<void> receiveFormValuesRequest(BERequest request) async {
-    if (request.pin != _instanceCode) {
+    final appCode = await _beService.loadAppInstanceCode();
+    if (request.pin != appCode) {
       _logger.i(
           "Ignoring browser extension request with pin of '${request.pin}'.");
       return;
@@ -219,11 +235,16 @@ class Agent {
     //Generate sample reminder data from literals
 
     //Sample Data
-    Reminder reminder1 = Reminder(1, DateTime.now().add(-Duration(hours: 1)), DateTime.now().add(Duration(hours: 1)), 'Description A', 'User');
-    Reminder reminder2 = Reminder(2, DateTime.now().add(-Duration(hours: 4)), DateTime.now().add(Duration(hours: 4)), 'Description B', 'User');
-    Reminder reminder3 = Reminder(3, DateTime.now().add(-Duration(hours: 34)), DateTime.now().add(Duration(hours: 36)), 'Description C', 'User');
-    Reminder reminder4 = Reminder(4, DateTime.now().add(-Duration(hours: 72)), DateTime.now().add(Duration(hours: 72)), 'Description D', 'User');
-    Reminder reminder5 = Reminder(5, DateTime.now().add(-Duration(hours: 168)), DateTime.now().add(Duration(hours: 168)), 'Description E', 'User');
+    Reminder reminder1 = Reminder(1, DateTime.now().add(-Duration(hours: 1)),
+        DateTime.now().add(Duration(hours: 1)), 'Description A', 'User');
+    Reminder reminder2 = Reminder(2, DateTime.now().add(-Duration(hours: 4)),
+        DateTime.now().add(Duration(hours: 4)), 'Description B', 'User');
+    Reminder reminder3 = Reminder(3, DateTime.now().add(-Duration(hours: 34)),
+        DateTime.now().add(Duration(hours: 36)), 'Description C', 'User');
+    Reminder reminder4 = Reminder(4, DateTime.now().add(-Duration(hours: 72)),
+        DateTime.now().add(Duration(hours: 72)), 'Description D', 'User');
+    Reminder reminder5 = Reminder(5, DateTime.now().add(-Duration(hours: 168)),
+        DateTime.now().add(Duration(hours: 168)), 'Description E', 'User');
     List<Reminder> sampleReminderList = [
       reminder1,
       reminder2,
