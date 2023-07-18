@@ -10,7 +10,7 @@ import 'package:backend_services/agent.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await AppStartup.startup();
-  getIt<Agent>().generateInstanceCode();
+  getIt<Agent>().generateInstanceCodeIfNone();
 
   runApp(const MyApp());
 }

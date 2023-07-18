@@ -12,15 +12,25 @@ class AppInstanceScreen extends StatefulWidget {
 }
 
 class _AppInstanceScreenState extends State<AppInstanceScreen> {
+  String _appCode = '';
+
   void _generateAppCode() {
-    setState(() {
-      getIt<Agent>().generateInstanceCode();
-    });
+    getIt<Agent>().generateInstanceCodeIfNone().then((value) => setState(() {
+          _appCode = value;
+        }));
   }
 
   void _resetAppInstanceCode() {
-    setState(() {
-      getIt<Agent>().resetAppInstanceCode();
+    getIt<Agent>().resetAppInstanceCode().whenComplete(() async {
+      try {
+        await getIt<Agent>().getInstanceCode().then((value) => setState(() {
+              _appCode = value;
+            }));
+      } catch (error) {
+        setState(() {
+          _appCode = error.toString();
+        });
+      }
     });
   }
 
@@ -32,14 +42,6 @@ class _AppInstanceScreenState extends State<AppInstanceScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var appCode = (() {
-      try {
-        return getIt<Agent>().getInstanceCode();
-      } catch (error) {
-        return error.toString();
-      }
-    })();
-
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -52,7 +54,7 @@ class _AppInstanceScreenState extends State<AppInstanceScreen> {
               style: TextStyle(
                   fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize),
             ),
-            title: Text(appCode, key: WidgetKeys.appCodeTextField),
+            title: Text(_appCode, key: WidgetKeys.appCodeTextField),
           ),
           ListTile(
               title: ElevatedButton(
@@ -61,14 +63,14 @@ class _AppInstanceScreenState extends State<AppInstanceScreen> {
                   child: const Text('Generate App Code'))),
           ListTile(
               title: ElevatedButton(
-                  key: WidgetKeys.resetAgentButton,
+                  key: WidgetKeys.resetAppCodeButton,
                   onPressed: () => _resetAppInstanceCode(),
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Theme.of(context).colorScheme.error,
                     backgroundColor:
                         Theme.of(context).colorScheme.errorContainer,
                   ),
-                  child: const Text('Reset Agent')))
+                  child: const Text('Reset App Instance Code')))
         ]));
   }
 }

@@ -8,8 +8,7 @@ void main() {
   // Initialize service bindings for widget integration testing
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets('test_utility main screen smoke test',
-      (WidgetTester tester) async {
+  testWidgets('app instance screen test', (WidgetTester tester) async {
     await app.main();
 
     // Build our app and trigger a frame.

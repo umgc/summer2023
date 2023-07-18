@@ -15,10 +15,11 @@ class WebSocketScreen extends StatefulWidget {
 
 class _WebSocketScreenState extends State<WebSocketScreen> {
   String _statusMessage = '';
+  String _appCode = '';
 
   void _simulateRequest() async {
     try {
-      var code = getIt<Agent>().getInstanceCode();
+      var code = await getIt<Agent>().getInstanceCode();
       var fields = ['name'];
       await getIt<Agent>().receiveFormValuesRequest(BERequest(code, fields));
       setState(() {
@@ -41,20 +42,14 @@ class _WebSocketScreenState extends State<WebSocketScreen> {
 
   @override
   void initState() {
-    getIt<Agent>().generateInstanceCode();
     super.initState();
+    getIt<Agent>().generateInstanceCodeIfNone().then((str) => setState(() {
+          _appCode = str;
+        }));
   }
 
   @override
   Widget build(BuildContext context) {
-    var appCode = (() {
-      try {
-        return getIt<Agent>().getInstanceCode();
-      } catch (error) {
-        return error.toString();
-      }
-    })();
-
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -67,7 +62,7 @@ class _WebSocketScreenState extends State<WebSocketScreen> {
               style: TextStyle(
                   fontSize: Theme.of(context).textTheme.bodyMedium?.fontSize),
             ),
-            title: Text(appCode, key: WidgetKeys.appCodeTextField),
+            title: Text(_appCode, key: WidgetKeys.appCodeTextField),
           ),
           ListTile(
             title:

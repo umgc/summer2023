@@ -14,17 +14,39 @@ void main() async {
 
   final logger = Logger();
 
-  test('get app instance code, not initialized', () {
+  test('get app instance code, not initialized', () async {
     var agent = Agent('browser-extension-api-unit-test', directory);
-    expect(() => agent.getInstanceCode(), throwsA(anything));
+    expectLater(agent.getInstanceCode(), throwsA(anything));
   });
 
-  test('get app instance code, initialized', () {
+  test('get app instance code, initialized', () async {
     var agent = Agent('browser-extension-api-unit-test', directory);
-    agent.generateInstanceCode();
-    var code = agent.getInstanceCode();
+    await agent.generateInstanceCodeIfNone();
+    var code = await agent.getInstanceCode();
     logger.i(code);
-    expect(code, '8736');
+    // expect 4 digit number
+    final regExp = RegExp(r'^\d{4}$');
+    expect(regExp.hasMatch(code), true);
+  });
+
+  test('get app instance code, initialized twice and unchanged', () async {
+    var agent = Agent('browser-extension-api-unit-test', directory);
+    var selectionActivator = TestRecordingSelectionActivator();
+    agent.setRecordingSelector(selectionActivator);
+
+    await agent.generateInstanceCodeIfNone();
+    var instanceCode = await agent.getInstanceCode();
+    expect(instanceCode, isNotNull);
+    expect(instanceCode, isNotEmpty);
+    logger.i('instanceCode: $instanceCode');
+
+    await agent.generateInstanceCodeIfNone();
+    var secondInstanceCode = await agent.getInstanceCode();
+    expect(secondInstanceCode, isNotNull);
+    expect(secondInstanceCode, isNotEmpty);
+    logger.i('secondInstanceCode: $secondInstanceCode');
+
+    expect(secondInstanceCode, instanceCode);
   });
 
   test('extract form values, app instance code initialized and passed in',
@@ -33,10 +55,11 @@ void main() async {
     var selectionActivator = TestRecordingSelectionActivator();
     agent.setRecordingSelector(selectionActivator);
 
-    agent.generateInstanceCode();
-    var instanceCode = agent.getInstanceCode();
+    await agent.generateInstanceCodeIfNone();
+    var instanceCode = await agent.getInstanceCode();
     expect(instanceCode, isNotNull);
     expect(instanceCode, isNotEmpty);
+    logger.i('instanceCode: $instanceCode');
 
     var formFields = ["name"];
     await agent.receiveFormValuesRequest(BERequest(instanceCode, formFields));
