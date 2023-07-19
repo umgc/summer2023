@@ -4,8 +4,10 @@ import 'package:backend_services/model/be_request.dart';
 import 'package:backend_services/model/be_response.dart';
 import 'package:backend_services/src/be-service/be_service.dart';
 import 'package:backend_services/src/recording-service/GptCalls.dart';
+import 'package:backend_services/src/reminder-service/GptReminder.dart';
 import 'package:backend_services/src/websocket-client/websocket_client.dart';
 import 'package:backend_services/src/websocket-client/websocket_listener.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:logger/logger.dart';
 import 'package:collection/collection.dart';
@@ -250,7 +252,12 @@ class Agent {
   String processReminders(String guid) {
     //Send to ChatGPT, create reminders, return a string to UI
     // Send Recording to chatGPT and ask it to return any reminders that need to be made based on the recording's transcription
-    return 'Lunch 1200 Wednesday, Birthday party 1000 Saturday';
+    var transcriptionFile = getRecordingTranscript(guid);
+    final gptReminders = GptReminder(_openAIApiKey);
+    final remindersFromTranscript =
+        gptReminders.getOpenAiReminderList(transcriptionFile, 'This Profile');
+    String reminderString = remindersFromTranscript.toString();
+    return reminderString;
   }
 
   List<Recording> globalSearch(String searchTerm) {
