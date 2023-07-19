@@ -22,7 +22,7 @@ class _ConversationDetailsScreenState extends State<ConversationDetailsScreen> {
   final controller = TextEditingController();
   late ConversationsProvider conversationsProvider;
   int selectedIndex = 0;
-  final String resultsText = "Transmogrifying...";
+  String resultsText = "Transmogrifying...";
   bool isEditing = false;
   late String audioPath;
   late PlayerController playerController;
@@ -38,6 +38,9 @@ class _ConversationDetailsScreenState extends State<ConversationDetailsScreen> {
     super.initState();
     conversationsProvider =
         Provider.of<ConversationsProvider>(context, listen: false);
+    resultsText = conversationsProvider.selectedConversation!.transcript.isEmpty
+        ? "Transmogrifying..."
+        : conversationsProvider.selectedConversation!.transcript;
     controller.text = conversationsProvider.selectedConversation!.title;
     var path =
         "${conversationsProvider.appDirectory.path}/${conversationsProvider.selectedConversation?.id}";
@@ -122,8 +125,25 @@ class _ConversationDetailsScreenState extends State<ConversationDetailsScreen> {
     }
 
     void onTransmogPress(int index) {
+      String transmogResult = "";
+      if (index == 0) {
+        transmogResult =
+            conversationsProvider.selectedConversation!.transcript.isEmpty
+                ? "Transmogrifying..."
+                : conversationsProvider.selectedConversation!.transcript;
+      } else if (index == 1) {
+        transmogResult =
+            conversationsProvider.selectedConversation!.gptDescription.isEmpty
+                ? "Transmogrifying..."
+                : conversationsProvider.selectedConversation!.gptDescription;
+      } else if (index == 2) {
+        transmogResult = "Reminders"; // todo
+      } else {
+        transmogResult = "Food Order"; // todo
+      }
       setState(() {
         selectedIndex = index;
+        resultsText = transmogResult;
       });
     }
 

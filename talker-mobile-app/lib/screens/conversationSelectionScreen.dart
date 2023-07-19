@@ -1,7 +1,6 @@
 import 'package:backend_services/backend_services_exports.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:talker_mobile_app/services/DummyConversationSelectionActivator.dart';
 
 import '../globals.dart';
 import '../widgets/conversationListItem.dart';
@@ -22,7 +21,6 @@ class _ConversationSelectionScreenState
   @override
   void initState() {
     super.initState();
-    getIt<Agent>().initialize(DummyConversationSelectionActivator(context));
   }
 
   @override
@@ -67,9 +65,10 @@ class _ConversationSelectionScreenState
           children: filteredConversations.map((conversation) {
             return ConversationListItem(
                 conversation: conversation,
-                onTap: () => {
-                      // todo DO FUNCTION TO SEND TRANSCRIPT TO BESIE HERE AND THEN GO BACK TO PREVIOUS SCREEN
-                    });
+                onTap: () {
+                  getIt<Agent>().extractFormValues(conversation.id);
+                  Navigator.pop(context);
+                });
           }).toList(),
         ),
       );
