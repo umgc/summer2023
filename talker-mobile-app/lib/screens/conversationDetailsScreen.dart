@@ -22,7 +22,6 @@ class _ConversationDetailsScreenState extends State<ConversationDetailsScreen> {
   final controller = TextEditingController();
   late ConversationsProvider conversationsProvider;
   int selectedIndex = 0;
-  String resultsText = "Transmogrifying...";
   bool isEditing = false;
   late String audioPath;
   late PlayerController playerController;
@@ -38,9 +37,6 @@ class _ConversationDetailsScreenState extends State<ConversationDetailsScreen> {
     super.initState();
     conversationsProvider =
         Provider.of<ConversationsProvider>(context, listen: false);
-    resultsText = conversationsProvider.selectedConversation!.transcript.isEmpty
-        ? "Transmogrifying..."
-        : conversationsProvider.selectedConversation!.transcript;
     controller.text = conversationsProvider.selectedConversation!.title;
     var path =
         "${conversationsProvider.appDirectory.path}/${conversationsProvider.selectedConversation?.id}";
@@ -124,26 +120,30 @@ class _ConversationDetailsScreenState extends State<ConversationDetailsScreen> {
       );
     }
 
-    void onTransmogPress(int index) {
+    String getResultsToShow() {
       String transmogResult = "";
-      if (index == 0) {
+      if (selectedIndex == 0) {
         transmogResult =
             conversationsProvider.selectedConversation!.transcript.isEmpty
                 ? "Transmogrifying..."
                 : conversationsProvider.selectedConversation!.transcript;
-      } else if (index == 1) {
+      } else if (selectedIndex == 1) {
         transmogResult =
             conversationsProvider.selectedConversation!.gptDescription.isEmpty
                 ? "Transmogrifying..."
                 : conversationsProvider.selectedConversation!.gptDescription;
-      } else if (index == 2) {
+      } else if (selectedIndex == 2) {
         transmogResult = "Reminders"; // todo
       } else {
         transmogResult = "Food Order"; // todo
       }
+
+      return transmogResult;
+    }
+
+    void onTransmogPress(int index) {
       setState(() {
         selectedIndex = index;
-        resultsText = transmogResult;
       });
     }
 
@@ -253,92 +253,101 @@ class _ConversationDetailsScreenState extends State<ConversationDetailsScreen> {
           ));
     }
 
-    return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(
-        title: buildTitleWidget(),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          key: const Key('btnBack'),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        centerTitle: true,
-        backgroundColor: Colors.black,
-        actions: <Widget>[
-          IconButton(
-              key: const Key('btnDelete'),
-              onPressed: onDeletePress,
-              icon: const Icon(
-                Icons.delete,
-                color: Colors.white,
-              ))
-        ],
-      ),
-      body: Container(
-        margin: const EdgeInsets.only(left: 10, top: 25, right: 10),
-        child: Column(
-          key: const Key('ctnrColumns'),
-          children: [
-            renderDateAndDuration(),
-            renderTransmogRow(),
-            Expanded(
-              child: Column(
-                key: const Key('colResults'),
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    width: double.infinity,
-                    margin: const EdgeInsets.only(top: 25),
-                    padding: const EdgeInsets.all(15),
-                    decoration: const BoxDecoration(
-                        color: Color(0xFF262626),
-                        borderRadius: BorderRadius.all(Radius.circular(30))),
-                    child: Text(resultsText,
-                        key: const Key('txtResults'),
-                        style: const TextStyle(
-                            color: Colors.white, fontSize: 16, height: 1.5)),
-                  ),
-                  Container(
-                    width: double.infinity,
-                    height: 70,
-                    margin: const EdgeInsets.only(bottom: 10),
-                    decoration: const BoxDecoration(
-                        color: Color(0xFF8900F8),
-                        borderRadius: BorderRadius.all(Radius.circular(10))),
-                    child: Row(
-                      key: const Key('audioPlayer'),
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        IconButton(
-                            key: const Key('btnPlayPause'),
-                            onPressed: _playOrPauseAudio,
-                            icon: Icon(
-                                playerController.playerState.isPlaying
-                                    ? Icons.pause
-                                    : Icons.play_arrow_rounded,
-                                color: Colors.white,
-                                size: 40)),
-                        Expanded(
-                          child: AudioFileWaveforms(
-                            key: const Key('audioWave'),
-                            enableSeekGesture: true,
-                            waveformType: WaveformType.fitWidth,
-                            size: Size(
-                                MediaQuery.of(context).size.width - 100, 90),
-                            playerController: playerController,
-                            continuousWaveform: true,
-                            playerWaveStyle: playerWaveStyle,
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+    return Consumer<ConversationsProvider>(
+      builder: (context, provider, child) {
+        return Scaffold(
+          backgroundColor: Colors.black,
+          appBar: AppBar(
+            title: buildTitleWidget(),
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              key: const Key('btnBack'),
+              onPressed: () => Navigator.of(context).pop(),
             ),
-          ],
-        ),
-      ),
+            centerTitle: true,
+            backgroundColor: Colors.black,
+            actions: <Widget>[
+              IconButton(
+                  key: const Key('btnDelete'),
+                  onPressed: onDeletePress,
+                  icon: const Icon(
+                    Icons.delete,
+                    color: Colors.white,
+                  ))
+            ],
+          ),
+          body: Container(
+            margin: const EdgeInsets.only(left: 10, top: 25, right: 10),
+            child: Column(
+              key: const Key('ctnrColumns'),
+              children: [
+                renderDateAndDuration(),
+                renderTransmogRow(),
+                Expanded(
+                  child: Column(
+                    key: const Key('colResults'),
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        width: double.infinity,
+                        margin: const EdgeInsets.only(top: 25),
+                        padding: const EdgeInsets.all(15),
+                        decoration: const BoxDecoration(
+                            color: Color(0xFF262626),
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(30))),
+                        child: Text(getResultsToShow(),
+                            key: const Key('txtResults'),
+                            style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                height: 1.5)),
+                      ),
+                      Container(
+                        width: double.infinity,
+                        height: 70,
+                        margin: const EdgeInsets.only(bottom: 10),
+                        decoration: const BoxDecoration(
+                            color: Color(0xFF8900F8),
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(10))),
+                        child: Row(
+                          key: const Key('audioPlayer'),
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            IconButton(
+                                key: const Key('btnPlayPause'),
+                                onPressed: _playOrPauseAudio,
+                                icon: Icon(
+                                    playerController.playerState.isPlaying
+                                        ? Icons.pause
+                                        : Icons.play_arrow_rounded,
+                                    color: Colors.white,
+                                    size: 40)),
+                            Expanded(
+                              child: AudioFileWaveforms(
+                                key: const Key('audioWave'),
+                                enableSeekGesture: true,
+                                waveformType: WaveformType.fitWidth,
+                                size: Size(
+                                    MediaQuery.of(context).size.width - 100,
+                                    90),
+                                playerController: playerController,
+                                continuousWaveform: true,
+                                playerWaveStyle: playerWaveStyle,
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }
