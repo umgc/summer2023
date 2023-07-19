@@ -6,6 +6,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:talker_mobile_app/screens/conversationDetailsScreen.dart';
+import 'package:talker_mobile_app/screens/conversationSelectionScreen.dart';
 import 'package:talker_mobile_app/screens/conversationsListScreen.dart';
 import 'package:talker_mobile_app/screens/eulaScreen.dart';
 import 'package:talker_mobile_app/screens/guidedTourScreen.dart';
@@ -33,7 +34,9 @@ Future main() async {
             const ConversationDetailsScreen(),
         '/recording': (context) => const RecordingScreen(),
         '/guidedTour': (context) => const GuidedTourScreen(),
-        '/eula': (context) => const EulaScreen()
+        '/eula': (context) => const EulaScreen(),
+        '/conversationSelection': (context) =>
+            const ConversationSelectionScreen()
       },
     ),
   ));
