@@ -8,6 +8,7 @@ environment:
 
 # Add regular dependencies here.
 dependencies:
+  dio: ^5.3.0
   dotenv: ^4.1.0
   http: ^1.1.0
   logger: ^1.4.0

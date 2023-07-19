@@ -1,12 +1,18 @@
-import 'package:http/http.dart' as http;
+import 'package:path/path.dart';
+import 'package:async/async.dart';
 import 'dart:io';
+import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
 import 'dart:convert';
-import 'dart:async';
-import 'dart:core';
 
 
 
-Future <Map<String,String>> audioFileUpload(File audioFile) async {
+
+
+
+Future <String> audioFileUpload(File audioFile) async {
+Dio dio = new Dio();
+
 //define messages for responses
 var successMessage = {'message':"audio file is uploaded for transcription", 'statusCode':'200'};
 var fourHundredMessage = {'message':'you do not have access to upload your conversation'};
@@ -18,17 +24,27 @@ if(audioFile == null){
   print("please select audio file");
 }
 
-//TODO: Updated with .env variables
-var url = Uri.https('7wgrq8myd7.execute-api.us-east-1.amazonaws.com', '/dev/testrecordingsswenv2/test-dart.txt');
-//var req = await http.put(url,body: File('./testfile/test-dart.txt').readAsBytesSync());
-var req = await http.put(url,body: audioFile.readAsBytesSync());
-if(req.statusCode == 200){ 
-    print(successMessage.toString());
-  return successMessage;
-}
-} catch (e){
- return {"errorMessage":e.toString()};
-}
-return {"message":"upload file function"};
+///define filename path for uri
+String fileName = audioFile.path.split('/').last;
+String apiURL = "https://7wgrq8myd7.execute-api.us-east-1.amazonaws.com";
+String uri = '$apiURL/dev/testrecordingsswenv2/$fileName';
 
+File uploadFile = File(audioFile.path);
+
+var response = await dio.put(
+uri, 
+data: uploadFile.openRead(),
+options: Options(contentType:"application/mp3"));
+print(response);
+if(response.statusCode == 200){
+  return "It uploaded";
+}
+return "ran the function";
+
+} catch (e){
+ //return {"errorMessage":e.toString()};
+ print(e.toString());
+}
+return "ran the function";
+//return true;
 }
