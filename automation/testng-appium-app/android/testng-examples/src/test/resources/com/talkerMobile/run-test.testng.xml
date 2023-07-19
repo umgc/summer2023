@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Local">
+    <test name="LocalTest">
+        <classes>
+            <class name="com.talkerMobile.Record"/>
+        </classes>
+    </test>
+</suite>

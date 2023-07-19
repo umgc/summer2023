@@ -1,34 +1,49 @@
-import 'package:http/http.dart' as http;
 import 'dart:io';
-import 'dart:convert';
-import 'dart:async';
-import 'dart:core';
+import 'package:dio/dio.dart';
 
+Future<String> audioFileUpload(File audioFile) async {
+  Dio dio = new Dio();
 
-
-Future <Map<String,String>> audioFileUpload(File audioFile) async {
 //define messages for responses
-var successMessage = {'message':"audio file is uploaded for transcription", 'statusCode':'200'};
-var fourHundredMessage = {'message':'you do not have access to upload your conversation'};
-var fiveHundredMessage = {'message':'there was an issue with uploading your conversation'};
+  // ignore: unused_local_variable
+  var successMessage = {
+    'message': "audio file is uploaded for transcription",
+    'statusCode': '200'
+  };
+  // ignore: unused_local_variable
+  var fourHundredMessage = {
+    'message': 'you do not have access to upload your conversation'
+  };
+  // ignore: unused_local_variable
+  var fiveHundredMessage = {
+    'message': 'there was an issue with uploading your conversation'
+  };
 
-try{
+  try {
+    // ignore: unnecessary_null_comparison
+    if (audioFile == null) {
+      print("please select audio file");
+    }
 
-if(audioFile == null){
-  print("please select audio file");
-}
+    ///define filename path for uri
+    String fileName = audioFile.path.split('/').last;
+    String apiURL = "https://7wgrq8myd7.execute-api.us-east-1.amazonaws.com";
+    String uri = '$apiURL/dev/testrecordingsswenv2/$fileName';
 
-//TODO: Updated with .env variables
-var url = Uri.https('7wgrq8myd7.execute-api.us-east-1.amazonaws.com', '/dev/testrecordingsswenv2/test-dart.txt');
-//var req = await http.put(url,body: File('./testfile/test-dart.txt').readAsBytesSync());
-var req = await http.put(url,body: audioFile.readAsBytesSync());
-if(req.statusCode == 200){ 
-    print(successMessage.toString());
-  return successMessage;
-}
-} catch (e){
- return {"errorMessage":e.toString()};
-}
-return {"message":"upload file function"};
+    File uploadFile = File(audioFile.path);
 
+    var response = await dio.put(uri,
+        data: uploadFile.openRead(),
+        options: Options(contentType: "application/mp3"));
+    print(response);
+    if (response.statusCode == 200) {
+      return "It uploaded";
+    }
+    return "ran the function";
+  } catch (e) {
+    //return {"errorMessage":e.toString()};
+    print(e.toString());
+  }
+  return "ran the function";
+//return true;
 }
