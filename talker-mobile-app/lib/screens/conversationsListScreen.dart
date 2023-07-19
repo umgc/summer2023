@@ -1,12 +1,12 @@
+import 'package:backend_services/backend_services_exports.dart';
 import 'package:flutter/material.dart';
 import 'package:panara_dialogs/panara_dialogs.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:talker_mobile_app/enums/sorting_type.dart';
-import 'package:talker_mobile_app/models/conversation.dart';
-import 'package:talker_mobile_app/state/conversations_provider.dart';
+import 'package:talker_mobile_app/services/DummyConversationSelectionActivator.dart';
 
+import '../globals.dart';
 import '../widgets/conversationListItem.dart';
 
 class ConversationsListScreen extends StatefulWidget {
@@ -25,6 +25,7 @@ class _ConversationsListScreenState extends State<ConversationsListScreen> {
   void initState() {
     super.initState();
     _getFirstLoadSetting();
+    getIt<Agent>().initialize(DummyConversationSelectionActivator(context));
   }
 
   Future<void> _getFirstLoadSetting() async {
@@ -123,6 +124,7 @@ class _ConversationsListScreenState extends State<ConversationsListScreen> {
         backgroundColor: Colors.black,
         actions: <Widget>[
           IconButton(
+              key: const Key('btnInfo'),
               onPressed: () => Navigator.pushNamed(context, '/information'),
               icon: const Icon(
                 Icons.info_outline,
@@ -134,6 +136,7 @@ class _ConversationsListScreenState extends State<ConversationsListScreen> {
         color: Colors.black,
         padding: const EdgeInsets.only(top: 10, left: 10, right: 10),
         child: Column(
+          key: const Key('ctnrColumns'),
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Container(
@@ -143,8 +146,10 @@ class _ConversationsListScreenState extends State<ConversationsListScreen> {
                   color: const Color(0xFF262626)),
               height: 45,
               child: Row(
+                key: const Key('rowConversation'),
                 children: [
                   PopupMenuButton(
+                    key: const Key('btnSort'),
                     shape: const RoundedRectangleBorder(
                         borderRadius: BorderRadius.all(Radius.circular(15.0))),
                     color: const Color(0xFF262626),
@@ -157,6 +162,7 @@ class _ConversationsListScreenState extends State<ConversationsListScreen> {
                     itemBuilder: (BuildContext context) =>
                         <PopupMenuEntry<SortingType>>[
                       const PopupMenuItem<SortingType>(
+                        key: Key('btnSort_DateNewToOld'),
                         value: SortingType.dateNewToOld,
                         child: Text(
                           'Date (New ➔ Old)',
@@ -164,6 +170,7 @@ class _ConversationsListScreenState extends State<ConversationsListScreen> {
                         ),
                       ),
                       const PopupMenuItem<SortingType>(
+                        key: Key('btnSort_DateOldToNew'),
                         value: SortingType.dateOldToNew,
                         child: Text(
                           'Date (Old ➔ New)',
@@ -171,6 +178,7 @@ class _ConversationsListScreenState extends State<ConversationsListScreen> {
                         ),
                       ),
                       const PopupMenuItem<SortingType>(
+                        key: Key('btnSort_TitleAToZ'),
                         value: SortingType.titleAToZ,
                         child: Text(
                           'Title (A ➔ Z)',
@@ -178,6 +186,7 @@ class _ConversationsListScreenState extends State<ConversationsListScreen> {
                         ),
                       ),
                       const PopupMenuItem<SortingType>(
+                        key: Key('btnSort_TitleZToA'),
                         value: SortingType.titleZToA,
                         child: Text(
                           'Title (Z ➔ A)',
@@ -185,6 +194,7 @@ class _ConversationsListScreenState extends State<ConversationsListScreen> {
                         ),
                       ),
                       const PopupMenuItem<SortingType>(
+                        key: Key('btnSort_DurationShortToLong'),
                         value: SortingType.durationShortToLong,
                         child: Text(
                           'Duration (Short ➔ Long)',
@@ -192,6 +202,7 @@ class _ConversationsListScreenState extends State<ConversationsListScreen> {
                         ),
                       ),
                       const PopupMenuItem<SortingType>(
+                        key: Key('btnSort_DurationLongToShort'),
                         value: SortingType.durationLongToShort,
                         child: Text(
                           'Duration (Long ➔ Short)',
@@ -200,12 +211,14 @@ class _ConversationsListScreenState extends State<ConversationsListScreen> {
                       ),
                     ],
                     icon: const Icon(
+                      key: Key('btnSortIcon'),
                       Icons.sort,
                       color: Colors.white,
                     ),
                   ),
                   Expanded(
                     child: TextField(
+                      key: const Key('txtSearch'),
                       controller: controller,
                       textAlignVertical: TextAlignVertical.center,
                       style: const TextStyle(color: Colors.white),
@@ -225,6 +238,7 @@ class _ConversationsListScreenState extends State<ConversationsListScreen> {
                           hintText: 'Search Conversations',
                           hintStyle: const TextStyle(color: Colors.grey),
                           suffixIcon: IconButton(
+                            key: const Key('btnSearchClear'),
                             onPressed: () => clearSearchText(),
                             icon: const Icon(Icons.clear),
                             color: searchText.isNotEmpty
@@ -251,6 +265,7 @@ class _ConversationsListScreenState extends State<ConversationsListScreen> {
             Container(
               margin: const EdgeInsets.only(top: 10),
               child: ElevatedButton.icon(
+                  key: const Key('btnRecord'),
                   onPressed: () {
                     onRecordPress();
                   },

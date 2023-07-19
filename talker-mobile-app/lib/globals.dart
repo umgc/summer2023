@@ -1,5 +1,3 @@
-import 'dart:io';
+import 'package:get_it/get_it.dart';
 
-class Globals {
-  static Directory? appDirectory;
-}
+GetIt getIt = GetIt.instance;

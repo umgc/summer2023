@@ -46,6 +46,7 @@ class _EulaScreenState extends State<EulaScreen> {
         body: Container(
           margin: const EdgeInsets.only(left: 15, right: 15),
           child: Column(
+            key: const Key('colEULA'),
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
@@ -63,6 +64,7 @@ class _EulaScreenState extends State<EulaScreen> {
                   Container(
                     margin: const EdgeInsets.only(bottom: 15),
                     child: TextButton(
+                      key: const Key('btnDisagree'),
                       onPressed: () async {
                         prefs.setBool('agreedToEula', false);
                         SystemNavigator.pop();
@@ -84,6 +86,7 @@ class _EulaScreenState extends State<EulaScreen> {
                     ),
                   ),
                   TextButton(
+                    key: const Key('btnAgree'),
                     onPressed: () async {
                       prefs.setBool('agreedToEula', true);
                       if (context.mounted) {

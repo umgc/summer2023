@@ -1,15 +1,13 @@
+import 'dart:io';
+
 import 'package:audio_waveforms/audio_waveforms.dart';
+import 'package:backend_services/backend_services_exports.dart';
 import 'package:flutter/material.dart';
 import 'package:panara_dialogs/panara_dialogs.dart';
 import 'package:provider/provider.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 import 'package:talker_mobile_app/screens/conversationDetailsScreen.dart';
 import 'package:uuid/uuid.dart';
-
-import '../globals.dart';
-import '../models/conversation.dart';
-import '../services/fileHelpers.dart';
-import '../state/conversations_provider.dart';
 
 class RecordingScreen extends StatefulWidget {
   const RecordingScreen({Key? key}) : super(key: key);
@@ -21,21 +19,19 @@ class RecordingScreen extends StatefulWidget {
 class _RecordingScreenState extends State<RecordingScreen> {
   late final RecorderController recorderController;
   final _stopWatchTimer = StopWatchTimer(mode: StopWatchMode.countUp);
+  late String directoryPath;
 
-  String? path;
   String id = const Uuid().v1();
   bool isPaused = false;
 
   @override
   void initState() {
     super.initState();
-    _getDir();
     _initializeControllers();
-    _startRecording();
-  }
-
-  void _getDir() {
-    path = "${Globals.appDirectory?.path}/$id";
+    directoryPath = Provider.of<ConversationsProvider>(context, listen: false)
+        .appDirectory
+        .path;
+    _startRecording(directoryPath);
   }
 
   @override
@@ -54,8 +50,8 @@ class _RecordingScreenState extends State<RecordingScreen> {
       ..bitRate = 48000;
   }
 
-  void _startRecording() async {
-    await recorderController.record(path: path);
+  void _startRecording(String directoryPath) async {
+    await recorderController.record(path: "$directoryPath/$id");
     _stopWatchTimer.onStartTimer();
     setState(() {
       isPaused = false;
@@ -87,16 +83,13 @@ class _RecordingScreenState extends State<RecordingScreen> {
     var seconds = _stopWatchTimer.secondTime;
     var recordedDate = DateTime.now();
     Conversation newConversation = Conversation(
-        title: 'NewConversation',
         recordedDate: recordedDate,
         duration: Duration(seconds: seconds.value),
-        content: '',
-        audioFilePath: path.toString(),
+        audioFilePath: "$directoryPath/$id",
         id: id);
     conversationsProvider.addConversation(newConversation);
     conversationsProvider.setSelectedConversation(newConversation);
-    await writeConversationsToJsonFile(conversationsProvider.conversations,
-        "${Globals.appDirectory?.path}/conversations.json");
+    audioFileUpload(File("$directoryPath/$id"));
     Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -108,6 +101,7 @@ class _RecordingScreenState extends State<RecordingScreen> {
       return Container(
         margin: const EdgeInsets.only(left: 20, right: 20),
         child: ElevatedButton.icon(
+            key: const Key('btnPause'),
             onPressed: () {
               _pauseRecording();
             },
@@ -133,6 +127,7 @@ class _RecordingScreenState extends State<RecordingScreen> {
       return Container(
         margin: const EdgeInsets.only(left: 20, right: 20),
         child: ElevatedButton.icon(
+            key: const Key('btnResume'),
             onPressed: () {
               _resumeRecording();
             },
@@ -204,6 +199,7 @@ class _RecordingScreenState extends State<RecordingScreen> {
                 child: Container(
                   margin: const EdgeInsets.only(top: 10, bottom: 10),
                   child: AudioWaveforms(
+                    key: const Key('audoWave'),
                     size: const Size(300, 35),
                     recorderController: recorderController,
                     waveStyle: const WaveStyle(
@@ -222,6 +218,7 @@ class _RecordingScreenState extends State<RecordingScreen> {
                       child: Container(
                         margin: const EdgeInsets.only(bottom: 10),
                         child: Text(
+                          key: const Key('timerRecording'),
                           '${'${(value / 60).floor()}'.padLeft(2, '0')}:${'${value % 60}'.padLeft(2, '0')}',
                           style: const TextStyle(
                               color: Colors.white, fontSize: 30),
@@ -235,6 +232,7 @@ class _RecordingScreenState extends State<RecordingScreen> {
                   Container(
                     margin: const EdgeInsets.only(left: 20, right: 20, top: 15),
                     child: ElevatedButton.icon(
+                        key: const Key('btnStopRecording'),
                         onPressed: () {
                           _stopRecording(conversationsProvider);
                         },

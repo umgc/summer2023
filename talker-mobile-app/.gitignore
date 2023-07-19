@@ -57,3 +57,6 @@ app.*.map.json
 ios/Podfile
 ios/Podfile.lock
 
+android/app/src/main/java/io/flutter/plugins/GeneratedPluginRegistrant.java
+ios/Runner/GeneratedPluginRegistrant.h
+ios/Runner/GeneratedPluginRegistrant.m

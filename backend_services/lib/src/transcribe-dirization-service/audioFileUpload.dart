@@ -13,16 +13,27 @@ import 'dart:convert';
 Future <String> audioFileUpload(File audioFile) async {
 Dio dio = new Dio();
 
+
 //define messages for responses
-var successMessage = {'message':"audio file is uploaded for transcription", 'statusCode':'200'};
-var fourHundredMessage = {'message':'you do not have access to upload your conversation'};
-var fiveHundredMessage = {'message':'there was an issue with uploading your conversation'};
+  var successMessage = {
+    'message': "audio file is uploaded for transcription",
+    'statusCode': '200'
+  };
+  // ignore: unused_local_variable
+  var fourHundredMessage = {
+    'message': 'you do not have access to upload your conversation'
+  };
+  // ignore: unused_local_variable
+  var fiveHundredMessage = {
+    'message': 'there was an issue with uploading your conversation'
+  };
 
-try{
+  try {
+    // ignore: unnecessary_null_comparison
+    if (audioFile == null) {
+      print("please select audio file");
+    }
 
-if(audioFile == null){
-  print("please select audio file");
-}
 
 ///define filename path for uri
 String fileName = audioFile.path.split('/').last;
@@ -48,3 +59,4 @@ return "ran the function";
 return "ran the function";
 //return true;
 }
+

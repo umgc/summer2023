@@ -1,0 +1,4 @@
+#Sat Jul 08 12:47:08 EDT 2023
+base.0=C\:\\Users\\payal\\Desktop\\UMGC-Final-project\\summer2023\\talker-mobile-app\\test_app\\build\\app\\intermediates\\dex\\debug\\mergeDexDebug\\classes.dex
+path.0=classes.dex
+renamed.0=classes.dex

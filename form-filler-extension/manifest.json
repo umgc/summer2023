@@ -1,7 +1,7 @@
 {
-    "name": "Form Filler",
+    "name": "ConvoBuddy Form Fill-In",
     "version": "0.0.1",
-    "description": "",
+    "description": "Use the ConvoBuddy app to auto-fill in web forms based on audio recordings.",
     "manifest_version": 3,
     "author": "Charlie McAllister - Team A",
     "permissions": [

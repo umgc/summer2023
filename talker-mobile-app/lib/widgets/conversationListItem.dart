@@ -1,7 +1,6 @@
+import 'package:backend_services/backend_services_exports.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
-import '../models/conversation.dart';
 
 class ConversationListItem extends StatelessWidget {
   const ConversationListItem(

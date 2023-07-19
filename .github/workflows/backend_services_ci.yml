@@ -1,0 +1,83 @@
+name: Backend Services CI
+
+on:
+  push:
+    branches: ["development"]
+    paths:
+      - "backend_services/**"
+      - "backend_test_utility/**"
+
+  pull_request:
+    branches: ["development"]
+    paths:
+      - "backend_services/**"
+      - "backend_test_utility/**"
+
+  # allow action to be run from github UI
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build backend_services
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout source
+        uses: actions/checkout@v3
+
+      - name: Setup Java environment for Android build
+        uses: actions/setup-java@v3
+        with:
+          distribution: "zulu"
+          java-version: "12.x"
+          cache: "gradle" # speed up java setup
+
+      - name: Setup flutter SDK
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.10.5"
+          channel: "stable"
+          cache: true # speed up flutter sdk setup
+
+      # backend_services
+      - name: Get backend_services dependencies
+        run: flutter pub get
+        working-directory: ./backend_services
+
+      # Allow violation of info suggestions
+      - name: Analyze backend_services project
+        run: flutter analyze --no-fatal-infos
+        working-directory: ./backend_services
+
+      - name: Run backend_services unit tests
+        run: flutter test --coverage
+        working-directory: ./backend_services
+
+      # backend_test_utility
+      - name: Copy .env.release to .env
+        run: |
+          cp .env.release .env
+        working-directory: ./backend_test_utility
+
+      - name: Get backend_test_utility dependencies
+        run: flutter pub get
+        working-directory: ./backend_services
+
+      # Allow violation of info suggestions
+      - name: Analyze backend_test_utility project
+        run: flutter analyze --no-fatal-infos
+        working-directory: ./backend_test_utility
+
+      - name: Run backend_test_utility unit tests
+        run: flutter test --coverage
+        working-directory: ./backend_test_utility
+
+      - name: Build backend_test_utility apk
+        run: flutter build apk --dart-define=OPENAI_API_KEY="${{secrets.OPENAI_API_KEY}}"
+        working-directory: ./backend_test_utility
+
+      - name: Upload generated apk to workflow artifacts
+        uses: actions/upload-artifact@v1
+        with:
+          name: backend_test_utility-apk
+          path: backend_test_utility/build/app/outputs/flutter-apk/app-release.apk
