@@ -238,32 +238,6 @@ class Agent {
     return guid;
   }
 
-  List<Recording> listRecordings(String sortOption) {
-    //sort based on sort type, return full list of recording objects
-    return recordingList;
-  }
-
-  void deleteRecording(String guid) async {
-    //Delete recording from memory and filesystem
-    // Use the guid to identify the recording in question and the filepath to it and remove it from the system
-    var recordingFile = await getRecordingFile(guid);
-    if (recordingFile.existsSync()) {
-      var content = recordingFile.readAsStringSync();
-      if (content.contains(guid)) {
-        recordingFile.deleteSync();
-      } else {
-        print('Not the right recording');
-      }
-    } else {
-      print('Recording file does not exist');
-    }
-  }
-
-  List<Recording> searchRecordings(String searchTerm) {
-    //Search through recordings, return subset of recording objects
-    return recordingList;
-  }
-
   void convertSpeechToText(String guid) {
     //send API call to STT provider, store results to Recording Object, save
   }
@@ -277,13 +251,12 @@ class Agent {
     //Send to ChatGPT, create reminders, return a string to UI
     // Send Recording to chatGPT and ask it to return any reminders that need to be made based on the recording's transcription
     var transcriptionFile = getRecordingTranscript(guid);
-    final gptReminders = GptReminder(_openAIApiKey);
+    final gptReminders = GptReminder(EnvironmentVars.openAIApiKey);
     final remindersFromTranscript =
         gptReminders.getOpenAiReminderList(transcriptionFile, 'This Profile');
     String reminderString = remindersFromTranscript.toString();
     return reminderString;
   }
-  */
 
   List<Conversation> globalSearch(String searchTerm) {
     //Search recordings, return subset of recordings to UI based on search term
