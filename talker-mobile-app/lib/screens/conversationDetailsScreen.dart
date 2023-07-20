@@ -133,9 +133,15 @@ class _ConversationDetailsScreenState extends State<ConversationDetailsScreen> {
                 ? "Transmogrifying..."
                 : conversationsProvider.selectedConversation!.gptDescription;
       } else if (selectedIndex == 2) {
-        transmogResult = "Reminders"; // todo
+        transmogResult = 
+            conversationsProvider.selectedConversation!.gptReminders.isEmpty
+                ? "Transmogrifying..."
+                : conversationsProvider.selectedConversation!.gptReminders;
       } else {
-        transmogResult = "Food Order"; // todo
+        transmogResult = 
+            conversationsProvider.selectedConversation!.gptFoodOrder.isEmpty
+                ? "Transmogrifying..."
+                : conversationsProvider.selectedConversation!.gptFoodOrder;
       }
 
       return transmogResult;

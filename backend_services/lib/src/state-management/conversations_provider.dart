@@ -88,6 +88,28 @@ class ConversationsProvider with ChangeNotifier {
     writeConversationsToJsonFile();
   }
 
+  void updateGptReminders(String id, String newGptReminders) {
+    Conversation? conversation =
+        conversations.firstWhereOrNull((convo) => convo.id == id);
+    if (conversation == null) {
+      return;
+    }
+    conversation.gptReminders = newGptReminders;
+    notifyListeners();
+    writeConversationsToJsonFile();
+  }
+
+    void updateGptFoodOrder(String id, String newGptFoodOrder) {
+    Conversation? conversation =
+        conversations.firstWhereOrNull((convo) => convo.id == id);
+    if (conversation == null) {
+      return;
+    }
+    conversation.gptFoodOrder = newGptFoodOrder;
+    notifyListeners();
+    writeConversationsToJsonFile();
+  }
+
   void setSelectedConversation(Conversation conversation) {
     _selectedConversation = conversation;
     notifyListeners();
