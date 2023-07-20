@@ -1,5 +1,6 @@
-var stompClient = null;
-var stompClient2 = null;
+let stompClient = null;
+let stompClient2 = null;
+let stompClient3 = null;
 
 function setConnected(connected) {
     $("#connect").prop("disabled", connected);
@@ -16,8 +17,10 @@ function setConnected(connected) {
 function connect() {
     let socket = new SockJS('/ws');
     let socket2 = new SockJS('/ws');
+    let socket3 = new SockJS('/ws');
     stompClient = Stomp.over(socket);
     stompClient2 = Stomp.over(socket2);
+    stompClient3 = Stomp.over(socket3);
     stompClient.connect({'Access-Control-Allow-Origin':'*'}, function (frame) {
         setConnected(true);
         console.log('Connected: ' + frame);
@@ -31,6 +34,13 @@ function connect() {
         console.log('Connected: ' + frame);
         stompClient2.subscribe('/topic/filled-form', function (msg) {
             showMessages("From /topic/filled-form: " + JSON.parse(msg.body).content);
+        });
+    });
+    stompClient3.connect({'Access-Control-Allow-Origin':'*'}, function (frame) {
+        setConnected(true);
+        console.log('Connected: ' + frame);
+        stompClient3.subscribe('/topic/transcript', function (msg) {
+            showMessages("From /topic/transcript: " + JSON.parse(msg.body).content);
         });
     });
 }
@@ -67,6 +77,14 @@ function sendFormPayload2() {
     stompClient2.send("/app/filled-form", {}, JSON.stringify(payload));
 }
 
+function sendFormPayload3() {
+    let payload = {
+        transcript: $('#payload3').val()
+    }
+    console.log(JSON.stringify(payload));
+    stompClient3.send("/app/transcript", {}, JSON.stringify(payload));
+}
+
 function showMessages(message) {
     $("#conversations").append("<tr><td>" + message + "</td></tr>");
 }
@@ -79,5 +97,6 @@ $(function () {
     $( "#disconnect" ).click(function() { disconnect(); });
     $( "#send" ).click(function() { sendFormPayload(); });
     $( "#send2" ).click(function () {sendFormPayload2();});
+    $( "#send3" ).click(function () {sendFormPayload3();});
 });
 

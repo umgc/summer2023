@@ -41,6 +41,14 @@ public class WebSocketController {
         return new OutboundMessage(form);
     }
 
+    @MessageMapping("/transcript")
+    @SendTo("/topic/transcript")
+    public OutboundMessage awsToPhone(String transcript) throws InterruptedException {
+        log.info("transcript: {}", transcript);
+        // sending message to TRANSCRIPT topic
+        return new OutboundMessage(transcript);
+    }
+
     @GetMapping("/ws/info/{t}")
     public String getInfo(@PathVariable("t") String t) {
         return "You're connected to BESsie's WebSocket server!";

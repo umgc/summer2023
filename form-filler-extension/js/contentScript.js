@@ -51,8 +51,8 @@ chrome.runtime.onMessage.addListener((obj, sender, sendResponse) => {
         
             console.log("Form field from BESie: " + key + ", " + data.payload[key]);
 
-            const formElement = document.getElementsByName(key)[0];
-            const isFormNameId = false;
+            let formElement = document.getElementsByName(key)[0];
+            let isFormNameId = false;
 
             if (!formElement) {
                 formElement = document.getElementById(key);

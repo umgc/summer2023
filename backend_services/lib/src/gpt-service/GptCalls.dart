@@ -39,8 +39,8 @@ Speaker2: Yes, I'm looking forward to it.''';
 
 Provide a description date/time of the following format:
 
-Reminder 1: 2023-08-03T08:00:00, Take your morning pill
-Reminder 2: 2023-08-04T11:00:00, Call Michael
+Reminder 1: 2023-08-03T08:00, Take your morning pill
+Reminder 2: 2023-08-04T11:00, Call Michael
 
 ''';
 
