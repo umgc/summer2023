@@ -18,7 +18,6 @@ import 'interfaces/recording_selection_activator.dart';
 import 'model/reminder.dart';
 import 'model/user.dart';
 
-// enum SortType { oldestFirst, newestFirst, aDescription, zDescription }
 
 class Agent {
   String userId;
@@ -208,29 +207,25 @@ class Agent {
     sendFormValueResponse(BEResponse(json));
   }
 
-  // JN: SM: You could create a new function getRecording and move the first
-  // part of this function there so we have the recording missing error handling
-  // in one place.
-  String getRecordingTranscript(String recordingGuid) {
-    var recording = conversationsProvider.conversations
-        .firstWhereOrNull((rec) => rec.id == recordingGuid);
+  // Recording Getters from conversationsProvider
+  Conversation getRecording(String recordingGuid) {
+    var recording = conversationsProvider.conversations.firstWhereOrNull((rec) => rec.id == recordingGuid);
     if (recording == null) {
       throw "Recording with guid $recordingGuid not found.";
     }
+    return recording;
+  }
+
+  String getRecordingTranscript(String recordingGuid) {
+    var recording = getRecording(recordingGuid);
     if (recording.transcript == "") {
       throw "Recording with guid $recordingGuid does not have a transcript.";
     }
     return recording.transcript;
   }
 
-  // JN: SM: This function could use getRecording to avoid reproducing error handling
-  // JN: SM: This function is unused, though you might want to use it for getOpenAiReminders
   DateTime getRecordingDate(String recordingGuid) {
-    var recording = conversationsProvider.conversations
-        .firstWhereOrNull((rec) => rec.id == recordingGuid);
-    if (recording == null) {
-      throw "Recording with guid $recordingGuid not found.";
-    }
+    var recording = getRecording(recordingGuid);
     return recording.recordedDate;
   }
 
@@ -248,25 +243,14 @@ class Agent {
     final completion = await gpt.getOpenAiSummary(recordingTranscript,
         'This Profile'); //Todo implement user profile argument if desired
 
-    //Todo parse this output if needed
+    //Todo Further parse this output if needed
 
     return completion;
   }
 
-  // JN: SM: I think this function should use getRecordingTranscript and getRecordingDate
-  // It is marginally less efficient than getting the recording and accessing the
-  // properties, but the error handling doesn't have to be reproduced.
   Future<String?> getOpenAiReminders(String recordingGuid) async {
-    var recording = conversationsProvider.conversations
-        .firstWhereOrNull((rec) => rec.id == recordingGuid);
-    if (recording == null) {
-      throw "Recording with guid $recordingGuid not found.";
-    }
-    if (recording.transcript == "") {
-      throw "Recording with guid $recordingGuid does not have a transcript.";
-    }
-    final recordingTranscript = recording.transcript;
-    final recordedDate = recording.recordedDate;
+    final recordingTranscript = getRecordingTranscript(recordingGuid);
+    final recordedDate = getRecordingDate(recordingGuid);
 
     // send to chatgpt
     final gpt = GptCalls(EnvironmentVars.openAIApiKey);
