@@ -208,6 +208,9 @@ class Agent {
     sendFormValueResponse(BEResponse(json));
   }
 
+  // JN: SM: You could create a new function getRecording and move the first
+  // part of this function there so we have the recording missing error handling
+  // in one place.
   String getRecordingTranscript(String recordingGuid) {
     var recording = conversationsProvider.conversations
         .firstWhereOrNull((rec) => rec.id == recordingGuid);
@@ -220,6 +223,8 @@ class Agent {
     return recording.transcript;
   }
 
+  // JN: SM: This function could use getRecording to avoid reproducing error handling
+  // JN: SM: This function is unused, though you might want to use it for getOpenAiReminders
   DateTime getRecordingDate(String recordingGuid) {
     var recording = conversationsProvider.conversations
         .firstWhereOrNull((rec) => rec.id == recordingGuid);
@@ -236,7 +241,7 @@ class Agent {
     }
   }
 
-    Future<String?> getOpenAiSummary(String recordingGuid) async {
+  Future<String?> getOpenAiSummary(String recordingGuid) async {
     String recordingTranscript = getRecordingTranscript(recordingGuid);
 
     final gpt = GptCalls(EnvironmentVars.openAIApiKey);
@@ -246,11 +251,12 @@ class Agent {
     //Todo parse this output if needed
 
     return completion;
-
   }
 
-    Future<String?> getOpenAiReminders(String recordingGuid) async {
-
+  // JN: SM: I think this function should use getRecordingTranscript and getRecordingDate
+  // It is marginally less efficient than getting the recording and accessing the
+  // properties, but the error handling doesn't have to be reproduced.
+  Future<String?> getOpenAiReminders(String recordingGuid) async {
     var recording = conversationsProvider.conversations
         .firstWhereOrNull((rec) => rec.id == recordingGuid);
     if (recording == null) {
@@ -264,22 +270,21 @@ class Agent {
 
     // send to chatgpt
     final gpt = GptCalls(EnvironmentVars.openAIApiKey);
-    final completion = await gpt.getReminders(
-        recordingTranscript, '', recordedDate); //Todo implement user profile argument if desired
+    final completion = await gpt.getReminders(recordingTranscript, '',
+        recordedDate); //Todo implement user profile argument if desired
     // write Reminder Transmog result to conversation
     conversationsProvider.updateGptReminders(recordingGuid, completion);
     // todo create Reminder objects based on completion
     return completion;
   }
 
-    Future<String?> getOpenAiFoodOrder(String recordingGuid) async {
-
+  Future<String?> getOpenAiFoodOrder(String recordingGuid) async {
     final recordingTranscript = getRecordingTranscript(recordingGuid);
 
     // send to chatgpt
     final gpt = GptCalls(EnvironmentVars.openAIApiKey);
-    final completion = await gpt.getRestaurantOrder(
-        recordingTranscript, ''); //Todo implement user profile argument if desired
+    final completion = await gpt.getRestaurantOrder(recordingTranscript,
+        ''); //Todo implement user profile argument if desired
     // write Reminder Transmog result to conversation
     conversationsProvider.updateGptFoodOrder(recordingGuid, completion);
     // todo create Reminder objects based on completion
@@ -297,7 +302,6 @@ class Agent {
   */
 
   //Reminders Section
-
 
   List<Reminder> getReminders() {
     //return reminders
@@ -373,6 +377,4 @@ class Agent {
       return '';
     }
   }
-
-
 }
