@@ -307,6 +307,12 @@ class Agent {
 
   void addReminder(Reminder newReminder) async {
     //add a reminder to the list and file storage
+    reminderList.add(newReminder);
+    var reminderListFile = await _remindersFile;
+    String reminderListString = await reminderListFile.readAsString();
+    List<dynamic> reminderEntries = json.decode(reminderListString);
+    reminderEntries.add(newReminder.toJson());
+    reminderListFile.writeAsStringSync(json.encode(reminderEntries));
   }
 
   void loadSampleReminderData() async {
