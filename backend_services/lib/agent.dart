@@ -18,7 +18,6 @@ import 'interfaces/recording_selection_activator.dart';
 import 'model/reminder.dart';
 import 'model/user.dart';
 
-// enum SortType { oldestFirst, newestFirst, aDescription, zDescription }
 
 class Agent {
   String userId;
@@ -208,16 +207,26 @@ class Agent {
     sendFormValueResponse(BEResponse(json));
   }
 
-  String getRecordingTranscript(String recordingGuid) {
-    var recording = conversationsProvider.conversations
-        .firstWhereOrNull((rec) => rec.id == recordingGuid);
+  // Recording Getters from conversationsProvider
+  Conversation getRecording(String recordingGuid) {
+    var recording = conversationsProvider.conversations.firstWhereOrNull((rec) => rec.id == recordingGuid);
     if (recording == null) {
       throw "Recording with guid $recordingGuid not found.";
     }
+    return recording;
+  }
+
+  String getRecordingTranscript(String recordingGuid) {
+    var recording = getRecording(recordingGuid);
     if (recording.transcript == "") {
       throw "Recording with guid $recordingGuid does not have a transcript.";
     }
     return recording.transcript;
+  }
+
+  DateTime getRecordingDate(String recordingGuid) {
+    var recording = getRecording(recordingGuid);
+    return recording.recordedDate;
   }
 
   void sendFormValueResponse(BEResponse response) {
@@ -227,27 +236,56 @@ class Agent {
     }
   }
 
+  Future<String?> getOpenAiSummary(String recordingGuid) async {
+    String recordingTranscript = getRecordingTranscript(recordingGuid);
+
+    final gpt = GptCalls(EnvironmentVars.openAIApiKey);
+    final completion = await gpt.getOpenAiSummary(recordingTranscript,
+        'This Profile'); //Todo implement user profile argument if desired
+
+    //Todo Further parse this output if needed
+
+    return completion;
+  }
+
+  Future<String?> getOpenAiReminders(String recordingGuid) async {
+    final recordingTranscript = getRecordingTranscript(recordingGuid);
+    final recordedDate = getRecordingDate(recordingGuid);
+
+    // send to chatgpt
+    final gpt = GptCalls(EnvironmentVars.openAIApiKey);
+    final completion = await gpt.getReminders(recordingTranscript, '',
+        recordedDate); //Todo implement user profile argument if desired
+    // write Reminder Transmog result to conversation
+    conversationsProvider.updateGptReminders(recordingGuid, completion);
+    // todo create Reminder objects based on completion
+    return completion;
+  }
+
+  Future<String?> getOpenAiFoodOrder(String recordingGuid) async {
+    final recordingTranscript = getRecordingTranscript(recordingGuid);
+
+    // send to chatgpt
+    final gpt = GptCalls(EnvironmentVars.openAIApiKey);
+    final completion = await gpt.getRestaurantOrder(recordingTranscript,
+        ''); //Todo implement user profile argument if desired
+    // write Reminder Transmog result to conversation
+    conversationsProvider.updateGptFoodOrder(recordingGuid, completion);
+    // todo create Reminder objects based on completion
+    return completion;
+  }
+
   //#endregion
   /*
-  void convertSpeechToText(String guid) {
-    //send API call to STT provider, store results to Recording Object, save
-  }
-
-  String processFoodOrder(String guid) {
-    //Send to ChatGPT, return a string
-    return 'Hamburger';
-  }
-
-  String processReminders(String guid) {
-    //Send to ChatGPT, create reminders, return a string to UI
-    return 'Lunch 1200 Wednesday, Birthday party 1000 Saturday';
-  }
-  */
+  Deprecated method
 
   List<Conversation> globalSearch(String searchTerm) {
     //Search recordings, return subset of recordings to UI based on search term
     return conversationsProvider.conversations;
   }
+  */
+
+  //Reminders Section
 
   List<Reminder> getReminders() {
     //return reminders
@@ -322,19 +360,5 @@ class Agent {
       print(e);
       return '';
     }
-  }
-
-  Future<String?> getOpenAiSummary(String guid) async {
-    String requestTranscript = getRecordingTranscript(guid);
-
-    GptCalls newGpt = GptCalls(EnvironmentVars.openAIApiKey);
-    final completion = await newGpt.getOpenAiSummary(requestTranscript,
-        'This Profile'); //Todo implement user profile argument if desired
-
-    //Todo parse this output "content: <THIS_IS_THE_INTERESTING_CONTENT>, ), finishReason: stop)"
-
-    //Todo save this GPT Summary to recording and write to file - call method with GUID and GPTsummary arguments
-
-    return completion;
   }
 }

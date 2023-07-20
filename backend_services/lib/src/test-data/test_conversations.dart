@@ -15,7 +15,9 @@ class TestConversations {
         title: 'Description A',
         transcript: transcript1,
         customDescription: 'Description',
-        gptDescription: '');
+        gptDescription: '',
+        gptReminders: '',
+        gptFoodOrder: '');
     Conversation recording2 = Conversation(
         id: '0a60bf00-a057-4ad7-87fd-534c7d407160',
         audioFilePath: 'path',
@@ -48,7 +50,9 @@ spk_6: I will have the cajun cat fish.
 
 spk_0: Anything else?''',
         customDescription: 'Description',
-        gptDescription: '');
+        gptDescription: '',
+        gptReminders: '',
+        gptFoodOrder: '');
     Conversation recording3 = Conversation(
         id: 'e3bc7acc-3b20-4056-94b6-6199fdba5870',
         audioFilePath: 'path',
@@ -64,7 +68,9 @@ spk_0: Remember to call your kids on Saturdays at 10:00 a.m.
 
 spk_1: Remind me every day at 04:30 p.m. that dinner is in the cafeteria at 05:00. It's down the hall and to the left.''',
         customDescription: 'Description',
-        gptDescription: '');
+        gptDescription: '',
+        gptReminders: '',
+        gptFoodOrder: '');
     Conversation recording4 = Conversation(
         id: '866731c8-a9cd-408c-ae04-886f31a42493',
         audioFilePath: 'path',
@@ -73,7 +79,9 @@ spk_1: Remind me every day at 04:30 p.m. that dinner is in the cafeteria at 05:0
         title: 'Description D',
         transcript: '',
         customDescription: 'Description',
-        gptDescription: '');
+        gptDescription: '',
+        gptReminders: '',
+        gptFoodOrder: '');
     Conversation recording5 = Conversation(
         id: 'e7cb2be9-75f2-44a0-9976-df7dfc0e1363',
         audioFilePath: 'path',
@@ -82,7 +90,9 @@ spk_1: Remind me every day at 04:30 p.m. that dinner is in the cafeteria at 05:0
         title: 'Description E',
         transcript: '',
         customDescription: 'Description',
-        gptDescription: '');
+        gptDescription: '',
+        gptReminders: '',
+        gptFoodOrder: '');
     Conversation recording6 = Conversation(
         id: '173d6dc0-fb47-4284-bd09-9465177f8eea',
         audioFilePath: 'path',
@@ -106,7 +116,9 @@ Unlike many of his contemporaries, Washington never attended college or received
 
 In addition to reading, writing, and basic legal forms, George studied geometry and trigonometry—in preparation for his first career as a surveyor—and manners—which would shape his character and conduct for the rest of his life.''',
         customDescription: 'Description',
-        gptDescription: '');
+        gptDescription: '',
+        gptReminders: '',
+        gptFoodOrder: '');
     Conversation recording7 = Conversation(
         id: 'cff13755-0a90-4f90-975f-fe9f5a13fcd5',
         audioFilePath: 'path',
@@ -116,7 +128,9 @@ In addition to reading, writing, and basic legal forms, George studied geometry 
         transcript:
             '''My name is John Doe and I want to apply for admission to the University of Maryland Global Campus Graduate degree program. I like computers so I was thinking a degree in IT would be the way to go. I am interested in security and have done some penetration testing at work, and would like to pursue those interests further. I am a vetaran, serving in the Air Force for 4 years. I live at 4321 Cypress St, Eastern Shore, Maryland. My email address is john_doe_iii@gmail.com.''',
         customDescription: '',
-        gptDescription: '');
+        gptDescription: '',
+        gptReminders: '',
+        gptFoodOrder: '');
 
     List<Conversation> sampleRecordingList = [
       recording1,
