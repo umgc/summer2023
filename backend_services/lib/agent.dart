@@ -9,10 +9,9 @@ import 'package:backend_services/model/be_response.dart';
 import 'package:backend_services/src/be-service/be_service.dart';
 import 'package:backend_services/src/gpt-service/GptCalls.dart';
 import 'package:backend_services/src/local-storage/index.dart';
-import 'package:backend_services/src/reminder-service/GptReminder.dart';
+// import 'package:backend_services/src/reminder-service/GptReminder.dart';
 import 'package:backend_services/src/websocket-client/websocket_client.dart';
 import 'package:backend_services/src/websocket-client/websocket_listener.dart';
-import 'package:flutter/material.dart';
 import 'package:collection/collection.dart';
 import 'package:logger/logger.dart';
 
@@ -230,14 +229,7 @@ class Agent {
   }
 
   //#endregion
-
-  String createRecording(String filename) {
-    //Insantiate a new recording object given a particular file
-    //generate a new GUID
-    String guid = 'abc37428-e345-492f-8a32-bbbb183d763f';
-    return guid;
-  }
-
+  /*
   void convertSpeechToText(String guid) {
     //send API call to STT provider, store results to Recording Object, save
   }
@@ -251,12 +243,13 @@ class Agent {
     //Send to ChatGPT, create reminders, return a string to UI
     // Send Recording to chatGPT and ask it to return any reminders that need to be made based on the recording's transcription
     var transcriptionFile = getRecordingTranscript(guid);
-    final gptReminders = GptReminder(EnvironmentVars.openAIApiKey);
+    final gptReminders = GptReminder(_openAIApiKey);
     final remindersFromTranscript =
         gptReminders.getOpenAiReminderList(transcriptionFile, 'This Profile');
     String reminderString = remindersFromTranscript.toString();
     return reminderString;
   }
+  */
 
   List<Conversation> globalSearch(String searchTerm) {
     //Search recordings, return subset of recordings to UI based on search term

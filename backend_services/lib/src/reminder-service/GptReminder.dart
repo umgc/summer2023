@@ -3,7 +3,7 @@ import 'package:dart_openai/dart_openai.dart';
 class GptReminder {
   GptReminder(this._openAIApiKey);
 
-  final String _openAIApiKey;
+  String _openAIApiKey;
 
   final String reminderPrompt =
       '''You are a Text-to-speech transcription service. The following JSON data depicts the contents of an audio file: From this audio file, find any sections that refer to an event occuring in the future 
