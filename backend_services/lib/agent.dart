@@ -9,10 +9,8 @@ import 'package:backend_services/model/be_response.dart';
 import 'package:backend_services/src/be-service/be_service.dart';
 import 'package:backend_services/src/gpt-service/GptCalls.dart';
 import 'package:backend_services/src/local-storage/index.dart';
-import 'package:backend_services/src/reminder-service/GptReminder.dart';
 import 'package:backend_services/src/websocket-client/websocket_client.dart';
 import 'package:backend_services/src/websocket-client/websocket_listener.dart';
-import 'package:flutter/material.dart';
 import 'package:collection/collection.dart';
 import 'package:logger/logger.dart';
 
