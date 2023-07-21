@@ -237,11 +237,11 @@ class Agent {
   }
 
   Future<String?> getOpenAiSummary(String recordingGuid) async {
-    String recordingTranscript = getRecordingTranscript(recordingGuid);
+    final recordingTranscript = getRecordingTranscript(recordingGuid);
 
     final gpt = GptCalls(EnvironmentVars.openAIApiKey);
-    final completion = await gpt.getOpenAiSummary(recordingTranscript,
-        'This Profile'); //Todo implement user profile argument if desired
+    final completion = await gpt.getOpenAiSummary(recordingTranscript,''); //Todo implement user profile argument if desired
+    conversationsProvider.updateGptDescription(recordingGuid, completion!);
 
     //Todo Further parse this output if needed
 
