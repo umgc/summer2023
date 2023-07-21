@@ -40,7 +40,7 @@ class _ConversationDetailsScreenState extends State<ConversationDetailsScreen> {
         Provider.of<ConversationsProvider>(context, listen: false);
     controller.text = conversationsProvider.selectedConversation!.title;
     var path =
-        "${conversationsProvider.appDirectory.path}/${conversationsProvider.selectedConversation?.id}";
+        "${conversationsProvider.appDirectory.path}/${conversationsProvider.selectedConversation?.id}.m4a";
     playerController = PlayerController();
     _preparePlayer(path);
     playerStateSubscription = playerController.onPlayerStateChanged.listen((_) {
@@ -213,6 +213,9 @@ class _ConversationDetailsScreenState extends State<ConversationDetailsScreen> {
           confirmButtonText: "OK",
           cancelButtonText: "Cancel", onTapConfirm: () async {
         conversationsProvider.removeConversation(conversation!);
+        var path =
+        "${conversationsProvider.appDirectory.path}/${conversationsProvider.selectedConversation?.id}.m4a";
+
         Navigator.of(context).popUntil((route) => route.isFirst);
       }, onTapCancel: () {
         Navigator.of(context).pop();
