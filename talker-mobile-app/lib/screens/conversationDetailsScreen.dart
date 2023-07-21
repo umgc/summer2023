@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:panara_dialogs/panara_dialogs.dart';
 import 'package:provider/provider.dart';
 
+import '../globals.dart';
 import '../widgets/transmogListItem.dart';
 
 class ConversationDetailsScreen extends StatefulWidget {
@@ -170,17 +171,35 @@ class _ConversationDetailsScreenState extends State<ConversationDetailsScreen> {
                 icon: Icons.event_note_rounded,
                 title: "Summary",
                 showHighlight: selectedIndex == 1,
-                onTap: () => onTransmogPress(1)),
+                onTap: () {
+                  if (conversationsProvider.selectedConversation!.gptDescription.isEmpty) {
+                  getIt<Agent>().getOpenAiSummary(conversationsProvider.selectedConversation!.id);
+                  }
+                  onTransmogPress(1);
+                }
+                ),
             TransmogListItem(
                 icon: Icons.notifications_active,
                 title: "Reminders",
                 showHighlight: selectedIndex == 2,
-                onTap: () => onTransmogPress(2)),
+                onTap: () {
+                if (conversationsProvider.selectedConversation!.gptReminders.isEmpty) {
+                  getIt<Agent>().getOpenAiReminders(conversationsProvider.selectedConversation!.id);
+                  }
+                onTransmogPress(2);
+                }
+                ),
             TransmogListItem(
                 icon: Icons.restaurant,
                 title: "Food Order",
                 showHighlight: selectedIndex == 3,
-                onTap: () => onTransmogPress(3))
+                onTap: () {
+                  if (conversationsProvider.selectedConversation!.gptFoodOrder.isEmpty) {
+                  getIt<Agent>().getOpenAiFoodOrder(conversationsProvider.selectedConversation!.id);
+                  }
+                  onTransmogPress(3);
+                }
+                )
           ],
         ),
       );
@@ -290,6 +309,7 @@ class _ConversationDetailsScreenState extends State<ConversationDetailsScreen> {
                 renderDateAndDuration(),
                 renderTransmogRow(),
                 Expanded(
+                  child: SingleChildScrollView(
                   child: Column(
                     key: const Key('colResults'),
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -347,6 +367,7 @@ class _ConversationDetailsScreenState extends State<ConversationDetailsScreen> {
                         ),
                       ),
                     ],
+                  ),
                   ),
                 ),
               ],

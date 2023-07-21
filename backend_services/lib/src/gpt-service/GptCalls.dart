@@ -42,6 +42,8 @@ Provide a description date/time of the following format:
 Reminder 1: 2023-08-03T08:00, Take your morning pill
 Reminder 2: 2023-08-04T11:00, Call Michael
 
+If this is a conversation about food orders in a restaurant, apologize that you are unable to generate reminders.
+
 ''';
 
   Future<String?> getOpenAiSummary(
@@ -61,8 +63,8 @@ Reminder 2: 2023-08-04T11:00, Call Michael
     final completion = await OpenAI.instance.chat
         .create(model: "gpt-3.5-turbo", messages: messages);
 
-    return completion.choices[0]
-        .toString(); //The conversation involves Speaker 1 expressing their hesitation and uncertainty about their pain tolerance, while Speaker 2 reassures them and expresses readiness to start the activity.
+    return completion.choices[0].message.content; 
+    //The conversation involves Speaker 1 expressing their hesitation and uncertainty about their pain tolerance, while Speaker 2 reassures them and expresses readiness to start the activity.
     // Possible Error: RequestFailedException (RequestFailedException{message: That model is currently overloaded with other requests. You can retry your request, or contact us through our help center at help.openai.com if the error persists. (Please include the request ID d946214a3b7fa731346976ac8a39e724 in your message.), statusCode: 503})
   }
 
