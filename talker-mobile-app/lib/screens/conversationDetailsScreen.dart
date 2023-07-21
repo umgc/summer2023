@@ -213,9 +213,6 @@ class _ConversationDetailsScreenState extends State<ConversationDetailsScreen> {
           confirmButtonText: "OK",
           cancelButtonText: "Cancel", onTapConfirm: () async {
         conversationsProvider.removeConversation(conversation!);
-        var path =
-        "${conversationsProvider.appDirectory.path}/${conversationsProvider.selectedConversation?.id}.m4a";
-
         Navigator.of(context).popUntil((route) => route.isFirst);
       }, onTapCancel: () {
         Navigator.of(context).pop();
