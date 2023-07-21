@@ -5,3 +5,4 @@ local.log
 *.iml
 .DS_Store
 **/logs/*
+/android/testng-examples/test-output/
