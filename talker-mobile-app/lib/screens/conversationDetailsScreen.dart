@@ -172,7 +172,8 @@ class _ConversationDetailsScreenState extends State<ConversationDetailsScreen> {
                 title: "Summary",
                 showHighlight: selectedIndex == 1,
                 onTap: () {
-                  if (conversationsProvider.selectedConversation!.gptDescription.isEmpty) {
+                  if (conversationsProvider.selectedConversation!.gptDescription.isEmpty &&
+                  conversationsProvider.selectedConversation!.transcript.isNotEmpty) {
                   getIt<Agent>().getOpenAiSummary(conversationsProvider.selectedConversation!.id);
                   }
                   onTransmogPress(1);
@@ -183,7 +184,8 @@ class _ConversationDetailsScreenState extends State<ConversationDetailsScreen> {
                 title: "Reminders",
                 showHighlight: selectedIndex == 2,
                 onTap: () {
-                if (conversationsProvider.selectedConversation!.gptReminders.isEmpty) {
+                if (conversationsProvider.selectedConversation!.gptReminders.isEmpty &&
+                  conversationsProvider.selectedConversation!.transcript.isNotEmpty) {
                   getIt<Agent>().getOpenAiReminders(conversationsProvider.selectedConversation!.id);
                   }
                 onTransmogPress(2);
@@ -194,7 +196,8 @@ class _ConversationDetailsScreenState extends State<ConversationDetailsScreen> {
                 title: "Food Order",
                 showHighlight: selectedIndex == 3,
                 onTap: () {
-                  if (conversationsProvider.selectedConversation!.gptFoodOrder.isEmpty) {
+                  if (conversationsProvider.selectedConversation!.gptFoodOrder.isEmpty &&
+                  conversationsProvider.selectedConversation!.transcript.isNotEmpty) {
                   getIt<Agent>().getOpenAiFoodOrder(conversationsProvider.selectedConversation!.id);
                   }
                   onTransmogPress(3);
