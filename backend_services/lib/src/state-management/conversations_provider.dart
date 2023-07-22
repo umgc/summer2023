@@ -36,6 +36,7 @@ class ConversationsProvider with ChangeNotifier {
     _conversations.remove(conversation);
     notifyListeners();
     writeConversationsToJsonFile();
+    deleteAudioFile(conversation.id);
   }
 
   void removeAllConversations() {
@@ -149,5 +150,13 @@ class ConversationsProvider with ChangeNotifier {
     var json = jsonEncode(conversations.map((c) => c.toJson()).toList());
     final File jsonFile = File(_conversationsJsonPath);
     await jsonFile.writeAsString(json, mode: FileMode.writeOnly);
+  }
+
+  Future<void> deleteAudioFile(String id) async {
+    final File audioFile = File("${appDirectory.path}/${selectedConversation?.id}.m4a");
+    if (audioFile.existsSync()) {
+      audioFile.deleteSync();
+    } 
+
   }
 }

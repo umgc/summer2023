@@ -51,7 +51,7 @@ class _RecordingScreenState extends State<RecordingScreen> {
   }
 
   void _startRecording(String directoryPath) async {
-    await recorderController.record(path: "$directoryPath/$id");
+    await recorderController.record(path: "$directoryPath/$id.m4a");
     _stopWatchTimer.onStartTimer();
     setState(() {
       isPaused = false;
@@ -85,11 +85,11 @@ class _RecordingScreenState extends State<RecordingScreen> {
     Conversation newConversation = Conversation(
         recordedDate: recordedDate,
         duration: Duration(seconds: seconds.value),
-        audioFilePath: "$directoryPath/$id",
+        audioFilePath: "$directoryPath/$id.m4a",
         id: id);
     conversationsProvider.addConversation(newConversation);
     conversationsProvider.setSelectedConversation(newConversation);
-    audioFileUpload(File("$directoryPath/$id"));
+    audioFileUpload(File("$directoryPath/$id.m4a"));
     Navigator.pushReplacement(
         context,
         MaterialPageRoute(
