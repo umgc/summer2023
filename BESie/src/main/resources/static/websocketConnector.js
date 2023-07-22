@@ -79,8 +79,44 @@ function sendFormPayload2() {
 
 function sendFormPayload3() {
     let payload = {
-        transcript: $('#payload3').val()
-    }
+        jobName: $("#conversationId").val(),
+        results: {
+            transcripts: [{ transcript: $("#transcript").val() }],
+            speaker_labels: {
+            channel_label: "ch_0",
+            speakers: 1,
+            segments: [
+                {
+                start_time: "0.109",
+                speaker_label: "spk_0",
+                end_time: "4.389",
+                items: [
+                    {
+                    start_time: "1.039",
+                    speaker_label: "spk_0",
+                    end_time: "1.659",
+                    },
+                ],
+                },
+            ],
+            },
+            items: [
+            {
+                start_time: "1.039",
+                speaker_label: "spk_0",
+                end_time: "1.659",
+                alternatives: [
+                {
+                    confidence: "0.996",
+                    content: "Testing",
+                },
+                ],
+                type: "pronunciation",
+            },
+            ],
+        },
+        status: "COMPLETED",
+    };
     console.log(JSON.stringify(payload));
     stompClient3.send("/app/transcript", {}, JSON.stringify(payload));
 }

@@ -36,7 +36,7 @@
         <div class="col-md-6">
             <form class="form-inline">
                 <div class="form-group">
-                    <label for="payload">Send this to app/fill endpoint:</label>
+                    <label for="pin">Send this to app/fill endpoint:</label>
                     <input type="text" id="pin" class="form-control" placeholder="Pin..." value="8736">
                 </div>
                 <div class="form-group">
@@ -46,17 +46,26 @@
             </form>
             <form class="form-inline">
                 <div class="form-group">
-                    <label for="payload">Send this to app/filled-form endpoint:</label>
+                    <label for="payload2">Send this to app/filled-form endpoint:</label>
                     <input type="text" id="payload2" class="form-control" placeholder="Test data here...">
                 </div>
                 <button id="send2" class="btn btn-default" type="submit">Send</button>
             </form>
-            <form class="form-inline">
+            <form class="form">
                 <div class="form-group">
                     <label for="payload">Send this to app/transcript endpoint:</label>
-                    <input type="text" id="payload3" class="form-control" placeholder="Test data here...">
+                    <input
+                    type="text"
+                    id="conversationId"
+                    class="form-control"
+                    placeholder="conversation id..."
+                  />
                 </div>
-                <button id="send3" class="btn btn-default" type="submit">Send</button>
+                <div class="form-group">
+                  <label for="transcript">Transcript:</label>
+                  <textarea class="form-control" id="transcript" rows="2"> </textarea>
+                </div>
+                <button id="send3" class="btn btn-default pull-right" type="submit">Send</button>
             </form>
         </div>
     </div>
