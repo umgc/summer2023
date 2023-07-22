@@ -13,6 +13,7 @@ import 'package:backend_services/src/websocket-client/websocket_client.dart';
 import 'package:backend_services/src/websocket-client/websocket_listener.dart';
 import 'package:collection/collection.dart';
 import 'package:logger/logger.dart';
+import 'package:stomp_dart_client/stomp_frame.dart';
 
 import 'interfaces/recording_selection_activator.dart';
 import 'model/reminder.dart';
@@ -47,7 +48,9 @@ class Agent {
       WebSocketListener(
           EnvironmentVars.formFillRequestTopic,
           (frame) =>
-              _beService.handleRequestFrame(frame, receiveFormValuesRequest))
+              _beService.handleRequestFrame(frame, receiveFormValuesRequest)),
+      WebSocketListener(EnvironmentVars.transcriptResponseTopic,
+          (frame) => _receiveTranscript(frame))
     ];
     _webSocketClient = WebSocketClient(EnvironmentVars.wsUrl,
         int.parse(EnvironmentVars.wsConnectionTimeoutMs), listeners);
@@ -63,6 +66,36 @@ class Agent {
     if (_webSocketClient != null) {
       _webSocketClient!.disconnect();
       _webSocketClient = null;
+    }
+  }
+
+  void _receiveTranscript(StompFrame frame) {
+    try {
+      var body = jsonDecode(frame.body!);
+      var content = body?['content'];
+      if (content == null) return;
+      var data = jsonDecode(content);
+      if (data != null &&
+          data.containsKey('jobName') &&
+          data.containsKey('results')) {
+        final jobName = data['jobName'] as String;
+
+        final recordingGuid =
+            jobName.length >= 36 ? jobName.substring(0, 36) : '';
+        if (recordingGuid.isEmpty) {
+          throw "JobName invalid or empty from transcript results ('$jobName').";
+        }
+        if (!doesRecordingExist(recordingGuid)) {
+          throw "Could not find recording with guid '$recordingGuid' for transcript save.";
+        }
+        _logger.i("Received transcript for recording guid '$recordingGuid'.");
+        final results = data['results'];
+        final resultsJson = jsonEncode(results);
+        conversationsProvider.updateConversationTranscript(
+            recordingGuid, resultsJson);
+      }
+    } catch (error) {
+      _logger.e(error.toString());
     }
   }
 
@@ -206,6 +239,12 @@ class Agent {
     sendFormValueResponse(BEResponse(json));
   }
 
+  bool doesRecordingExist(String recordingGuid) {
+    var recording = conversationsProvider.conversations
+        .firstWhereOrNull((rec) => rec.id == recordingGuid);
+    return recording != null;
+  }
+
   // Recording Getters from conversationsProvider
   Conversation getRecording(String recordingGuid) {
     var recording = conversationsProvider.conversations
@@ -240,7 +279,8 @@ class Agent {
     final recordingTranscript = getRecordingTranscript(recordingGuid);
 
     final gpt = GptCalls(EnvironmentVars.openAIApiKey);
-    final completion = await gpt.getOpenAiSummary(recordingTranscript,''); //Todo implement user profile argument if desired
+    final completion = await gpt.getOpenAiSummary(recordingTranscript,
+        ''); //Todo implement user profile argument if desired
     conversationsProvider.updateGptDescription(recordingGuid, completion!);
 
     //Todo Further parse this output if needed
