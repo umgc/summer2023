@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:backend_services/src/ambients.dart';
 import 'package:dio/dio.dart';
 
 Future<String> audioFileUpload(File audioFile) async {
@@ -35,14 +36,14 @@ Future<String> audioFileUpload(File audioFile) async {
     var response = await dio.put(uri,
         data: uploadFile.openRead(),
         options: Options(contentType: "application/mp3"));
-    print(response);
+    log.i(response);
     if (response.statusCode == 200) {
       return "It uploaded";
     }
     return "ran the function";
   } catch (e) {
     //return {"errorMessage":e.toString()};
-    print(e.toString());
+    log.e(e.toString());
   }
   return "ran the function";
 //return true;

@@ -11,6 +11,8 @@ class WebSocketLogOutput extends LogOutput {
   final Duration wsConnectTimeout;
   WebSocketClient? websocketClient;
 
+  final List<OutputEvent> _eventsQueue = [];
+
   @override
   void init() {
     websocketClient = WebSocketClient(wsUrl, wsConnectTimeout, []);
@@ -19,15 +21,20 @@ class WebSocketLogOutput extends LogOutput {
 
   @override
   void output(OutputEvent event) {
-    for (var line in event.lines) {
-      try {
-        if (websocketClient != null && websocketClient!.isConnected) {
-          websocketClient!.send(EnvironmentVars.besieLogTopic, line);
+    _eventsQueue.add(event);
+    try {
+      while (_eventsQueue.isNotEmpty) {
+        var queueEvent = _eventsQueue[0];
+        for (var line in queueEvent.lines) {
+          if (websocketClient != null && websocketClient!.isConnected) {
+            websocketClient!.send(EnvironmentVars.besieLogTopic, line);
+            _eventsQueue.remove(queueEvent);
+          }
         }
-      } catch (error) {
-        if (!kReleaseMode) {
-          print('Error writing to websocket logger.');
-        }
+      }
+    } catch (error) {
+      if (!kReleaseMode) {
+        print('Error writing to websocket logger.');
       }
     }
   }
