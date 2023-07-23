@@ -1,4 +1,5 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:logger/logger.dart';
 
 // This is not great... for String.fromEnvironment to work on all platforms, it
 // needs to store to a const.  That means you can't pass a key in and make a general
@@ -36,6 +37,38 @@ class EnvironmentVars {
 
   static String get transcriptResponseTopic =>
       _getFromEnv('TRANSCRIPT_RESPONSE_TOPIC');
+
+  static Level get logLevel {
+    return _getLogLevelFromEnv('LOG_LEVEL');
+  }
+
+  static Level get webSocketLogLevel {
+    return _getLogLevelFromEnv('WEBSOCKET_LOG_LEVEL');
+  }
+
+  static Level _getLogLevelFromEnv(String name) {
+    final level = _getFromEnv(name);
+    switch (level) {
+      case 'info':
+        return Level.info;
+      case 'debug':
+        return Level.debug;
+      case 'error':
+        return Level.error;
+      case 'nothing':
+        return Level.nothing;
+      case 'verbose':
+        return Level.verbose;
+      case 'wtf':
+        return Level.wtf;
+      case 'warning':
+        return Level.warning;
+      default:
+        throw "Invalid log level '$level' for .env variable $name.";
+    }
+  }
+
+  static String get besieLogTopic => _getFromEnv('BESIE_LOG_TOPIC');
 
   static String _getFromEnv(String name) {
     final envValue = dotenv.env[name];

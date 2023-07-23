@@ -49,6 +49,12 @@ public class WebSocketController {
         return new OutboundMessage(transcript);
     }
 
+    @MessageMapping("/log")
+    @SendTo("/topic/logs")
+    public OutboundMessage addLog(String logEntry) throws Exception {
+        return new OutboundMessage(logEntry);
+    }
+
     @GetMapping("/ws/info/{t}")
     public String getInfo(@PathVariable("t") String t) {
         return "You're connected to BESsie's WebSocket server!";

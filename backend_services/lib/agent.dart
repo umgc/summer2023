@@ -2,26 +2,29 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
-import 'package:backend_services/backend_services_exports.dart';
 import 'package:backend_services/interfaces/json_storage.dart';
 import 'package:backend_services/model/be_request.dart';
 import 'package:backend_services/model/be_response.dart';
+import 'package:backend_services/src/ambients.dart';
 import 'package:backend_services/src/be-service/be_service.dart';
 import 'package:backend_services/src/gpt-service/GptCalls.dart';
 import 'package:backend_services/src/local-storage/index.dart';
 import 'package:backend_services/src/websocket-client/websocket_client.dart';
 import 'package:backend_services/src/websocket-client/websocket_listener.dart';
 import 'package:collection/collection.dart';
-import 'package:logger/logger.dart';
 import 'package:stomp_dart_client/stomp_frame.dart';
 
 import 'interfaces/recording_selection_activator.dart';
+import 'model/conversation.dart';
 import 'model/reminder.dart';
 import 'model/user.dart';
+import 'src/backend_logging.dart';
+import 'src/environment_vars.dart';
+import 'src/state-management/conversations_provider.dart';
+import 'src/test-data/test_conversations.dart';
 
 class Agent {
   String userId;
-  final Logger _logger = Logger();
   String? profile = '';
   late List<Reminder> reminderList = [];
   late BEService _beService;
@@ -44,6 +47,12 @@ class Agent {
   initialize(RecordingSelectionActivator recordingSelectionActivator) {
     setRecordingSelector(recordingSelectionActivator);
 
+    final wsConnectTimeout = Duration(
+        milliseconds: int.parse(EnvironmentVars.wsConnectionTimeoutMs));
+
+    BackendLogging.initializeForPlatform(
+        EnvironmentVars.wsUrl, wsConnectTimeout, _appDirectory);
+
     List<WebSocketListener> listeners = [
       WebSocketListener(
           EnvironmentVars.formFillRequestTopic,
@@ -52,8 +61,8 @@ class Agent {
       WebSocketListener(EnvironmentVars.transcriptResponseTopic,
           (frame) => _receiveTranscript(frame))
     ];
-    _webSocketClient = WebSocketClient(EnvironmentVars.wsUrl,
-        int.parse(EnvironmentVars.wsConnectionTimeoutMs), listeners);
+    _webSocketClient =
+        WebSocketClient(EnvironmentVars.wsUrl, wsConnectTimeout, listeners);
     _webSocketClient!.connect();
   }
 
@@ -62,7 +71,7 @@ class Agent {
   }
 
   shutdown() {
-    _logger.i("Shutdown called on Agent");
+    log.i("Shutdown called on Agent");
     if (_webSocketClient != null) {
       _webSocketClient!.disconnect();
       _webSocketClient = null;
@@ -75,6 +84,7 @@ class Agent {
       var content = body?['content'];
       if (content == null) return;
       var data = jsonDecode(content);
+      log.i(data);
       if (data != null &&
           data.containsKey('jobName') &&
           data.containsKey('results')) {
@@ -88,14 +98,14 @@ class Agent {
         if (!doesRecordingExist(recordingGuid)) {
           throw "Could not find recording with guid '$recordingGuid' for transcript save.";
         }
-        _logger.i("Received transcript for recording guid '$recordingGuid'.");
+        log.i("Received transcript for recording guid '$recordingGuid'.");
         final results = data['results'];
         final resultsJson = jsonEncode(results);
         conversationsProvider.updateConversationTranscript(
             recordingGuid, resultsJson);
       }
     } catch (error) {
-      _logger.e(error.toString());
+      log.e(error.toString());
     }
   }
 
@@ -207,8 +217,7 @@ class Agent {
   Future<void> receiveFormValuesRequest(BERequest request) async {
     final appCode = await _beService.loadAppInstanceCode();
     if (request.pin != appCode) {
-      _logger.i(
-          "Ignoring browser extension request with pin of '${request.pin}'.");
+      log.i("Ignoring browser extension request with pin of '${request.pin}'.");
       return;
     }
     _beService.storeRequest(request);
@@ -234,7 +243,7 @@ class Agent {
         request.form); //Todo implement user profile argument if desired
 
     var json = jsonDecode(completion);
-    _logger.d("Form filler completion JSON:\n$json");
+    log.d("Form filler completion JSON:\n$json");
 
     sendFormValueResponse(BEResponse(json));
   }

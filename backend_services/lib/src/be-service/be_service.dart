@@ -2,10 +2,10 @@ import 'dart:convert';
 
 import 'package:backend_services/model/be_request.dart';
 import 'package:backend_services/src/be-service/app_instance_code.dart';
-import 'package:logger/logger.dart';
 import 'package:stomp_dart_client/stomp_frame.dart';
 
 import '../../interfaces/json_storage.dart';
+import '../ambients.dart';
 import '../utilities/json_util.dart';
 
 class BEService {
@@ -14,21 +14,20 @@ class BEService {
 
   BEService(this._storage);
 
-  final Logger _logger = Logger();
   BERequest? _request;
 
   void handleRequestFrame(StompFrame frame, Function(BERequest) handleRequest) {
     if (frame.body == null || frame.body!.isEmpty) {
-      _logger.w("Received empty body on form fill request");
+      log.w("Received empty body on form fill request");
       return;
     }
-    _logger.d("Received form fill request, processing request");
+    log.d("Received form fill request, processing request");
     var request = parseRequestFromFrame(frame);
     if (request != null) {
       try {
         handleRequest(request);
       } catch (error) {
-        _logger.e("Error handling brower extension request.", error);
+        log.e("Error handling brower extension request.", error);
       }
     }
   }
@@ -45,11 +44,11 @@ class BEService {
     try {
       var body = jsonDecode(frame.body!);
       var request = BERequest.fromJson(jsonDecode(body["content"]));
-      _logger.i(
+      log.i(
           "Parsed incoming form-fill request: ${jsonUtil.toJsonPretty(request)}");
       return request;
     } catch (error) {
-      _logger.e("Malformed brower extension request: ${frame.body}", error);
+      log.e("Malformed brower extension request: ${frame.body}", error);
     }
     return null;
   }

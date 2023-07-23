@@ -1,3 +1,4 @@
+import 'package:backend_services/backend_services_exports.dart';
 import 'package:backend_services/src/websocket-client/websocket_listener.dart';
 import 'package:logger/logger.dart';
 import 'package:stomp_dart_client/stomp.dart';
@@ -6,20 +7,24 @@ import 'package:stomp_dart_client/stomp_frame.dart';
 
 class WebSocketClient {
   final String _wsUrl;
-  final int _wsConnectTimeoutMs;
+  final Duration _wsConnectTimeout;
   final List<WebSocketListener> _listeners;
-  final Logger _logger = Logger();
+  // We don't to log to websocket from the websocket client, just use basic logger
+  final Logger _logger = Logger(
+      printer: SimplePrinter(), level: EnvironmentVars.webSocketLogLevel);
   StompClient? _webSocketClient;
   bool _isConnected = false;
 
-  WebSocketClient(this._wsUrl, this._wsConnectTimeoutMs, this._listeners);
+  WebSocketClient(this._wsUrl, this._wsConnectTimeout, this._listeners);
+
+  bool get isConnected => _isConnected;
 
   void connect() {
     _logger.i("Opening connection to websocket server at '$_wsUrl'.");
     _webSocketClient = StompClient(
         config: StompConfig.SockJS(
             url: _wsUrl,
-            connectionTimeout: Duration(milliseconds: _wsConnectTimeoutMs),
+            connectionTimeout: _wsConnectTimeout,
             onConnect: _onConnectCallback,
             onDisconnect: _onDisconnectCallback,
             onStompError: _onStompError,
