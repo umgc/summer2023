@@ -134,12 +134,12 @@ class _ConversationDetailsScreenState extends State<ConversationDetailsScreen> {
                 ? "Transmogrifying..."
                 : conversationsProvider.selectedConversation!.gptDescription;
       } else if (selectedIndex == 2) {
-        transmogResult = 
+        transmogResult =
             conversationsProvider.selectedConversation!.gptReminders.isEmpty
                 ? "Transmogrifying..."
                 : conversationsProvider.selectedConversation!.gptReminders;
       } else {
-        transmogResult = 
+        transmogResult =
             conversationsProvider.selectedConversation!.gptFoodOrder.isEmpty
                 ? "Transmogrifying..."
                 : conversationsProvider.selectedConversation!.gptFoodOrder;
@@ -172,37 +172,43 @@ class _ConversationDetailsScreenState extends State<ConversationDetailsScreen> {
                 title: "Summary",
                 showHighlight: selectedIndex == 1,
                 onTap: () {
-                  if (conversationsProvider.selectedConversation!.gptDescription.isEmpty &&
-                  conversationsProvider.selectedConversation!.transcript.isNotEmpty) {
-                  getIt<Agent>().getOpenAiSummary(conversationsProvider.selectedConversation!.id);
+                  if (conversationsProvider
+                          .selectedConversation!.gptDescription.isEmpty &&
+                      conversationsProvider
+                          .selectedConversation!.transcript.isNotEmpty) {
+                    getIt<Agent>().getOpenAiSummary(
+                        conversationsProvider.selectedConversation!.id);
                   }
                   onTransmogPress(1);
-                }
-                ),
+                }),
             TransmogListItem(
                 icon: Icons.notifications_active,
                 title: "Reminders",
                 showHighlight: selectedIndex == 2,
                 onTap: () {
-                if (conversationsProvider.selectedConversation!.gptReminders.isEmpty &&
-                  conversationsProvider.selectedConversation!.transcript.isNotEmpty) {
-                  getIt<Agent>().getOpenAiReminders(conversationsProvider.selectedConversation!.id);
+                  if (conversationsProvider
+                          .selectedConversation!.gptReminders.isEmpty &&
+                      conversationsProvider
+                          .selectedConversation!.transcript.isNotEmpty) {
+                    getIt<Agent>().getOpenAiReminders(
+                        conversationsProvider.selectedConversation!.id);
                   }
-                onTransmogPress(2);
-                }
-                ),
+                  onTransmogPress(2);
+                }),
             TransmogListItem(
                 icon: Icons.restaurant,
                 title: "Food Order",
                 showHighlight: selectedIndex == 3,
                 onTap: () {
-                  if (conversationsProvider.selectedConversation!.gptFoodOrder.isEmpty &&
-                  conversationsProvider.selectedConversation!.transcript.isNotEmpty) {
-                  getIt<Agent>().getOpenAiFoodOrder(conversationsProvider.selectedConversation!.id);
+                  if (conversationsProvider
+                          .selectedConversation!.gptFoodOrder.isEmpty &&
+                      conversationsProvider
+                          .selectedConversation!.transcript.isNotEmpty) {
+                    getIt<Agent>().getOpenAiFoodOrder(
+                        conversationsProvider.selectedConversation!.id);
                   }
                   onTransmogPress(3);
-                }
-                )
+                })
           ],
         ),
       );
@@ -281,6 +287,42 @@ class _ConversationDetailsScreenState extends State<ConversationDetailsScreen> {
           ));
     }
 
+    Widget buildResultsContainer() {
+      if (getResultsToShow() == "Transmogrifying...") {
+        return Container(
+          width: double.infinity,
+          margin: const EdgeInsets.only(top: 10),
+          padding: const EdgeInsets.all(15),
+          decoration: const BoxDecoration(
+              color: Color(0xFF262626),
+              borderRadius: BorderRadius.all(Radius.circular(30))),
+          child: SingleChildScrollView(
+            child: Text(getResultsToShow(),
+                key: const Key('txtResults'),
+                style: const TextStyle(
+                    color: Colors.white, fontSize: 16, height: 1.5)),
+          ),
+        );
+      }
+
+      return Expanded(
+        child: Container(
+          width: double.infinity,
+          margin: const EdgeInsets.only(top: 10),
+          padding: const EdgeInsets.all(15),
+          decoration: const BoxDecoration(
+              color: Color(0xFF262626),
+              borderRadius: BorderRadius.all(Radius.circular(30))),
+          child: SingleChildScrollView(
+            child: Text(getResultsToShow(),
+                key: const Key('txtResults'),
+                style: const TextStyle(
+                    color: Colors.white, fontSize: 16, height: 1.5)),
+          ),
+        ),
+      );
+    }
+
     return Consumer<ConversationsProvider>(
       builder: (context, provider, child) {
         return Scaffold(
@@ -312,30 +354,15 @@ class _ConversationDetailsScreenState extends State<ConversationDetailsScreen> {
                 renderDateAndDuration(),
                 renderTransmogRow(),
                 Expanded(
-                  child: SingleChildScrollView(
                   child: Column(
                     key: const Key('colResults'),
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Container(
-                        width: double.infinity,
-                        margin: const EdgeInsets.only(top: 25),
-                        padding: const EdgeInsets.all(15),
-                        decoration: const BoxDecoration(
-                            color: Color(0xFF262626),
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(30))),
-                        child: Text(getResultsToShow(),
-                            key: const Key('txtResults'),
-                            style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                                height: 1.5)),
-                      ),
+                      buildResultsContainer(),
                       Container(
                         width: double.infinity,
                         height: 70,
-                        margin: const EdgeInsets.only(bottom: 10),
+                        margin: const EdgeInsets.only(top: 10, bottom: 10),
                         decoration: const BoxDecoration(
                             color: Color(0xFF8900F8),
                             borderRadius:
@@ -370,7 +397,6 @@ class _ConversationDetailsScreenState extends State<ConversationDetailsScreen> {
                         ),
                       ),
                     ],
-                  ),
                   ),
                 ),
               ],
