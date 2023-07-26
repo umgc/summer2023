@@ -142,9 +142,8 @@ Please ensure that every field in the list of fields has a value filled in, and 
       String reminderText, String recordingId, DateTime createTimestamp) async {
     OpenAI.apiKey = _openAIApiKey;
 
-    // JN: SM: Why is the 5th property id here and and guid in the object and userId in the file?  Seems like it should be recordingId.
     final convertRemindersToJsonPrompt =
-        '''You are a reminders assistant.  Convert the following list of reminder source data into JSON format, using fields "reminderId" "createTimestamp" "notifyTimestamp" "reminderDescription" "id".  There may be multiple reminders in the source data.  Create JSON for all reminders.  The response must only consist of complete properly-formatted JSON.
+        '''You are a reminders assistant.  Convert the following list of reminder source data into JSON format, using fields "reminderId" "createTimestamp" "notifyTimestamp" "reminderDescription" "recordingId".  There may be multiple reminders in the source data.  Create JSON for all reminders.  The response must only consist of complete properly-formatted JSON.
 
 Attributes common to each reminder: 
 
