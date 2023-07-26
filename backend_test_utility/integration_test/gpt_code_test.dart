@@ -123,6 +123,18 @@ void main() async {
     logger.i(result);
   });
 
+    test('Send reminder text to OpenAI for conversion to JSON', () async {
+    final conversation = TestConversations.sampleConversations.firstWhereOrNull(
+        (convo) => convo.id == '866731c8-a9cd-408c-ae04-886f31a42493');
+    final gpt = GptCalls(EnvironmentVars.openAIApiKey);
+    expect(conversation, isNotNull);
+    expect(conversation!.gptReminders, isNotEmpty);
+
+    String? result = await gpt.convertRemindersToJson(
+        conversation.gptReminders, conversation.id, conversation.recordedDate);
+    logger.i(result);
+  });
+
 
 
 }

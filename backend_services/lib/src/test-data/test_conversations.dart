@@ -77,10 +77,10 @@ spk_1: Remind me every day at 04:30 p.m. that dinner is in the cafeteria at 05:0
         duration: Duration(minutes: 3),
         recordedDate: DateTime.now().add(-Duration(hours: 3)),
         title: 'Description D',
-        transcript: '',
+        transcript: '''Remind me to prepare for a meeting on Thursdays at 9 a.m. The meeting will start at 10 a.m. This is on cloud meeting.''',
         customDescription: 'Description',
         gptDescription: '',
-        gptReminders: '',
+        gptReminders: '''Reminder 1: 2023-07-13T08:00, Prepare for Thursday's meeting at 9 a.m.\nReminder 2: 2023-07-13T10:00, Start the cloud meeting''',
         gptFoodOrder: '');
     Conversation recording5 = Conversation(
         id: 'e7cb2be9-75f2-44a0-9976-df7dfc0e1363',
