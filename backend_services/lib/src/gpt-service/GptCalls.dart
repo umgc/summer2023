@@ -139,7 +139,7 @@ Please ensure that every field in the list of fields has a value filled in, and 
   }
 
   Future<String> convertRemindersToJson(
-      String reminderText, String guid, DateTime createTimestamp) async {
+      String reminderText, String recordingId, DateTime createTimestamp) async {
     OpenAI.apiKey = _openAIApiKey;
 
     // JN: SM: Why is the 5th property id here and and guid in the object and userId in the file?  Seems like it should be recordingId.
@@ -149,7 +149,7 @@ Please ensure that every field in the list of fields has a value filled in, and 
 Attributes common to each reminder: 
 
 createTimestamp: $createTimestamp
-id: $guid
+recordingId: $recordingId
 
 "createTimestamp" represents the current time and will be the same for all.  "notifyTimestamp" is the time the reminder takes effect as noted in the source data.  Create a new unique UUID to populate "reminderId" field..
 
@@ -161,7 +161,7 @@ Example JSON using the desired formatting:
 		"createTimestamp": "2023-07-04T20:46:59.346827",
 		"notifyTimestamp": "2023-07-06T22:28:48.683649",
 		"reminderDescription": "Take out the trash",
-		"id": "6dd25210-276e-11ee-a831-510c56deaff3"
+		"recordingId": "6dd25210-276e-11ee-a831-510c56deaff3"
 	}
 ]
 

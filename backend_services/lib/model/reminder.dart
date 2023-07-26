@@ -3,26 +3,23 @@ class Reminder {
   final DateTime createTimestamp;
   final DateTime notifyTimestamp;
   late String reminderDescription;
-  // JN: SM: recordingId?
-  late String guid;
+  late String recordingId;
 
   Reminder(this.reminderId, this.createTimestamp, this.notifyTimestamp,
-      this.reminderDescription, this.guid);
+      this.reminderDescription, this.recordingId);
 
   Reminder.fromJson(Map<String, dynamic> json)
       : reminderId = json['reminderId'] as String,
         createTimestamp = DateTime.parse(json['createTimestamp']),
         notifyTimestamp = DateTime.parse(json['notifyTimestamp']),
         reminderDescription = json['reminderDescription'] as String,
-        // JN: SM: This needs to be the same as property name in toJson()
-        guid = json['guid'] ?? '';
+        recordingId = json['recordingId'] ?? '';
 
   Map<String, dynamic> toJson() => {
         'reminderId': reminderId,
         'createTimestamp': createTimestamp.toIso8601String(),
         'notifyTimestamp': notifyTimestamp.toIso8601String(),
         'reminderDescription': reminderDescription,
-        // JN: SM: looks like this should be recordingId
-        'userId': guid,
+        'recordingId': recordingId,
       };
 }
