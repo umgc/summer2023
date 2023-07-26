@@ -10,7 +10,8 @@ class GptCalls {
 
   //String browserRequest;
   //String userProfile;
-  final String restaurantPrompt = '''You are a restaurant assistant.  Take the following audio transcript of a waiter taking patrons' orders and generate a summary of patrons' orders at a restaurant.  There may be up to 10 speakers in the conversation.  Different speakers' voices are indicated by "spk_0", "spk_1", "spk_2" or up to "spk_9".  You must separate out different speakers' orders and refer to them using using "Seat 1", "Seat 2", "Seat 3", etc.
+  final String restaurantPrompt =
+      '''You are a restaurant assistant.  Take the following audio transcript of a waiter taking patrons' orders and generate a summary of patrons' orders at a restaurant.  There may be up to 10 speakers in the conversation.  Different speakers' voices are indicated by "spk_0", "spk_1", "spk_2" or up to "spk_9".  You must separate out different speakers' orders and refer to them using using "Seat 1", "Seat 2", "Seat 3", etc.
 
 Example format:
 
@@ -35,7 +36,8 @@ Speaker1: Did you get Mike's invitation to the party?
 
 Speaker2: Yes, I'm looking forward to it.''';
 
-  final reminderPrompt = '''You are a reminder assistant.  Take the following audio transcript and generate a list of reminders for a person with short term memory loss.  Provide clear reminder descriptions and date/times for reminders that will occur within the next 7 days.
+  final reminderPrompt =
+      '''You are a reminder assistant.  Take the following audio transcript and generate a list of reminders for a person with short term memory loss.  Provide clear reminder descriptions and date/times for reminders that will occur within the next 7 days.
 
 Provide a description date/time of the following format:
 
@@ -45,9 +47,6 @@ Reminder 2: 2023-08-04T11:00, Call Michael
 If this is a conversation about food orders in a restaurant, apologize that you are unable to generate reminders.
 
 ''';
-
-
-
 
   Future<String?> getOpenAiSummary(
     String transcript,
@@ -66,7 +65,7 @@ If this is a conversation about food orders in a restaurant, apologize that you 
     final completion = await OpenAI.instance.chat
         .create(model: "gpt-3.5-turbo", messages: messages);
 
-    return completion.choices[0].message.content; 
+    return completion.choices[0].message.content;
     //The conversation involves Speaker 1 expressing their hesitation and uncertainty about their pain tolerance, while Speaker 2 reassures them and expresses readiness to start the activity.
     // Possible Error: RequestFailedException (RequestFailedException{message: That model is currently overloaded with other requests. You can retry your request, or contact us through our help center at help.openai.com if the error persists. (Please include the request ID d946214a3b7fa731346976ac8a39e724 in your message.), statusCode: 503})
   }
@@ -119,11 +118,12 @@ Please ensure that every field in the list of fields has a value filled in, and 
     return completion.choices[0].message.content;
   }
 
-    Future<String> getReminders(
+  Future<String> getReminders(
       String transcript, String userProfile, DateTime recordedDate) async {
     OpenAI.apiKey = _openAIApiKey;
 
-    String reminderPromptToSend = '$reminderPrompt \n The Current Date and time is: ${recordedDate.toIso8601String()}\n The Audio Transcript:\n$transcript';
+    String reminderPromptToSend =
+        '$reminderPrompt \n The Current Date and time is: ${recordedDate.toIso8601String()}\n The Audio Transcript:\n$transcript';
 
     _logger.i(reminderPromptToSend);
 
@@ -139,10 +139,12 @@ Please ensure that every field in the list of fields has a value filled in, and 
   }
 
   Future<String> convertRemindersToJson(
-    String reminderText, String guid, DateTime createTimestamp) async {
-      OpenAI.apiKey = _openAIApiKey;
-        final convertRemindersToJsonPrompt = 
-  '''You are a reminders assistant.  Convert the following list of reminder source data into JSON format, using fields "reminderId" "createTimestamp" "notifyTimestamp" "reminderDescription" "id".  There may be multiple reminders in the source data.  Create JSON for all reminders.
+      String reminderText, String guid, DateTime createTimestamp) async {
+    OpenAI.apiKey = _openAIApiKey;
+
+    // JN: SM: Why is the 5th property id here and and guid in the object and userId in the file?  Seems like it should be recordingId.
+    final convertRemindersToJsonPrompt =
+        '''You are a reminders assistant.  Convert the following list of reminder source data into JSON format, using fields "reminderId" "createTimestamp" "notifyTimestamp" "reminderDescription" "id".  There may be multiple reminders in the source data.  Create JSON for all reminders.
 
 Attributes common to each reminder: 
 
@@ -166,17 +168,17 @@ Example JSON using the desired formatting:
 Source Data:
 $reminderText''';
 
-_logger.i(convertRemindersToJsonPrompt);
+    _logger.i(convertRemindersToJsonPrompt);
 
     List<OpenAIChatCompletionChoiceMessageModel> messages = [
       OpenAIChatCompletionChoiceMessageModel(
-          role: OpenAIChatMessageRole.user, content: convertRemindersToJsonPrompt)
+          role: OpenAIChatMessageRole.user,
+          content: convertRemindersToJsonPrompt)
     ];
 
     final completion = await OpenAI.instance.chat
         .create(model: "gpt-3.5-turbo", messages: messages);
 
     return completion.choices[0].message.content;
-
-    }
+  }
 }
