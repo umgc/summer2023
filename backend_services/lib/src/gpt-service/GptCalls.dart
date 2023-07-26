@@ -1,5 +1,6 @@
 import 'package:dart_openai/dart_openai.dart';
 import 'package:logger/logger.dart';
+import 'package:uuid/uuid.dart';
 
 class GptCalls {
   GptCalls(this._openAIApiKey);
@@ -45,6 +46,9 @@ Reminder 2: 2023-08-04T11:00, Call Michael
 If this is a conversation about food orders in a restaurant, apologize that you are unable to generate reminders.
 
 ''';
+
+
+
 
   Future<String?> getOpenAiSummary(
     String transcript,
@@ -134,4 +138,46 @@ Please ensure that every field in the list of fields has a value filled in, and 
 
     return completion.choices[0].message.content;
   }
+
+  Future<String> convertRemindersToJson(
+    String reminderText, String guid, DateTime createTimestamp) async {
+      OpenAI.apiKey = _openAIApiKey;
+        final convertRemindersToJsonPrompt = 
+  '''You are a reminders assistant.  Convert the following list of reminder source data into JSON format, using fields "reminderId" "createTimestamp" "notifyTimestamp" "reminderDescription" "id".  There may be multiple reminders in the source data.  Create JSON for all reminders.
+
+Attributes common to each reminder: 
+
+createTimestamp: $createTimestamp
+id: $guid
+
+"createTimestamp" represents the current time and will be the same for all.  "notifyTimestamp" is the time the reminder takes effect as noted in the source data.  Create a new unique UUID to populate "reminderId" field..
+
+Example JSON using the desired formatting:
+
+[
+	{
+		"reminderId": "10e2d970-2760-11ee-a831-510c56deaff3",
+		"createTimestamp": "2023-07-04T20:46:59.346827",
+		"notifyTimestamp": "2023-07-06T22:28:48.683649",
+		"reminderDescription": "Take out the trash",
+		"id": "6dd25210-276e-11ee-a831-510c56deaff3"
+	}
+]
+
+Source Data:
+$reminderText''';
+
+_logger.i(convertRemindersToJsonPrompt);
+
+    List<OpenAIChatCompletionChoiceMessageModel> messages = [
+      OpenAIChatCompletionChoiceMessageModel(
+          role: OpenAIChatMessageRole.user, content: convertRemindersToJsonPrompt)
+    ];
+
+    final completion = await OpenAI.instance.chat
+        .create(model: "gpt-3.5-turbo", messages: messages);
+
+    return completion.choices[0].message.content;
+
+    }
 }

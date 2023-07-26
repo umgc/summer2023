@@ -298,7 +298,18 @@ class Agent {
         recordedDate); //Todo implement user profile argument if desired
     // write Reminder Transmog result to conversation
     conversationsProvider.updateGptReminders(recordingGuid, completion);
-    // todo create Reminder objects based on completion
+    // Create Reminder objects based on completion
+    // send to chatgpt
+    final jsonResult = await gpt.convertRemindersToJson(completion, recordingGuid, recordedDate);
+    var jsonResponse = jsonDecode(jsonResult);
+      var jsonAsList = jsonResponse as List;
+      List<Reminder> reminders = jsonAsList
+          .map<Reminder>((json) => Reminder.fromJson(json))
+          .toList();
+    
+      for (Reminder rem in reminders) {
+      conversationsProvider.addReminder(rem);
+      }
     return completion;
   }
 
@@ -357,16 +368,16 @@ class Agent {
     //Generate sample reminder data from literals
 
     //Sample Data
-    Reminder reminder1 = Reminder(1, DateTime.now().add(-Duration(hours: 1)),
-        DateTime.now().add(Duration(hours: 1)), 'Description A', 'User');
-    Reminder reminder2 = Reminder(2, DateTime.now().add(-Duration(hours: 4)),
-        DateTime.now().add(Duration(hours: 4)), 'Description B', 'User');
-    Reminder reminder3 = Reminder(3, DateTime.now().add(-Duration(hours: 34)),
-        DateTime.now().add(Duration(hours: 36)), 'Description C', 'User');
-    Reminder reminder4 = Reminder(4, DateTime.now().add(-Duration(hours: 72)),
-        DateTime.now().add(Duration(hours: 72)), 'Description D', 'User');
-    Reminder reminder5 = Reminder(5, DateTime.now().add(-Duration(hours: 168)),
-        DateTime.now().add(Duration(hours: 168)), 'Description E', 'User');
+    Reminder reminder1 = Reminder('e3bc7acc-3b20-4056-94b6-6199fdba5870', DateTime.now().add(-Duration(hours: 1)),
+        DateTime.now().add(Duration(hours: 1)), 'Description A', 'e3bc7acc-3b20-4056-94b6-6199fdba5870');
+    Reminder reminder2 = Reminder('e3bc7acc-3b20-4056-94b6-6199fdba5871', DateTime.now().add(-Duration(hours: 4)),
+        DateTime.now().add(Duration(hours: 4)), 'Description B', 'e3bc7acc-3b20-4056-94b6-6199fdba5870');
+    Reminder reminder3 = Reminder('e3bc7acc-3b20-4056-94b6-6199fdba5872', DateTime.now().add(-Duration(hours: 34)),
+        DateTime.now().add(Duration(hours: 36)), 'Description C', 'e3bc7acc-3b20-4056-94b6-6199fdba5870');
+    Reminder reminder4 = Reminder('e3bc7acc-3b20-4056-94b6-6199fdba5873', DateTime.now().add(-Duration(hours: 72)),
+        DateTime.now().add(Duration(hours: 72)), 'Description D', 'e3bc7acc-3b20-4056-94b6-6199fdba5870');
+    Reminder reminder5 = Reminder('e3bc7acc-3b20-4056-94b6-6199fdba5874', DateTime.now().add(-Duration(hours: 168)),
+        DateTime.now().add(Duration(hours: 168)), 'Description E', 'e3bc7acc-3b20-4056-94b6-6199fdba5870');
     List<Reminder> sampleReminderList = [
       reminder1,
       reminder2,
@@ -374,8 +385,10 @@ class Agent {
       reminder4,
       reminder5
     ];
-
     reminderList = sampleReminderList;
+    for (var rem in reminderList) {
+      conversationsProvider.addReminder(rem);
+    }
   }
 
   void writeRemindersToFile() async {
