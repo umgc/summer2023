@@ -1,6 +1,5 @@
 import 'package:dart_openai/dart_openai.dart';
 import 'package:logger/logger.dart';
-import 'package:uuid/uuid.dart';
 
 class GptCalls {
   GptCalls(this._openAIApiKey);
