@@ -20,7 +20,8 @@ samples, guidance on mobile development, and a full API reference.
 
 ## Setting Up the .env File
 
-ConvoBuddy and the backend_services package use a .env file deployed with the application to configure certain items such as AWS URLs, BESie topics, and the OpenAI API key. As the API key must be private, it cannot be pushed to github. Thus the .env file is in the .gitignore and is not to be checked in. To build and run the project, you must get a complete copy of the .env file. 
+ConvoBuddy and the backend_services package use a .env file deployed with the application to configure certain items such as AWS URLs, BESie topics, and the OpenAI API key.
+As the API key must be private, it cannot be pushed to github. Thus the .env file is in the .gitignore and is not to be checked in. To build and run the project, you must get a complete copy of the .env file. 
 
 The filled in development .env file with OpenAI API Key can be downloaded from Team B Files at:
 
