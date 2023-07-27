@@ -17,6 +17,7 @@ samples, guidance on mobile development, and a full API reference.
 
 1. Run `flutter pub get` to install dependencies
 2. Run `flutter run` to run the app
+3. Run `flutter build apk --split-per-abi` to build all of the APK files for Android.
 
 ## Setting Up the .env File
 
