@@ -131,6 +131,25 @@ In addition to reading, writing, and basic legal forms, George studied geometry 
         gptDescription: '',
         gptReminders: '',
         gptFoodOrder: '');
+    Conversation recording8 = Conversation(
+        id: 'cff13755-0a90-4f90-975f-fe9f5a13fcd7',
+        audioFilePath: 'path',
+        duration: Duration(minutes: 1),
+        recordedDate: DateTime.now().add(-Duration(hours: 1)),
+        title: 'Work History Part 1',
+        transcript:
+            '''My previous job I worked with Auto Blitz, an auto parts reseller. Auto Blitz is located
+            at 24362 Latitude Pl, Oxgarden, Massachusetts, zip code 01520.  I was a shift supervisor 
+            working full time, and I worked there from May 2018 to April 2023. 
+            As a shift supervisor I oversaw the daily activities and how employees perform during their shift. I
+            was responsible for maximizing customer satisfaction through handling requests or complaints. I was 
+            also in charge of maintaining a tidy and organized workspace stocked with essential supplies, while 
+            ensuring that production or service runs smoothly. I received a commendation and award during the month
+            of June 2021 for maintaining outstanding productivity and safety during the shift I oversaw.''',
+        customDescription: '',
+        gptDescription: '',
+        gptReminders: '',
+        gptFoodOrder: '');
 
     List<Conversation> sampleRecordingList = [
       recording1,
@@ -139,7 +158,8 @@ In addition to reading, writing, and basic legal forms, George studied geometry 
       recording4,
       recording5,
       recording6,
-      recording7
+      recording7,
+      recording8
     ];
 
     return sampleRecordingList;
