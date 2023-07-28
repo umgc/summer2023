@@ -20,7 +20,6 @@ class ConversationsProvider with ChangeNotifier {
     _conversations = getConversationsFromJsonFile();
     _remindersJsonPath = "${_appDirectory.path}/reminders.json";
     _reminders = getRemindersFromJsonFile();
-
   }
 
   SortingType _sortingType = SortingType.dateNewToOld;
@@ -33,23 +32,23 @@ class ConversationsProvider with ChangeNotifier {
   String get conversationsJsonPath => _conversationsJsonPath;
   List<Reminder> get reminders => _reminders;
 
-  void addConversation(Conversation conversation) {
+  Future<void> addConversation(Conversation conversation) {
     _conversations.add(conversation);
     notifyListeners();
-    writeConversationsToJsonFile();
+    return writeConversationsToJsonFile();
   }
 
-  void removeConversation(Conversation conversation) {
+  Future<void> removeConversation(Conversation conversation) {
     _conversations.remove(conversation);
     notifyListeners();
-    writeConversationsToJsonFile();
     deleteAudioFile(conversation.id);
+    return writeConversationsToJsonFile();
   }
 
-  void removeAllConversations() {
+  Future<void> removeAllConversations() {
     _conversations.clear();
     notifyListeners();
-    writeConversationsToJsonFile();
+    return writeConversationsToJsonFile();
   }
 
   void updateConversationTitle(String id, String newTitle) {
@@ -107,7 +106,7 @@ class ConversationsProvider with ChangeNotifier {
     writeConversationsToJsonFile();
   }
 
-    void updateGptFoodOrder(String id, String newGptFoodOrder) {
+  void updateGptFoodOrder(String id, String newGptFoodOrder) {
     Conversation? conversation =
         conversations.firstWhereOrNull((convo) => convo.id == id);
     if (conversation == null) {
@@ -160,10 +159,11 @@ class ConversationsProvider with ChangeNotifier {
   }
 
   Future<void> deleteAudioFile(String id) async {
-    final File audioFile = File("${appDirectory.path}/${selectedConversation?.id}.m4a");
+    final File audioFile =
+        File("${appDirectory.path}/${selectedConversation?.id}.m4a");
     if (audioFile.existsSync()) {
       audioFile.deleteSync();
-    } 
+    }
   }
 
   void addReminder(Reminder reminder) {
@@ -191,12 +191,11 @@ class ConversationsProvider with ChangeNotifier {
       String contents = jsonFile.readAsStringSync();
       var jsonResponse = jsonDecode(contents);
       var jsonAsList = jsonResponse as List;
-      List<Reminder> reminders = jsonAsList
-          .map<Reminder>((json) => Reminder.fromJson(json))
-          .toList();
+      List<Reminder> reminders =
+          jsonAsList.map<Reminder>((json) => Reminder.fromJson(json)).toList();
       return reminders;
     } else {
-      return[];
+      return [];
     }
   }
 
@@ -205,6 +204,4 @@ class ConversationsProvider with ChangeNotifier {
     final File jsonFile = File(_remindersJsonPath);
     await jsonFile.writeAsString(json, mode: FileMode.writeOnly);
   }
-
-
 }

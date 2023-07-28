@@ -13,21 +13,6 @@ import 'package:mockito/mockito.dart';
 
 import 'browser_extension_api_test.mocks.dart';
 
-class TestRecordingSelectionActivator implements RecordingSelectionActivator {
-  TestRecordingSelectionActivator();
-
-  final _logger = Logger();
-  bool didCallSelector = false;
-
-  @override
-  RecordingSelectionActivatorCallback getSelectorCallback() {
-    return () async {
-      _logger.i('Recording selector callback called.');
-      didCallSelector = true;
-    };
-  }
-}
-
 // Run "dart run build_runner build" from the command line to regenerate RecordingSelectionActivator
 @GenerateNiceMocks([MockSpec<RecordingSelectionActivator>()])
 void main() async {
@@ -48,16 +33,14 @@ void main() async {
   });
 
   test('receive form fill request', () async {
-    var agent = Agent('browser-extension-api-unit-test', directory);
-    agent.setBeStorageService(TestStorage());
     var mockSelector = MockRecordingSelectionActivator();
     var didCallSelector = false;
     when(mockSelector.getSelectorCallback())
         .thenAnswer(((realInvocation) => () async {
               didCallSelector = true;
             }));
-
-    agent.setRecordingSelector(mockSelector);
+    var agent = Agent('browser-extension-api-unit-test', directory,
+        storage: TestStorage(), recordingSelectionActivator: mockSelector);
 
     await agent.generateInstanceCodeIfNone();
     var instanceCode = await agent.getInstanceCode();

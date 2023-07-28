@@ -3,6 +3,7 @@
 import 'dart:convert';
 
 import 'package:backend_services/backend_services_exports.dart';
+import 'package:backend_services/backend_services_testing_exports.dart';
 import 'package:backend_services/src/gpt-service/GptCalls.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -32,73 +33,18 @@ void main() async {
 
   test('Send transcript and form values to OpenAI for form fill', () async {
     final conversation = TestConversations.sampleConversations.firstWhereOrNull(
-        (convo) => convo.id == 'cff13755-0a90-4f90-975f-fe9f5a13fcd5');
+        (convo) => convo.id == TestConversations.umgcAdmissionsInfoGuid);
 
     expect(conversation, isNotNull);
     expect(conversation!.transcript, isNotEmpty);
-
-    final formFields = [
-      [
-        {"firstNameField": "text"},
-        {"lastNameField": "text"},
-        {"emailField": "text"},
-        {"country": "tel"},
-        {"input-7": "text"},
-        {
-          "select-di-01-0": {
-            "inputType": "select",
-            "optionList": [
-              "",
-              "Undergraduate/Bachelors",
-              "Graduate/Master's",
-              "Doctorate",
-              "Not Sure"
-            ]
-          }
-        },
-        {
-          "select-02-0": {
-            "inputType": "select",
-            "optionList": [
-              "",
-              "Business & Management",
-              "Cybersecurity",
-              "Data Analytics",
-              "Education & Teaching",
-              "Health Care & Sciences",
-              "Information Technology",
-              "Liberal Arts & Communication",
-              "Psychology",
-              "Public Safety & Criminal Justice",
-              "Not Sure/Other"
-            ]
-          }
-        },
-        {
-          "select-03-0": {
-            "inputType": "select",
-            "optionList": [
-              "",
-              "Active-duty servicemember",
-              "Spouse of active-duty servicemember",
-              "Family member of active-duty servicemember",
-              "Veteran",
-              "National Guard",
-              "Reservist",
-              "Other",
-              "None / Civilian"
-            ]
-          }
-        }
-      ],
-    ];
 
     // send to chatgpt
     final gpt = GptCalls(EnvironmentVars.openAIApiKey);
     final completion = await gpt.extractFormValuesFromTranscript(
         conversation.transcript,
         'This Profile',
-        formFields); //Todo implement user profile argument if desired
+        TestFormFields
+            .umgcRegistrationFormFields); //Todo implement user profile argument if desired
     var resultObject = jsonDecode(completion);
     logger.i(resultObject);
   });
@@ -107,7 +53,7 @@ void main() async {
     var gpt = GptCalls(EnvironmentVars.openAIApiKey);
     var testConvos = TestConversations.sampleConversations;
     var convo = testConvos.firstWhereOrNull(
-        (convo) => convo.id == 'cff13755-0a90-4f90-975f-fe9f5a13fcd5');
+        (convo) => convo.id == TestConversations.umgcAdmissionsInfoGuid);
 
     expect(convo, isNotNull);
 
@@ -131,7 +77,7 @@ void main() async {
     var gpt = GptCalls(EnvironmentVars.openAIApiKey);
     var testConvos = TestConversations.sampleConversations;
     var convo = testConvos.firstWhereOrNull(
-        (convo) => convo.id == 'cff13755-0a90-4f90-975f-fe9f5a13fcd7');
+        (convo) => convo.id == TestConversations.workHistoryGuid);
 
     expect(convo, isNotNull);
 

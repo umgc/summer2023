@@ -1,6 +1,12 @@
 import 'package:backend_services/model/conversation.dart';
 
 class TestConversations {
+  static const String workHistoryGuid = 'cff13755-0a90-4f90-975f-fe9f5a13fcd7';
+  static const String umgcAdmissionsInfoGuid =
+      'cff13755-0a90-4f90-975f-fe9f5a13fcd5';
+  static const String georgeWashingtonGuid =
+      '173d6dc0-fb47-4284-bd09-9465177f8eea';
+
   static List<Conversation> get sampleConversations {
     //Sample Data - Method will load literals into memory as recordingFile
 
@@ -77,10 +83,12 @@ spk_1: Remind me every day at 04:30 p.m. that dinner is in the cafeteria at 05:0
         duration: Duration(minutes: 3),
         recordedDate: DateTime.now().add(-Duration(hours: 3)),
         title: 'Description D',
-        transcript: '''Remind me to prepare for a meeting on Thursdays at 9 a.m. The meeting will start at 10 a.m. This is on cloud meeting.''',
+        transcript:
+            '''Remind me to prepare for a meeting on Thursdays at 9 a.m. The meeting will start at 10 a.m. This is on cloud meeting.''',
         customDescription: 'Description',
         gptDescription: '',
-        gptReminders: '''Reminder 1: 2023-07-13T08:00, Prepare for Thursday's meeting at 9 a.m.\nReminder 2: 2023-07-13T10:00, Start the cloud meeting''',
+        gptReminders:
+            '''Reminder 1: 2023-07-13T08:00, Prepare for Thursday's meeting at 9 a.m.\nReminder 2: 2023-07-13T10:00, Start the cloud meeting''',
         gptFoodOrder: '');
     Conversation recording5 = Conversation(
         id: 'e7cb2be9-75f2-44a0-9976-df7dfc0e1363',
@@ -94,7 +102,7 @@ spk_1: Remind me every day at 04:30 p.m. that dinner is in the cafeteria at 05:0
         gptReminders: '',
         gptFoodOrder: '');
     Conversation recording6 = Conversation(
-        id: '173d6dc0-fb47-4284-bd09-9465177f8eea',
+        id: georgeWashingtonGuid,
         audioFilePath: 'path',
         duration: Duration(minutes: 1),
         recordedDate: DateTime.now().add(-Duration(hours: 1)),
@@ -120,7 +128,7 @@ In addition to reading, writing, and basic legal forms, George studied geometry 
         gptReminders: '',
         gptFoodOrder: '');
     Conversation recording7 = Conversation(
-        id: 'cff13755-0a90-4f90-975f-fe9f5a13fcd5',
+        id: umgcAdmissionsInfoGuid,
         audioFilePath: 'path',
         duration: Duration(minutes: 1),
         recordedDate: DateTime.now().add(-Duration(hours: 1)),
@@ -132,7 +140,7 @@ In addition to reading, writing, and basic legal forms, George studied geometry 
         gptReminders: '',
         gptFoodOrder: '');
     Conversation recording8 = Conversation(
-        id: 'cff13755-0a90-4f90-975f-fe9f5a13fcd7',
+        id: workHistoryGuid,
         audioFilePath: 'path',
         duration: Duration(minutes: 1),
         recordedDate: DateTime.now().add(-Duration(hours: 1)),
