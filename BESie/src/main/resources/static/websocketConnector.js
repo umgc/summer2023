@@ -55,15 +55,25 @@ function disconnect() {
 }
 
 function sendFormPayload() {
-    let payload = {
-        pin: $("#pin").val(),
-        firstName: "string",
-        lastName: "string",
-        zipcode: "integer",
-        other: $('#payload').val()
+    var shouldSendHtml = $('#shouldSendHtml').prop('checked');
+    const payloadContent = $('#payload').val();
+    console.log(payloadContent);
+    if(shouldSendHtml) {
+        let payload = {
+            pin: $("#pin").val(),
+            formHtml: payloadContent,
+            shouldExtractFromHtml: true
+        }
+        console.log(JSON.stringify(payload));
+        stompClient.send("/app/fill", {}, JSON.stringify(payload));
+    } else {
+        let payload = {
+            pin: $("#pin").val(),
+            form: $.parseJSON(payloadContent)
+        }
+        console.log(JSON.stringify(payload));
+        stompClient.send("/app/fill", {}, JSON.stringify(payload));
     }
-    console.log(JSON.stringify(payload));
-    stompClient.send("/app/fill", {}, JSON.stringify(payload));
 }
 
 function sendFormPayload2() {
