@@ -13,7 +13,7 @@ export async function getActiveTabURL() {
 }
 
 const ServiceURL_DEV = "http://localhost:8080/ws";
-const serviceUrl_PROD = "http://44.202.25.184:8080/ws";
+const serviceUrl_PROD = "https://besie.servehttp.com/ws";
 const serviceUrl = ServiceURL_DEV;
 
 var stompClient;
