@@ -13,13 +13,15 @@ void main() async {
 
   final logger = Logger();
 
-  test('read existing recording JSON files and return list of files', () async {
+  test(
+      'test clearing the stored list of conversations and loading sample conversations',
+      () async {
     var agent = Agent('Recording-API-Unit-test', directory);
     expect(() => agent.conversationsProvider.conversations, returnsNormally);
 
     agent.conversationsProvider.removeAllConversations();
     expect(agent.conversationsProvider.conversations.length, 0);
-    agent.loadSampleConversations();
+    await agent.loadSampleConversations();
     logger.i(
         "test conversations count: ${agent.conversationsProvider.conversations.length}");
     expect(agent.conversationsProvider.conversations.length, isNot(0));

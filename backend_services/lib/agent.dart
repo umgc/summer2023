@@ -24,7 +24,7 @@ class Agent {
   final Logger _logger = Logger();
   String? profile = '';
   late List<Reminder> reminderList = [];
-  late BEService _beService;
+  late final BEService _beService;
   static const int numAppInstanceCodeDigits = 4;
 
   WebSocketClient? _webSocketClient;
@@ -33,16 +33,21 @@ class Agent {
 
   late final ConversationsProvider conversationsProvider;
 
-  Agent(this.userId, Directory appDirectory) {
+  Agent(this.userId, Directory appDirectory,
+      {RecordingSelectionActivator? recordingSelectionActivator,
+      JsonStorage? storage,
+      WebSocketClient? webSocketClient}) {
     _appDirectory = appDirectory;
-    _beService = BEService(LocalStorageService(_appDirectory.path));
+    _beService = BEService(storage ?? LocalStorageService(_appDirectory.path));
     conversationsProvider = ConversationsProvider(_appDirectory);
+    _webSocketClient = webSocketClient;
+    _recordingSelectionActivator = recordingSelectionActivator;
   }
 
   // RecordingSelectionActivator object with callback is required to initialize the Agent.
   // See the README.md for details.
   initialize(RecordingSelectionActivator recordingSelectionActivator) {
-    setRecordingSelector(recordingSelectionActivator);
+    _setRecordingSelector(recordingSelectionActivator);
 
     List<WebSocketListener> listeners = [
       WebSocketListener(
@@ -55,10 +60,6 @@ class Agent {
     _webSocketClient = WebSocketClient(EnvironmentVars.wsUrl,
         int.parse(EnvironmentVars.wsConnectionTimeoutMs), listeners);
     _webSocketClient!.connect();
-  }
-
-  setBeStorageService(JsonStorage storageService) {
-    _beService = BEService(storageService);
   }
 
   shutdown() {
@@ -99,7 +100,7 @@ class Agent {
     }
   }
 
-  void setRecordingSelector(
+  void _setRecordingSelector(
       RecordingSelectionActivator recordingSelectionActivator) {
     _recordingSelectionActivator = recordingSelectionActivator;
   }
@@ -125,9 +126,10 @@ class Agent {
     }
   }
 
-  void loadSampleConversations() {
+  Future<void> loadSampleConversations() async {
+    conversationsProvider.removeAllConversations();
     for (var convo in TestConversations.sampleConversations) {
-      conversationsProvider.addConversation(convo);
+      await conversationsProvider.addConversation(convo);
     }
   }
 
@@ -228,15 +230,27 @@ class Agent {
 
     // send to chatgpt
     final gpt = GptCalls(EnvironmentVars.openAIApiKey);
-    final completion = await gpt.extractFormValuesFromTranscript(
-        recordingTranscript,
-        'This Profile',
-        request.form); //Todo implement user profile argument if desired
+    if (request.shouldExtractFromHtml) {
+      final completion = await gpt.extractHtmlFormValuesFromTranscript(
+          recordingTranscript,
+          'This Profile',
+          request.formHtml); //Todo implement user profile argument if desired
 
-    var json = jsonDecode(completion);
-    _logger.d("Form filler completion JSON:\n$json");
+      var json = jsonDecode(completion);
+      _logger.d("HTML form filler completion JSON:\n$json");
 
-    sendFormValueResponse(BEResponse(json));
+      sendFormValueResponse(BEResponse(json));
+    } else {
+      final completion = await gpt.extractFormValuesFromTranscript(
+          recordingTranscript,
+          'This Profile',
+          request.form); //Todo implement user profile argument if desired
+
+      var json = jsonDecode(completion);
+      _logger.d("Field list form filler completion JSON:\n$json");
+
+      sendFormValueResponse(BEResponse(json));
+    }
   }
 
   bool doesRecordingExist(String recordingGuid) {

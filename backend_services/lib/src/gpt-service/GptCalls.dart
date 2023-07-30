@@ -77,14 +77,16 @@ If this is a conversation about food orders in a restaurant, apologize that you 
     String formFillerPromptToSend =
         '''You are a form filler service. I will give you a transcript and list of field 
 names and I want you to extract the values for the fields out of the information 
-in the transcript. The field values should be in JSON format. 
+in the transcript. The field values should be in JSON format. The response must only consist 
+of complete properly-formatted JSON.
 Here is additional information about the user:
 $userProfile
 Here are the list of fields in JSON format:
 $fields
 Here is the transcript I want you to extract field values from:
 $transcript
-Please ensure that every field in the list of fields has a value filled in, and make up answers if no relevant information is available.''';
+Please ensure that every field in the list of fields has a value filled in, and provide a 
+best guess value for each field even if there is insuffucient information from the transcript.''';
 
     _logger.i(formFillerPromptToSend);
 
@@ -97,6 +99,41 @@ Please ensure that every field in the list of fields has a value filled in, and 
         .create(model: "gpt-3.5-turbo", messages: messages);
 
     return completion.choices[0].message.content;
+  }
+
+  Future<String> extractHtmlFormValuesFromTranscript(
+      String transcript, String userProfile, dynamic fields) async {
+    OpenAI.apiKey = _openAIApiKey;
+
+    String htmlFormFillerPromptToSend =
+        '''You are a form filler service. I will give you an HTML form snippet, and 
+I would like you to build a list of fields based on the HTML form. The key for these fields
+should be the HTML "id" attribute or "name" if no id is specified.  I will then give 
+you a transcript and I want you to extract the values for the fields found in the HTML 
+form snippet based on the information in the transcript. The resulting field values 
+should be in JSON format. The response must only consist of complete properly-formatted JSON.
+Here is additional information about the user:
+$userProfile
+Here is the HTML form snippet:
+$fields
+Here is the transcript I want you to extract field values from:
+$transcript
+Please ensure that every field found in the HTML form snippet has a value filled in, and provide a 
+best guess value for each field even if there is insuffucient information from the transcript.''';
+
+    _logger.i(htmlFormFillerPromptToSend);
+
+    List<OpenAIChatCompletionChoiceMessageModel> messages = [
+      OpenAIChatCompletionChoiceMessageModel(
+          role: OpenAIChatMessageRole.user, content: htmlFormFillerPromptToSend)
+    ];
+
+    final completion = await OpenAI.instance.chat
+        .create(model: "gpt-3.5-turbo-16k", messages: messages, temperature: 0);
+
+    final content = completion.choices[0].message.content;
+    _logger.i(content);
+    return content;
   }
 
   Future<String> getRestaurantOrder(

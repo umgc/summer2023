@@ -1,6 +1,12 @@
 import 'package:backend_services/model/conversation.dart';
 
 class TestConversations {
+  static const String workHistoryGuid = 'cff13755-0a90-4f90-975f-fe9f5a13fcd7';
+  static const String umgcAdmissionsInfoGuid =
+      'cff13755-0a90-4f90-975f-fe9f5a13fcd5';
+  static const String georgeWashingtonGuid =
+      '173d6dc0-fb47-4284-bd09-9465177f8eea';
+
   static List<Conversation> get sampleConversations {
     //Sample Data - Method will load literals into memory as recordingFile
 
@@ -77,10 +83,12 @@ spk_1: Remind me every day at 04:30 p.m. that dinner is in the cafeteria at 05:0
         duration: Duration(minutes: 3),
         recordedDate: DateTime.now().add(-Duration(hours: 3)),
         title: 'Description D',
-        transcript: '''Remind me to prepare for a meeting on Thursdays at 9 a.m. The meeting will start at 10 a.m. This is on cloud meeting.''',
+        transcript:
+            '''Remind me to prepare for a meeting on Thursdays at 9 a.m. The meeting will start at 10 a.m. This is on cloud meeting.''',
         customDescription: 'Description',
         gptDescription: '',
-        gptReminders: '''Reminder 1: 2023-07-13T08:00, Prepare for Thursday's meeting at 9 a.m.\nReminder 2: 2023-07-13T10:00, Start the cloud meeting''',
+        gptReminders:
+            '''Reminder 1: 2023-07-13T08:00, Prepare for Thursday's meeting at 9 a.m.\nReminder 2: 2023-07-13T10:00, Start the cloud meeting''',
         gptFoodOrder: '');
     Conversation recording5 = Conversation(
         id: 'e7cb2be9-75f2-44a0-9976-df7dfc0e1363',
@@ -94,7 +102,7 @@ spk_1: Remind me every day at 04:30 p.m. that dinner is in the cafeteria at 05:0
         gptReminders: '',
         gptFoodOrder: '');
     Conversation recording6 = Conversation(
-        id: '173d6dc0-fb47-4284-bd09-9465177f8eea',
+        id: georgeWashingtonGuid,
         audioFilePath: 'path',
         duration: Duration(minutes: 1),
         recordedDate: DateTime.now().add(-Duration(hours: 1)),
@@ -120,13 +128,32 @@ In addition to reading, writing, and basic legal forms, George studied geometry 
         gptReminders: '',
         gptFoodOrder: '');
     Conversation recording7 = Conversation(
-        id: 'cff13755-0a90-4f90-975f-fe9f5a13fcd5',
+        id: umgcAdmissionsInfoGuid,
         audioFilePath: 'path',
         duration: Duration(minutes: 1),
         recordedDate: DateTime.now().add(-Duration(hours: 1)),
         title: 'UMGC Admissions Information',
         transcript:
             '''My name is John Doe and I want to apply for admission to the University of Maryland Global Campus Graduate degree program. I like computers so I was thinking a degree in IT would be the way to go. I am interested in security and have done some penetration testing at work, and would like to pursue those interests further. I am a vetaran, serving in the Air Force for 4 years. I live at 4321 Cypress St, Eastern Shore, Maryland. My email address is john_doe_iii@gmail.com.''',
+        customDescription: '',
+        gptDescription: '',
+        gptReminders: '',
+        gptFoodOrder: '');
+    Conversation recording8 = Conversation(
+        id: workHistoryGuid,
+        audioFilePath: 'path',
+        duration: Duration(minutes: 1),
+        recordedDate: DateTime.now().add(-Duration(hours: 1)),
+        title: 'Work History Part 1',
+        transcript:
+            '''My previous job I worked with Auto Blitz, an auto parts reseller. Auto Blitz is located
+            at 24362 Latitude Pl, Oxgarden, Massachusetts, zip code 01520.  I was a shift supervisor 
+            working full time, and I worked there from May 2018 to April 2023. 
+            As a shift supervisor I oversaw the daily activities and how employees perform during their shift. I
+            was responsible for maximizing customer satisfaction through handling requests or complaints. I was 
+            also in charge of maintaining a tidy and organized workspace stocked with essential supplies, while 
+            ensuring that production or service runs smoothly. I received a commendation and award during the month
+            of June 2021 for maintaining outstanding productivity and safety during the shift I oversaw.''',
         customDescription: '',
         gptDescription: '',
         gptReminders: '',
@@ -139,7 +166,8 @@ In addition to reading, writing, and basic legal forms, George studied geometry 
       recording4,
       recording5,
       recording6,
-      recording7
+      recording7,
+      recording8
     ];
 
     return sampleRecordingList;
