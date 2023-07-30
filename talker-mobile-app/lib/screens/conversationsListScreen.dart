@@ -4,7 +4,7 @@ import 'package:panara_dialogs/panara_dialogs.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:talker_mobile_app/services/DummyConversationSelectionActivator.dart';
+import 'package:talker_mobile_app/services/ConversationSelectionActivator.dart';
 
 import '../globals.dart';
 import '../widgets/conversationListItem.dart';
@@ -25,7 +25,7 @@ class _ConversationsListScreenState extends State<ConversationsListScreen> {
   void initState() {
     super.initState();
     _getFirstLoadSetting();
-    getIt<Agent>().initialize(DummyConversationSelectionActivator(context));
+    getIt<Agent>().initialize(ConversationSelectionActivator(context));
   }
 
   Future<void> _getFirstLoadSetting() async {
