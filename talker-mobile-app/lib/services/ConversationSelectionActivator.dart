@@ -1,9 +1,8 @@
 import 'package:backend_services/interfaces/recording_selection_activator.dart';
 import 'package:flutter/material.dart';
 
-class DummyConversationSelectionActivator
-    implements RecordingSelectionActivator {
-  DummyConversationSelectionActivator(this.rootContext);
+class ConversationSelectionActivator implements RecordingSelectionActivator {
+  ConversationSelectionActivator(this.rootContext);
 
   bool didCallSelector = false;
   BuildContext rootContext;
