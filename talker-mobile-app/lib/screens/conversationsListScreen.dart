@@ -154,7 +154,10 @@ class _ConversationsListScreenState extends State<ConversationsListScreen> {
                         borderRadius: BorderRadius.all(Radius.circular(15.0))),
                     color: const Color(0xFF262626),
                     initialValue: sortingType,
+                    onCanceled: () =>
+                        FocusScope.of(context).requestFocus(FocusNode()),
                     onSelected: (SortingType sortType) {
+                      FocusScope.of(context).requestFocus(FocusNode());
                       setState(() {
                         conversationsProvider.setSortingType(sortType);
                       });
