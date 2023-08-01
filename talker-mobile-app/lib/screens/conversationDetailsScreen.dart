@@ -125,9 +125,9 @@ class _ConversationDetailsScreenState extends State<ConversationDetailsScreen> {
       String transmogResult = "";
       if (selectedIndex == 0) {
         transmogResult =
-            conversationsProvider.selectedConversation!.transcript.isEmpty
+            conversationsProvider.selectedConversation!.gptTranscript.isEmpty
                 ? "Transmogrifying..."
-                : conversationsProvider.selectedConversation!.transcript;
+                : conversationsProvider.selectedConversation!.gptTranscript;
       } else if (selectedIndex == 1) {
         transmogResult =
             conversationsProvider.selectedConversation!.gptDescription.isEmpty
@@ -166,7 +166,14 @@ class _ConversationDetailsScreenState extends State<ConversationDetailsScreen> {
                 icon: Icons.monitor,
                 title: "Full Conversation",
                 showHighlight: selectedIndex == 0,
-                onTap: () => onTransmogPress(0)),
+                onTap: () {
+                  if (conversationsProvider
+                          .selectedConversation!.gptTranscript.isEmpty) {
+                    getIt<Agent>().getOpenAiTranscript(
+                        conversationsProvider.selectedConversation!.id);
+                  }
+                  onTransmogPress(0);
+                }),
             TransmogListItem(
                 icon: Icons.event_note_rounded,
                 title: "Summary",
