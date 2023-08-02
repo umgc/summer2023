@@ -9,6 +9,7 @@ class Conversation {
   String gptDescription;
   String gptReminders;
   String gptFoodOrder;
+  String gptTranscript;
 
   Conversation(
       {required this.id,
@@ -20,7 +21,8 @@ class Conversation {
       this.customDescription = "",
       this.gptDescription = "",
       this.gptReminders = "",
-      this.gptFoodOrder = ""});
+      this.gptFoodOrder = "",
+      this.gptTranscript = ""});
 
   Conversation.fromJson(Map<String, dynamic> json)
       : id = json['id'],
@@ -32,7 +34,8 @@ class Conversation {
         customDescription = json['customDescription'] ?? '',
         gptDescription = json['gptDescription'] ?? '',
         gptReminders = json['gptReminders'] ?? '',
-        gptFoodOrder = json['gptFoodOrder'] ?? '';
+        gptFoodOrder = json['gptFoodOrder'] ?? '',
+        gptTranscript = json['gptTranscript'] ?? '';
 
   Map<String, dynamic> toJson() => {
         'id': id,
@@ -44,6 +47,7 @@ class Conversation {
         'customDescription': customDescription,
         'gptDescription': gptDescription,
         'gptReminders': gptReminders,
-        'gptFoodOrder': gptFoodOrder
+        'gptFoodOrder': gptFoodOrder,
+        'gptTranscript': gptTranscript
       };
 }

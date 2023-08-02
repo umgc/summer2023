@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dart_openai/dart_openai.dart';
 import 'package:logger/logger.dart';
 
@@ -216,5 +218,20 @@ $reminderText''';
         .create(model: "gpt-3.5-turbo", messages: messages);
 
     return completion.choices[0].message.content;
+  }
+
+  Future<String> getPrettyTranscript(
+      File audioPath) async {
+    OpenAI.apiKey = _openAIApiKey;
+    _logger.i(audioPath);
+
+    OpenAIAudioModel transcription = await OpenAI.instance.audio.createTranscription(
+      file: audioPath,
+      model: "whisper-1",
+      responseFormat: OpenAIAudioResponseFormat.json,
+      );
+    _logger.i(transcription);
+
+    return transcription.text;
   }
 }
