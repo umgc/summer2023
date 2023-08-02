@@ -125,9 +125,9 @@ class _ConversationDetailsScreenState extends State<ConversationDetailsScreen> {
       String transmogResult = "";
       if (selectedIndex == 0) {
         transmogResult =
-            conversationsProvider.selectedConversation!.transcript.isEmpty
+            conversationsProvider.selectedConversation!.gptTranscript.isEmpty
                 ? "Transmogrifying..."
-                : conversationsProvider.selectedConversation!.transcript;
+                : conversationsProvider.selectedConversation!.gptTranscript;
       } else if (selectedIndex == 1) {
         transmogResult =
             conversationsProvider.selectedConversation!.gptDescription.isEmpty

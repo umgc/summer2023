@@ -105,15 +105,19 @@ class Agent {
     _recordingSelectionActivator = recordingSelectionActivator;
   }
 
+  /*
+
   Future<File> get _remindersFile async {
     final path = _appDirectory.path;
     return File('$path/reminders.json');
   }
+  */
 
   Future<File> get _userFile async {
     final path = _appDirectory.path;
     return File('$path/user.json');
   }
+  
 
   List<FileSystemEntity> listFilesInPath() {
     try {
@@ -282,6 +286,14 @@ class Agent {
     return recording.recordedDate;
   }
 
+  String getRecordingPath(String recordingGuid) {
+    var recording = getRecording(recordingGuid);
+    if (recording.audioFilePath == "") {
+      throw "Recording with $recordingGuid does not have an audio path.";
+    }
+    return recording.audioFilePath;
+  }
+
   void sendFormValueResponse(BEResponse response) {
     if (_webSocketClient != null) {
       _webSocketClient!
@@ -340,6 +352,16 @@ class Agent {
     return completion;
   }
 
+  Future<String?> getOpenAiTranscript(String recordingGuid) async {
+
+    final File recordingPath =
+        File("${conversationsProvider.appDirectory.path}/${recordingGuid}.m4a");
+    final gpt = GptCalls(EnvironmentVars.openAIApiKey);
+    final completion = await gpt.getPrettyTranscript(recordingPath);
+    conversationsProvider.updateGptTranscript(recordingGuid, completion);
+    return completion;
+  }
+
   //#endregion
   /*
   Deprecated method
@@ -356,6 +378,8 @@ class Agent {
     //return reminders
     return reminderList;
   }
+
+  /*
 
   void deleteReminder(int reminderId) async {
     var reminderListFile = await _remindersFile;
@@ -377,6 +401,7 @@ class Agent {
     reminderEntries.add(newReminder.toJson());
     reminderListFile.writeAsStringSync(json.encode(reminderEntries));
   }
+  */
 
   void loadSampleReminderData() async {
     //Generate sample reminder data from literals
@@ -424,7 +449,7 @@ class Agent {
       conversationsProvider.addReminder(rem);
     }
   }
-
+  /*
   void writeRemindersToFile() async {
     //Write List to file 'reminders.json'
 
@@ -461,4 +486,5 @@ class Agent {
       return '';
     }
   }
+  */
 }

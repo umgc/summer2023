@@ -117,6 +117,17 @@ class ConversationsProvider with ChangeNotifier {
     writeConversationsToJsonFile();
   }
 
+  void updateGptTranscript(String id, String newGptTranscript) {
+    Conversation? conversation =
+        conversations.firstWhereOrNull((convo) => convo.id == id);
+    if (conversation == null) {
+      return;
+    }
+    conversation.gptTranscript = newGptTranscript;
+    notifyListeners();
+    writeConversationsToJsonFile();
+  }
+
   void setSelectedConversation(Conversation conversation) {
     _selectedConversation = conversation;
     notifyListeners();
