@@ -16,11 +16,6 @@ import 'package:talker_mobile_app/screens/recordingScreen.dart';
 
 import 'globals.dart';
 
-/*onSelectNotification(NotificationResponse notificationResponse) async {
-    Navigator.pushNamed(rootContext, '/conversationSelection');
-  }
-}*/
-
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Permission.notification.isDenied.then((value) {
