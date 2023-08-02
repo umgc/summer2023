@@ -9,6 +9,8 @@ import 'package:stop_watch_timer/stop_watch_timer.dart';
 import 'package:talker_mobile_app/screens/conversationDetailsScreen.dart';
 import 'package:uuid/uuid.dart';
 
+import '../globals.dart';
+
 class RecordingScreen extends StatefulWidget {
   const RecordingScreen({Key? key}) : super(key: key);
 
@@ -90,6 +92,7 @@ class _RecordingScreenState extends State<RecordingScreen> {
     conversationsProvider.addConversation(newConversation);
     conversationsProvider.setSelectedConversation(newConversation);
     audioFileUpload(File("$directoryPath/$id.m4a"));
+    getIt<Agent>().getOpenAiTranscript(id);
     Navigator.pushReplacement(
         context,
         MaterialPageRoute(

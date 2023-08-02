@@ -166,14 +166,7 @@ class _ConversationDetailsScreenState extends State<ConversationDetailsScreen> {
                 icon: Icons.monitor,
                 title: "Full Conversation",
                 showHighlight: selectedIndex == 0,
-                onTap: () {
-                  if (conversationsProvider
-                          .selectedConversation!.gptTranscript.isEmpty) {
-                    getIt<Agent>().getOpenAiTranscript(
-                        conversationsProvider.selectedConversation!.id);
-                  }
-                  onTransmogPress(0);
-                }),
+                onTap: () => onTransmogPress(0)),
             TransmogListItem(
                 icon: Icons.event_note_rounded,
                 title: "Summary",
