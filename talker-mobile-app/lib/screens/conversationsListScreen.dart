@@ -7,6 +7,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:talker_mobile_app/services/ConversationSelectionActivator.dart';
 
 import '../globals.dart';
+import '../notifications_service.dart';
+import '../services/notificationTapHandler.dart';
 import '../widgets/conversationListItem.dart';
 
 class ConversationsListScreen extends StatefulWidget {
@@ -26,6 +28,8 @@ class _ConversationsListScreenState extends State<ConversationsListScreen> {
     super.initState();
     _getFirstLoadSetting();
     getIt<Agent>().initialize(ConversationSelectionActivator(context));
+    NotificationsService.initialize(
+        flutterLocalNotificationsPlugin, context, onSelectNotification);
   }
 
   Future<void> _getFirstLoadSetting() async {

@@ -1,6 +1,9 @@
 import 'package:backend_services/interfaces/recording_selection_activator.dart';
 import 'package:flutter/material.dart';
 
+import '../globals.dart';
+import '../notifications_service.dart';
+
 class ConversationSelectionActivator implements RecordingSelectionActivator {
   ConversationSelectionActivator(this.rootContext);
 
@@ -13,7 +16,12 @@ class ConversationSelectionActivator implements RecordingSelectionActivator {
       didCallSelector = true;
 
       if (!rootContext.mounted) return;
-      Navigator.pushNamed(rootContext, '/conversationSelection');
+      NotificationsService.showBigTextNotification(
+          title: "New Request from BESie",
+          body: "Select a conversation",
+          fln: flutterLocalNotificationsPlugin);
+
+      //Navigator.pushNamed(rootContext, '/conversationSelection');
     };
   }
 }
