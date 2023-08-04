@@ -17,11 +17,9 @@ class ConversationSelectionActivator implements RecordingSelectionActivator {
 
       if (!rootContext.mounted) return;
       NotificationsService.showBigTextNotification(
-          title: "New Request from BESie",
+          title: "Request from Form Fill-In Extension",
           body: "Select a conversation",
           fln: flutterLocalNotificationsPlugin);
-
-      //Navigator.pushNamed(rootContext, '/conversationSelection');
     };
   }
 }
