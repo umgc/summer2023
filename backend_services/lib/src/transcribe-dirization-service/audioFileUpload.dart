@@ -27,14 +27,17 @@ Future<String> audioFileUpload(File audioFile) async {
 
     ///define filename path for uri
     String fileName = audioFile.path.split('/').last;
-    String apiURL = "https://7wgrq8myd7.execute-api.us-east-1.amazonaws.com";
-    String uri = '$apiURL/dev/testrecordingsswenv2/$fileName';
+    //String apiURL = "https://7wgrq8myd7.execute-api.us-east-1.amazonaws.com";
+    String apiURL = "https://v7o2hf8l8f.execute-api.us-east-1.amazonaws.com";
+    //String uri = '$apiURL/dev/testrecordingsswenv2/$fileName';
+    String uri = '$apiURL/prod/convobuddytrasncriptions-convobuddyaudiofiles1c5e-7lpni7ngy63w/$fileName';
 
     File uploadFile = File(audioFile.path);
 
     var response = await dio.put(uri,
         data: uploadFile.openRead(),
-        options: Options(contentType: "application/mp3"));
+        options: Options(contentType: "application/mp3")
+        );
     print(response);
     if (response.statusCode == 200) {
       return "It uploaded";
