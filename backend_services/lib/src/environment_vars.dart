@@ -34,6 +34,9 @@ class EnvironmentVars {
   static String get formFillResponseTopic =>
       _getFromEnv('FORM_FILL_RESPONSE_TOPIC');
 
+  static String get transcriptResponseTopic =>
+      _getFromEnv('TRANSCRIPT_RESPONSE_TOPIC');
+
   static String _getFromEnv(String name) {
     final envValue = dotenv.env[name];
     if (envValue == null) throw "Missing environment variable '$name'.";

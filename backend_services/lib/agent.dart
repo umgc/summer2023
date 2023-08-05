@@ -13,6 +13,7 @@ import 'package:backend_services/src/websocket-client/websocket_client.dart';
 import 'package:backend_services/src/websocket-client/websocket_listener.dart';
 import 'package:collection/collection.dart';
 import 'package:logger/logger.dart';
+import 'package:stomp_dart_client/stomp_frame.dart';
 
 import 'interfaces/recording_selection_activator.dart';
 import 'model/reminder.dart';
@@ -23,7 +24,7 @@ class Agent {
   final Logger _logger = Logger();
   String? profile = '';
   late List<Reminder> reminderList = [];
-  late BEService _beService;
+  late final BEService _beService;
   static const int numAppInstanceCodeDigits = 4;
 
   WebSocketClient? _webSocketClient;
@@ -32,30 +33,33 @@ class Agent {
 
   late final ConversationsProvider conversationsProvider;
 
-  Agent(this.userId, Directory appDirectory) {
+  Agent(this.userId, Directory appDirectory,
+      {RecordingSelectionActivator? recordingSelectionActivator,
+      JsonStorage? storage,
+      WebSocketClient? webSocketClient}) {
     _appDirectory = appDirectory;
-    _beService = BEService(LocalStorageService(_appDirectory.path));
+    _beService = BEService(storage ?? LocalStorageService(_appDirectory.path));
     conversationsProvider = ConversationsProvider(_appDirectory);
+    _webSocketClient = webSocketClient;
+    _recordingSelectionActivator = recordingSelectionActivator;
   }
 
   // RecordingSelectionActivator object with callback is required to initialize the Agent.
   // See the README.md for details.
   initialize(RecordingSelectionActivator recordingSelectionActivator) {
-    setRecordingSelector(recordingSelectionActivator);
+    _setRecordingSelector(recordingSelectionActivator);
 
     List<WebSocketListener> listeners = [
       WebSocketListener(
           EnvironmentVars.formFillRequestTopic,
           (frame) =>
-              _beService.handleRequestFrame(frame, receiveFormValuesRequest))
+              _beService.handleRequestFrame(frame, receiveFormValuesRequest)),
+      WebSocketListener(EnvironmentVars.transcriptResponseTopic,
+          (frame) => _receiveTranscript(frame))
     ];
     _webSocketClient = WebSocketClient(EnvironmentVars.wsUrl,
         int.parse(EnvironmentVars.wsConnectionTimeoutMs), listeners);
     _webSocketClient!.connect();
-  }
-
-  setBeStorageService(JsonStorage storageService) {
-    _beService = BEService(storageService);
   }
 
   shutdown() {
@@ -66,20 +70,54 @@ class Agent {
     }
   }
 
-  void setRecordingSelector(
+  void _receiveTranscript(StompFrame frame) {
+    try {
+      var body = jsonDecode(frame.body!);
+      var content = body?['content'];
+      if (content == null) return;
+      var data = jsonDecode(content);
+      if (data != null &&
+          data.containsKey('jobName') &&
+          data.containsKey('results')) {
+        final jobName = data['jobName'] as String;
+
+        final recordingGuid =
+            jobName.length >= 36 ? jobName.substring(0, 36) : '';
+        if (recordingGuid.isEmpty) {
+          throw "JobName invalid or empty from transcript results ('$jobName').";
+        }
+        if (!doesRecordingExist(recordingGuid)) {
+          throw "Could not find recording with guid '$recordingGuid' for transcript save.";
+        }
+        _logger.i("Received transcript for recording guid '$recordingGuid'.");
+        final results = data['results'];
+        final resultsJson = jsonEncode(results);
+        conversationsProvider.updateConversationTranscript(
+            recordingGuid, resultsJson);
+      }
+    } catch (error) {
+      _logger.e(error.toString());
+    }
+  }
+
+  void _setRecordingSelector(
       RecordingSelectionActivator recordingSelectionActivator) {
     _recordingSelectionActivator = recordingSelectionActivator;
   }
+
+  /*
 
   Future<File> get _remindersFile async {
     final path = _appDirectory.path;
     return File('$path/reminders.json');
   }
+  */
 
   Future<File> get _userFile async {
     final path = _appDirectory.path;
     return File('$path/user.json');
   }
+  
 
   List<FileSystemEntity> listFilesInPath() {
     try {
@@ -92,9 +130,10 @@ class Agent {
     }
   }
 
-  void loadSampleConversations() {
+  Future<void> loadSampleConversations() async {
+    conversationsProvider.removeAllConversations();
     for (var convo in TestConversations.sampleConversations) {
-      conversationsProvider.addConversation(convo);
+      await conversationsProvider.addConversation(convo);
     }
   }
 
@@ -195,15 +234,33 @@ class Agent {
 
     // send to chatgpt
     final gpt = GptCalls(EnvironmentVars.openAIApiKey);
-    final completion = await gpt.extractFormValuesFromTranscript(
-        recordingTranscript,
-        'This Profile',
-        request.form); //Todo implement user profile argument if desired
+    if (request.shouldExtractFromHtml) {
+      final completion = await gpt.extractHtmlFormValuesFromTranscript(
+          recordingTranscript,
+          'This Profile',
+          request.formHtml); //Todo implement user profile argument if desired
 
-    var json = jsonDecode(completion);
-    _logger.d("Form filler completion JSON:\n$json");
+      var json = jsonDecode(completion);
+      _logger.d("HTML form filler completion JSON:\n$json");
 
-    sendFormValueResponse(BEResponse(json));
+      sendFormValueResponse(BEResponse(json));
+    } else {
+      final completion = await gpt.extractFormValuesFromTranscript(
+          recordingTranscript,
+          'This Profile',
+          request.form); //Todo implement user profile argument if desired
+
+      var json = jsonDecode(completion);
+      _logger.d("Field list form filler completion JSON:\n$json");
+
+      sendFormValueResponse(BEResponse(json));
+    }
+  }
+
+  bool doesRecordingExist(String recordingGuid) {
+    var recording = conversationsProvider.conversations
+        .firstWhereOrNull((rec) => rec.id == recordingGuid);
+    return recording != null;
   }
 
   // Recording Getters from conversationsProvider
@@ -229,6 +286,14 @@ class Agent {
     return recording.recordedDate;
   }
 
+  String getRecordingPath(String recordingGuid) {
+    var recording = getRecording(recordingGuid);
+    if (recording.audioFilePath == "") {
+      throw "Recording with $recordingGuid does not have an audio path.";
+    }
+    return recording.audioFilePath;
+  }
+
   void sendFormValueResponse(BEResponse response) {
     if (_webSocketClient != null) {
       _webSocketClient!
@@ -240,7 +305,8 @@ class Agent {
     final recordingTranscript = getRecordingTranscript(recordingGuid);
 
     final gpt = GptCalls(EnvironmentVars.openAIApiKey);
-    final completion = await gpt.getOpenAiSummary(recordingTranscript,''); //Todo implement user profile argument if desired
+    final completion = await gpt.getOpenAiSummary(recordingTranscript,
+        ''); //Todo implement user profile argument if desired
     conversationsProvider.updateGptDescription(recordingGuid, completion!);
 
     //Todo Further parse this output if needed
@@ -258,7 +324,18 @@ class Agent {
         recordedDate); //Todo implement user profile argument if desired
     // write Reminder Transmog result to conversation
     conversationsProvider.updateGptReminders(recordingGuid, completion);
-    // todo create Reminder objects based on completion
+    // Create Reminder objects based on completion
+    // send to chatgpt
+    final jsonResult = await gpt.convertRemindersToJson(
+        completion, recordingGuid, recordedDate);
+    var jsonResponse = jsonDecode(jsonResult);
+    var jsonAsList = jsonResponse as List;
+    List<Reminder> reminders =
+        jsonAsList.map<Reminder>((json) => Reminder.fromJson(json)).toList();
+
+    for (Reminder rem in reminders) {
+      conversationsProvider.addReminder(rem);
+    }
     return completion;
   }
 
@@ -272,6 +349,16 @@ class Agent {
     // write Reminder Transmog result to conversation
     conversationsProvider.updateGptFoodOrder(recordingGuid, completion);
     // todo create Reminder objects based on completion
+    return completion;
+  }
+
+  Future<String?> getOpenAiTranscript(String recordingGuid) async {
+
+    final File recordingPath =
+        File("${conversationsProvider.appDirectory.path}/${recordingGuid}.m4a");
+    final gpt = GptCalls(EnvironmentVars.openAIApiKey);
+    final completion = await gpt.getPrettyTranscript(recordingPath);
+    conversationsProvider.updateGptTranscript(recordingGuid, completion);
     return completion;
   }
 
@@ -291,6 +378,8 @@ class Agent {
     //return reminders
     return reminderList;
   }
+
+  /*
 
   void deleteReminder(int reminderId) async {
     var reminderListFile = await _remindersFile;
@@ -312,21 +401,42 @@ class Agent {
     reminderEntries.add(newReminder.toJson());
     reminderListFile.writeAsStringSync(json.encode(reminderEntries));
   }
+  */
 
   void loadSampleReminderData() async {
     //Generate sample reminder data from literals
 
     //Sample Data
-    Reminder reminder1 = Reminder(1, DateTime.now().add(-Duration(hours: 1)),
-        DateTime.now().add(Duration(hours: 1)), 'Description A', 'User');
-    Reminder reminder2 = Reminder(2, DateTime.now().add(-Duration(hours: 4)),
-        DateTime.now().add(Duration(hours: 4)), 'Description B', 'User');
-    Reminder reminder3 = Reminder(3, DateTime.now().add(-Duration(hours: 34)),
-        DateTime.now().add(Duration(hours: 36)), 'Description C', 'User');
-    Reminder reminder4 = Reminder(4, DateTime.now().add(-Duration(hours: 72)),
-        DateTime.now().add(Duration(hours: 72)), 'Description D', 'User');
-    Reminder reminder5 = Reminder(5, DateTime.now().add(-Duration(hours: 168)),
-        DateTime.now().add(Duration(hours: 168)), 'Description E', 'User');
+    Reminder reminder1 = Reminder(
+        'e3bc7acc-3b20-4056-94b6-6199fdba5870',
+        DateTime.now().add(-Duration(hours: 1)),
+        DateTime.now().add(Duration(hours: 1)),
+        'Description A',
+        'e3bc7acc-3b20-4056-94b6-6199fdba5870');
+    Reminder reminder2 = Reminder(
+        'e3bc7acc-3b20-4056-94b6-6199fdba5871',
+        DateTime.now().add(-Duration(hours: 4)),
+        DateTime.now().add(Duration(hours: 4)),
+        'Description B',
+        'e3bc7acc-3b20-4056-94b6-6199fdba5870');
+    Reminder reminder3 = Reminder(
+        'e3bc7acc-3b20-4056-94b6-6199fdba5872',
+        DateTime.now().add(-Duration(hours: 34)),
+        DateTime.now().add(Duration(hours: 36)),
+        'Description C',
+        'e3bc7acc-3b20-4056-94b6-6199fdba5870');
+    Reminder reminder4 = Reminder(
+        'e3bc7acc-3b20-4056-94b6-6199fdba5873',
+        DateTime.now().add(-Duration(hours: 72)),
+        DateTime.now().add(Duration(hours: 72)),
+        'Description D',
+        'e3bc7acc-3b20-4056-94b6-6199fdba5870');
+    Reminder reminder5 = Reminder(
+        'e3bc7acc-3b20-4056-94b6-6199fdba5874',
+        DateTime.now().add(-Duration(hours: 168)),
+        DateTime.now().add(Duration(hours: 168)),
+        'Description E',
+        'e3bc7acc-3b20-4056-94b6-6199fdba5870');
     List<Reminder> sampleReminderList = [
       reminder1,
       reminder2,
@@ -334,10 +444,12 @@ class Agent {
       reminder4,
       reminder5
     ];
-
     reminderList = sampleReminderList;
+    for (var rem in reminderList) {
+      conversationsProvider.addReminder(rem);
+    }
   }
-
+  /*
   void writeRemindersToFile() async {
     //Write List to file 'reminders.json'
 
@@ -374,4 +486,5 @@ class Agent {
       return '';
     }
   }
+  */
 }

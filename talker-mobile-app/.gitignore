@@ -60,3 +60,7 @@ ios/Podfile.lock
 android/app/src/main/java/io/flutter/plugins/GeneratedPluginRegistrant.java
 ios/Runner/GeneratedPluginRegistrant.h
 ios/Runner/GeneratedPluginRegistrant.m
+ios/Flutter/flutter_export_environment.sh
+
+.env
+/.env

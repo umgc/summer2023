@@ -4,9 +4,11 @@ import 'package:panara_dialogs/panara_dialogs.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:talker_mobile_app/services/DummyConversationSelectionActivator.dart';
+import 'package:talker_mobile_app/services/ConversationSelectionActivator.dart';
 
 import '../globals.dart';
+import '../notifications_service.dart';
+import '../services/notificationTapHandler.dart';
 import '../widgets/conversationListItem.dart';
 
 class ConversationsListScreen extends StatefulWidget {
@@ -25,7 +27,9 @@ class _ConversationsListScreenState extends State<ConversationsListScreen> {
   void initState() {
     super.initState();
     _getFirstLoadSetting();
-    getIt<Agent>().initialize(DummyConversationSelectionActivator(context));
+    getIt<Agent>().initialize(ConversationSelectionActivator(context));
+    NotificationsService.initialize(
+        flutterLocalNotificationsPlugin, context, onSelectNotification);
   }
 
   Future<void> _getFirstLoadSetting() async {
@@ -154,7 +158,10 @@ class _ConversationsListScreenState extends State<ConversationsListScreen> {
                         borderRadius: BorderRadius.all(Radius.circular(15.0))),
                     color: const Color(0xFF262626),
                     initialValue: sortingType,
+                    onCanceled: () =>
+                        FocusScope.of(context).requestFocus(FocusNode()),
                     onSelected: (SortingType sortType) {
+                      FocusScope.of(context).requestFocus(FocusNode());
                       setState(() {
                         conversationsProvider.setSortingType(sortType);
                       });

@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:backend_services/agent.dart';
 import 'package:backend_services/backend_services_exports.dart';
 import 'package:backend_test_utility/test_selection_and_extraction_activator.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -18,8 +17,8 @@ class AppStartup {
     Directory directory = await getApplicationDocumentsDirectory();
     getIt.registerSingleton<Agent>(Agent('backend-test-utility', directory),
         dispose: (param) => param.shutdown());
-    getIt<Agent>().loadSampleConversations();
+    await getIt<Agent>().loadSampleConversations();
     getIt<Agent>().initialize(TestSelectionAndExtractionActivator(
-        getIt<Agent>(), '173d6dc0-fb47-4284-bd09-9465177f8eea'));
+        getIt<Agent>(), TestConversations.workHistoryGuid));
   }
 }

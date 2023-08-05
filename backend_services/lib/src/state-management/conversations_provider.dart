@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:backend_services/model/conversation.dart';
+import 'package:backend_services/model/reminder.dart';
 import 'package:backend_services/src/state-management/sorting_type.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
@@ -10,11 +11,15 @@ class ConversationsProvider with ChangeNotifier {
   late final List<Conversation> _conversations;
   late final Directory _appDirectory;
   late final String _conversationsJsonPath;
+  late final List<Reminder> _reminders;
+  late final String _remindersJsonPath;
 
   ConversationsProvider(Directory appDirectory) {
     _appDirectory = appDirectory;
     _conversationsJsonPath = "${_appDirectory.path}/conversations.json";
     _conversations = getConversationsFromJsonFile();
+    _remindersJsonPath = "${_appDirectory.path}/reminders.json";
+    _reminders = getRemindersFromJsonFile();
   }
 
   SortingType _sortingType = SortingType.dateNewToOld;
@@ -25,23 +30,25 @@ class ConversationsProvider with ChangeNotifier {
   SortingType get sortingType => _sortingType;
   Directory get appDirectory => _appDirectory;
   String get conversationsJsonPath => _conversationsJsonPath;
+  List<Reminder> get reminders => _reminders;
 
-  void addConversation(Conversation conversation) {
+  Future<void> addConversation(Conversation conversation) {
     _conversations.add(conversation);
     notifyListeners();
-    writeConversationsToJsonFile();
+    return writeConversationsToJsonFile();
   }
 
-  void removeConversation(Conversation conversation) {
+  Future<void> removeConversation(Conversation conversation) {
     _conversations.remove(conversation);
     notifyListeners();
-    writeConversationsToJsonFile();
+    deleteAudioFile(conversation.id);
+    return writeConversationsToJsonFile();
   }
 
-  void removeAllConversations() {
+  Future<void> removeAllConversations() {
     _conversations.clear();
     notifyListeners();
-    writeConversationsToJsonFile();
+    return writeConversationsToJsonFile();
   }
 
   void updateConversationTitle(String id, String newTitle) {
@@ -99,13 +106,24 @@ class ConversationsProvider with ChangeNotifier {
     writeConversationsToJsonFile();
   }
 
-    void updateGptFoodOrder(String id, String newGptFoodOrder) {
+  void updateGptFoodOrder(String id, String newGptFoodOrder) {
     Conversation? conversation =
         conversations.firstWhereOrNull((convo) => convo.id == id);
     if (conversation == null) {
       return;
     }
     conversation.gptFoodOrder = newGptFoodOrder;
+    notifyListeners();
+    writeConversationsToJsonFile();
+  }
+
+  void updateGptTranscript(String id, String newGptTranscript) {
+    Conversation? conversation =
+        conversations.firstWhereOrNull((convo) => convo.id == id);
+    if (conversation == null) {
+      return;
+    }
+    conversation.gptTranscript = newGptTranscript;
     notifyListeners();
     writeConversationsToJsonFile();
   }
@@ -148,6 +166,53 @@ class ConversationsProvider with ChangeNotifier {
   Future<void> writeConversationsToJsonFile() async {
     var json = jsonEncode(conversations.map((c) => c.toJson()).toList());
     final File jsonFile = File(_conversationsJsonPath);
+    await jsonFile.writeAsString(json, mode: FileMode.writeOnly);
+  }
+
+  Future<void> deleteAudioFile(String id) async {
+    final File audioFile =
+        File("${appDirectory.path}/${selectedConversation?.id}.m4a");
+    if (audioFile.existsSync()) {
+      audioFile.deleteSync();
+    }
+  }
+
+  void addReminder(Reminder reminder) {
+    _reminders.add(reminder);
+    notifyListeners();
+    writeRemindersToJsonFile();
+  }
+
+  void removeReminder(Reminder reminder) {
+    _reminders.remove(reminder);
+    notifyListeners();
+    writeRemindersToJsonFile();
+  }
+
+  void removeAllReminders() {
+    _reminders.clear();
+    notifyListeners();
+    writeRemindersToJsonFile();
+  }
+
+  List<Reminder> getRemindersFromJsonFile() {
+    var fileExists = File(_remindersJsonPath).existsSync();
+    if (fileExists) {
+      final File jsonFile = File(_remindersJsonPath);
+      String contents = jsonFile.readAsStringSync();
+      var jsonResponse = jsonDecode(contents);
+      var jsonAsList = jsonResponse as List;
+      List<Reminder> reminders =
+          jsonAsList.map<Reminder>((json) => Reminder.fromJson(json)).toList();
+      return reminders;
+    } else {
+      return [];
+    }
+  }
+
+  Future<void> writeRemindersToJsonFile() async {
+    var json = jsonEncode(reminders.map((c) => c.toJson()).toList());
+    final File jsonFile = File(_remindersJsonPath);
     await jsonFile.writeAsString(json, mode: FileMode.writeOnly);
   }
 }

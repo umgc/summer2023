@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dart_openai/dart_openai.dart';
 import 'package:logger/logger.dart';
 
@@ -10,7 +12,8 @@ class GptCalls {
 
   //String browserRequest;
   //String userProfile;
-  final String restaurantPrompt = '''You are a restaurant assistant.  Take the following audio transcript of a waiter taking patrons' orders and generate a summary of patrons' orders at a restaurant.  There may be up to 10 speakers in the conversation.  Different speakers' voices are indicated by "spk_0", "spk_1", "spk_2" or up to "spk_9".  You must separate out different speakers' orders and refer to them using using "Seat 1", "Seat 2", "Seat 3", etc.
+  final String restaurantPrompt =
+      '''You are a restaurant assistant.  Take the following audio transcript of a waiter taking patrons' orders and generate a summary of patrons' orders at a restaurant.  There may be up to 10 speakers in the conversation.  Different speakers' voices are indicated by "spk_0", "spk_1", "spk_2" or up to "spk_9".  You must separate out different speakers' orders and refer to them using using "Seat 1", "Seat 2", "Seat 3", etc.
 
 Example format:
 
@@ -35,7 +38,8 @@ Speaker1: Did you get Mike's invitation to the party?
 
 Speaker2: Yes, I'm looking forward to it.''';
 
-  final reminderPrompt = '''You are a reminder assistant.  Take the following audio transcript and generate a list of reminders for a person with short term memory loss.  Provide clear reminder descriptions and date/times for reminders that will occur within the next 7 days.
+  final reminderPrompt =
+      '''You are a reminder assistant.  Take the following audio transcript and generate a list of reminders for a person with short term memory loss.  Provide clear reminder descriptions and date/times for reminders that will occur within the next 7 days.
 
 Provide a description date/time of the following format:
 
@@ -63,7 +67,7 @@ If this is a conversation about food orders in a restaurant, apologize that you 
     final completion = await OpenAI.instance.chat
         .create(model: "gpt-3.5-turbo", messages: messages);
 
-    return completion.choices[0].message.content; 
+    return completion.choices[0].message.content;
     //The conversation involves Speaker 1 expressing their hesitation and uncertainty about their pain tolerance, while Speaker 2 reassures them and expresses readiness to start the activity.
     // Possible Error: RequestFailedException (RequestFailedException{message: That model is currently overloaded with other requests. You can retry your request, or contact us through our help center at help.openai.com if the error persists. (Please include the request ID d946214a3b7fa731346976ac8a39e724 in your message.), statusCode: 503})
   }
@@ -75,14 +79,16 @@ If this is a conversation about food orders in a restaurant, apologize that you 
     String formFillerPromptToSend =
         '''You are a form filler service. I will give you a transcript and list of field 
 names and I want you to extract the values for the fields out of the information 
-in the transcript. The field values should be in JSON format. 
+in the transcript. The field values should be in JSON format. The response must only consist 
+of complete properly-formatted JSON.
 Here is additional information about the user:
 $userProfile
 Here are the list of fields in JSON format:
 $fields
 Here is the transcript I want you to extract field values from:
 $transcript
-Please ensure that every field in the list of fields has a value filled in, and make up answers if no relevant information is available.''';
+Please ensure that every field in the list of fields has a value filled in, and provide a 
+best guess value for each field even if there is insuffucient information from the transcript.''';
 
     _logger.i(formFillerPromptToSend);
 
@@ -95,6 +101,41 @@ Please ensure that every field in the list of fields has a value filled in, and 
         .create(model: "gpt-3.5-turbo", messages: messages);
 
     return completion.choices[0].message.content;
+  }
+
+  Future<String> extractHtmlFormValuesFromTranscript(
+      String transcript, String userProfile, dynamic fields) async {
+    OpenAI.apiKey = _openAIApiKey;
+
+    String htmlFormFillerPromptToSend =
+        '''You are a form filler service. I will give you an HTML form snippet, and 
+I would like you to build a list of fields based on the HTML form. The key for these fields
+should be the HTML "id" attribute or "name" if no id is specified.  I will then give 
+you a transcript and I want you to extract the values for the fields found in the HTML 
+form snippet based on the information in the transcript. The resulting field values 
+should be in JSON format. The response must only consist of complete properly-formatted JSON.
+Here is additional information about the user:
+$userProfile
+Here is the HTML form snippet:
+$fields
+Here is the transcript I want you to extract field values from:
+$transcript
+Please ensure that every field found in the HTML form snippet has a value filled in, and provide a 
+best guess value for each field even if there is insuffucient information from the transcript.''';
+
+    _logger.i(htmlFormFillerPromptToSend);
+
+    List<OpenAIChatCompletionChoiceMessageModel> messages = [
+      OpenAIChatCompletionChoiceMessageModel(
+          role: OpenAIChatMessageRole.user, content: htmlFormFillerPromptToSend)
+    ];
+
+    final completion = await OpenAI.instance.chat
+        .create(model: "gpt-3.5-turbo-16k", messages: messages, temperature: 0);
+
+    final content = completion.choices[0].message.content;
+    _logger.i(content);
+    return content;
   }
 
   Future<String> getRestaurantOrder(
@@ -116,11 +157,12 @@ Please ensure that every field in the list of fields has a value filled in, and 
     return completion.choices[0].message.content;
   }
 
-    Future<String> getReminders(
+  Future<String> getReminders(
       String transcript, String userProfile, DateTime recordedDate) async {
     OpenAI.apiKey = _openAIApiKey;
 
-    String reminderPromptToSend = '$reminderPrompt \n The Current Date and time is: ${recordedDate.toIso8601String()}\n The Audio Transcript:\n$transcript';
+    String reminderPromptToSend =
+        '$reminderPrompt \n The Current Date and time is: ${recordedDate.toIso8601String()}\n The Audio Transcript:\n$transcript';
 
     _logger.i(reminderPromptToSend);
 
@@ -133,5 +175,63 @@ Please ensure that every field in the list of fields has a value filled in, and 
         .create(model: "gpt-3.5-turbo", messages: messages);
 
     return completion.choices[0].message.content;
+  }
+
+  Future<String> convertRemindersToJson(
+      String reminderText, String recordingId, DateTime createTimestamp) async {
+    OpenAI.apiKey = _openAIApiKey;
+
+    final convertRemindersToJsonPrompt =
+        '''You are a reminders assistant.  Convert the following list of reminder source data into JSON format, using fields "reminderId" "createTimestamp" "notifyTimestamp" "reminderDescription" "recordingId".  There may be multiple reminders in the source data.  Create JSON for all reminders.  The response must only consist of complete properly-formatted JSON.
+
+Attributes common to each reminder: 
+
+createTimestamp: $createTimestamp
+recordingId: $recordingId
+
+"createTimestamp" represents the current time and will be the same for all.  "notifyTimestamp" is the time the reminder takes effect as noted in the source data.  Create a new unique UUID to populate "reminderId" field..
+
+Example JSON using the desired formatting:
+
+[
+	{
+		"reminderId": "10e2d970-2760-11ee-a831-510c56deaff3",
+		"createTimestamp": "2023-07-04T20:46:59.346827",
+		"notifyTimestamp": "2023-07-06T22:28:48.683649",
+		"reminderDescription": "Take out the trash",
+		"recordingId": "6dd25210-276e-11ee-a831-510c56deaff3"
+	}
+]
+
+Source Data:
+$reminderText''';
+
+    _logger.i(convertRemindersToJsonPrompt);
+
+    List<OpenAIChatCompletionChoiceMessageModel> messages = [
+      OpenAIChatCompletionChoiceMessageModel(
+          role: OpenAIChatMessageRole.user,
+          content: convertRemindersToJsonPrompt)
+    ];
+
+    final completion = await OpenAI.instance.chat
+        .create(model: "gpt-3.5-turbo", messages: messages);
+
+    return completion.choices[0].message.content;
+  }
+
+  Future<String> getPrettyTranscript(
+      File audioPath) async {
+    OpenAI.apiKey = _openAIApiKey;
+    _logger.i(audioPath);
+
+    OpenAIAudioModel transcription = await OpenAI.instance.audio.createTranscription(
+      file: audioPath,
+      model: "whisper-1",
+      responseFormat: OpenAIAudioResponseFormat.json,
+      );
+    _logger.i(transcription);
+
+    return transcription.text;
   }
 }

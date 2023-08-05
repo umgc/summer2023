@@ -13,8 +13,9 @@ export async function getActiveTabURL() {
 }
 
 const ServiceURL_DEV = "http://localhost:8080/ws";
-const serviceUrl_PROD = "http://44.202.25.184:8080/ws";
-const serviceUrl = ServiceURL_DEV;
+const serviceUrl_PROD = "https://besie.servehttp.com/ws";
+const serviceUrl = serviceUrl_PROD;
+export const HTML_PAYLOAD_ENABLED = false;
 
 var stompClient;
 export async function connect() {
@@ -45,6 +46,16 @@ export function sendFormPayload(pinNumber, form) {
     let payload = {
         form: form,
         pin: pinNumber,
+    };
+    console.log(JSON.stringify(payload));
+    stompClient.send("/app/fill", {}, JSON.stringify(payload));
+}
+
+export function sendHtmlPayload(pinNumber, html) {
+    let payload = {
+        formHtml: html,
+        pin: pinNumber,
+        shouldExtractFromHtml: true
     };
     console.log(JSON.stringify(payload));
     stompClient.send("/app/fill", {}, JSON.stringify(payload));

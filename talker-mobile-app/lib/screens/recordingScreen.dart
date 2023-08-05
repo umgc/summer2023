@@ -9,6 +9,8 @@ import 'package:stop_watch_timer/stop_watch_timer.dart';
 import 'package:talker_mobile_app/screens/conversationDetailsScreen.dart';
 import 'package:uuid/uuid.dart';
 
+import '../globals.dart';
+
 class RecordingScreen extends StatefulWidget {
   const RecordingScreen({Key? key}) : super(key: key);
 
@@ -51,7 +53,7 @@ class _RecordingScreenState extends State<RecordingScreen> {
   }
 
   void _startRecording(String directoryPath) async {
-    await recorderController.record(path: "$directoryPath/$id");
+    await recorderController.record(path: "$directoryPath/$id.m4a");
     _stopWatchTimer.onStartTimer();
     setState(() {
       isPaused = false;
@@ -85,11 +87,12 @@ class _RecordingScreenState extends State<RecordingScreen> {
     Conversation newConversation = Conversation(
         recordedDate: recordedDate,
         duration: Duration(seconds: seconds.value),
-        audioFilePath: "$directoryPath/$id",
+        audioFilePath: "$directoryPath/$id.m4a",
         id: id);
     conversationsProvider.addConversation(newConversation);
     conversationsProvider.setSelectedConversation(newConversation);
-    audioFileUpload(File("$directoryPath/$id"));
+    audioFileUpload(File("$directoryPath/$id.m4a"));
+    getIt<Agent>().getOpenAiTranscript(id);
     Navigator.pushReplacement(
         context,
         MaterialPageRoute(

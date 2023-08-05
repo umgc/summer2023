@@ -55,15 +55,25 @@ function disconnect() {
 }
 
 function sendFormPayload() {
-    let payload = {
-        pin: $("#pin").val(),
-        firstName: "string",
-        lastName: "string",
-        zipcode: "integer",
-        other: $('#payload').val()
+    var shouldSendHtml = $('#shouldSendHtml').prop('checked');
+    const payloadContent = $('#payload').val();
+    console.log(payloadContent);
+    if(shouldSendHtml) {
+        let payload = {
+            pin: $("#pin").val(),
+            formHtml: payloadContent,
+            shouldExtractFromHtml: true
+        }
+        console.log(JSON.stringify(payload));
+        stompClient.send("/app/fill", {}, JSON.stringify(payload));
+    } else {
+        let payload = {
+            pin: $("#pin").val(),
+            form: $.parseJSON(payloadContent)
+        }
+        console.log(JSON.stringify(payload));
+        stompClient.send("/app/fill", {}, JSON.stringify(payload));
     }
-    console.log(JSON.stringify(payload));
-    stompClient.send("/app/fill", {}, JSON.stringify(payload));
 }
 
 function sendFormPayload2() {
@@ -79,8 +89,44 @@ function sendFormPayload2() {
 
 function sendFormPayload3() {
     let payload = {
-        transcript: $('#payload3').val()
-    }
+        jobName: $("#conversationId").val(),
+        results: {
+            transcripts: [{ transcript: $("#transcript").val() }],
+            speaker_labels: {
+            channel_label: "ch_0",
+            speakers: 1,
+            segments: [
+                {
+                start_time: "0.109",
+                speaker_label: "spk_0",
+                end_time: "4.389",
+                items: [
+                    {
+                    start_time: "1.039",
+                    speaker_label: "spk_0",
+                    end_time: "1.659",
+                    },
+                ],
+                },
+            ],
+            },
+            items: [
+            {
+                start_time: "1.039",
+                speaker_label: "spk_0",
+                end_time: "1.659",
+                alternatives: [
+                {
+                    confidence: "0.996",
+                    content: "Testing",
+                },
+                ],
+                type: "pronunciation",
+            },
+            ],
+        },
+        status: "COMPLETED",
+    };
     console.log(JSON.stringify(payload));
     stompClient3.send("/app/transcript", {}, JSON.stringify(payload));
 }

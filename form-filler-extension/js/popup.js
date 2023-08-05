@@ -1,4 +1,4 @@
-import { getActiveTabURL, connect, sendFormPayload } from "./utils.js";
+import { getActiveTabURL, connect, sendFormPayload, sendHtmlPayload, HTML_PAYLOAD_ENABLED } from "./utils.js";
 
 $(document).ready(async function () {
 
@@ -15,11 +15,16 @@ $(document).ready(async function () {
         if (validatePin()) {
             chrome.tabs.sendMessage(activeTab.id, {
                 mode: "FORM_SCRAPE",
-                data: null
+                data: null,
+                enableHtmlPayload: HTML_PAYLOAD_ENABLED
             }).then(async (response) => {
                 console.log("data from content script: " + response.formFields);
                 let pinNumber = $("#pinNumber").val();
-                sendFormPayload(pinNumber, response.formFields);
+                if (HTML_PAYLOAD_ENABLED) {
+                    sendHtmlPayload(pinNumber, response.htmlForms);
+                } else {
+                    sendFormPayload(pinNumber, response.formFields);
+                }
             })
         }
     });
