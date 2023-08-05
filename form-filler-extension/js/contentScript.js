@@ -1,7 +1,19 @@
 chrome.runtime.onMessage.addListener((obj, sender, sendResponse) => {
-    const { mode, data } = obj;
+    const { mode, data, enableHtmlPayload } = obj;
 
     if (mode === 'FORM_SCRAPE') {
+
+        if (enableHtmlPayload) {
+            let forms = document.getElementsByTagName('form');
+            
+            let formsHtmlTxt = [];
+            for (const form of forms) {
+                formsHtmlTxt.push(form.innerHTML);
+            }
+            sendResponse({ "htmlForms": formsHtmlTxt });
+            return true;
+        }
+        
         // Collect all input elements and put in a list of name : type
         let inputElements = document.getElementsByTagName("input");
         let textAreaInputs = document.getElementsByTagName("textarea");
